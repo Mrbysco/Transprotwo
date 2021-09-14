@@ -1,0 +1,37 @@
+package com.mrbysco.transprotwo.network;
+
+import com.mrbysco.transprotwo.Transprotwo;
+import com.mrbysco.transprotwo.network.message.TransferParticleMessage;
+import com.mrbysco.transprotwo.network.message.UpdateDispatcherMessage;
+import com.mrbysco.transprotwo.network.message.UpdateFluidDispatcherMessage;
+import com.mrbysco.transprotwo.network.message.UpdatePowerDispatcherMessage;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+
+public class PacketHandler {
+	private static final String PROTOCOL_VERSION = "1";
+	public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
+			new ResourceLocation(Transprotwo.MOD_ID, "main"),
+			() -> PROTOCOL_VERSION,
+			PROTOCOL_VERSION::equals,
+			PROTOCOL_VERSION::equals
+	);
+
+	private static int id = 0;
+
+	public static void init(){
+		CHANNEL.registerMessage(id++, UpdateDispatcherMessage.class, UpdateDispatcherMessage::encode, UpdateDispatcherMessage::decode, UpdateDispatcherMessage::handle);
+		CHANNEL.registerMessage(id++, UpdateFluidDispatcherMessage.class, UpdateFluidDispatcherMessage::encode, UpdateFluidDispatcherMessage::decode, UpdateFluidDispatcherMessage::handle);
+		CHANNEL.registerMessage(id++, UpdatePowerDispatcherMessage.class, UpdatePowerDispatcherMessage::encode, UpdatePowerDispatcherMessage::decode, UpdatePowerDispatcherMessage::handle);
+		CHANNEL.registerMessage(id++, TransferParticleMessage.class, TransferParticleMessage::encode, TransferParticleMessage::decode, TransferParticleMessage::handle);
+	}
+
+	public static void sendToNearbyPlayers(Object message, BlockPos pos, double radius, RegistryKey<World> dim) {
+		CHANNEL.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(pos.getX(), pos.getY(), pos.getZ(), radius, dim)), message);
+	}
+}

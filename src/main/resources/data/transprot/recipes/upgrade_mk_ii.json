@@ -1,0 +1,17 @@
+{
+  "result": {
+    "item": "transprotwo:upgrade_mk_ii"
+  },
+  "pattern": [
+    "ueu"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "u": {
+      "item": "transprotwo:upgrade_mk_i"
+    },
+    "e": {
+      "item": "minecraft:gold_ingot"
+    }
+  }
+}
