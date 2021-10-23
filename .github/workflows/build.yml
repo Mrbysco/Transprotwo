@@ -18,7 +18,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: Build with Gradle
-        run: ./gradlew build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build
       - name: Publish the Mod
         if: contains(github.event.head_commit.message, '[push]') || contains(github.event.head_commit.message, '[build]')
         env:
