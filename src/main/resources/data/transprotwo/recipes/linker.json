@@ -3,17 +3,17 @@
     "item": "transprotwo:linker"
   },
   "pattern": [
-    "i  ",
-    " p ",
-    "  i"
+    "I  ",
+    " P ",
+    "  I"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
-    "p": {
+    "P": {
       "item": "minecraft:paper"
     },
-    "i": {
-      "item": "minecraft:iron_ingot"
+    "I": {
+      "tag": "forge:ingots/iron"
     }
   }
 }

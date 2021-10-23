@@ -6,7 +6,7 @@ public class PowerStack {
 	public static final PowerStack EMPTY = new PowerStack(0);
 
 	private boolean isEmpty;
-	private int amount;
+	private final int amount;
 
 	public PowerStack(int amount) {
 		this.amount = amount;
@@ -42,23 +42,8 @@ public class PowerStack {
 		return isEmpty ? 0 : amount ;
 	}
 
-	public int getPower() {
-		if(getAmount() > 0) {
-			return getAmount() * 1000;
-		}
-		return 0;
+	public String toString() {
+		return "PowerStack[ " + this.amount + " ]";
 	}
 
-	public void setAmount(int amount) {
-		this.amount = amount;
-		updateEmpty();
-	}
-
-	public void grow(int amount) {
-		setAmount(this.amount + amount);
-	}
-
-	public void shrink(int amount) {
-		setAmount(this.amount - amount);
-	}
 }

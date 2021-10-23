@@ -19,13 +19,13 @@ public class ItemTransfer extends AbstractTransfer {
 
 	public void readFromNBT(CompoundNBT compound) {
 		CompoundNBT tag = compound.getCompound("stack");
-		stack = ItemStack.read(tag);
+		stack = ItemStack.of(tag);
 		super.readFromNBT(compound);
 	}
 
 	public CompoundNBT writeToNBT(CompoundNBT compound) {
 		CompoundNBT tag = new CompoundNBT();
-		stack.write(tag);
+		stack.save(tag);
 		compound.put("stack", tag);
 		return super.writeToNBT(compound);
 	}

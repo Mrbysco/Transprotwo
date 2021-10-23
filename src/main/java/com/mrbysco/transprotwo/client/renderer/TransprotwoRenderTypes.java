@@ -17,42 +17,46 @@ public class TransprotwoRenderTypes extends RenderType {
 	}
 
 	public static RenderType getType(float lineWidth) {
-		return makeType("transprotwo:line",
+		return create("transprotwo:line",
 				DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINES, 256,
-				RenderType.State.getBuilder()
-						.layer(VIEW_OFFSET_Z_LAYERING)
-						.line(new LineState(OptionalDouble.of(lineWidth)))
-						.transparency(NO_TRANSPARENCY)
-						.target(ITEM_ENTITY_TARGET)
-						.writeMask(COLOR_DEPTH_WRITE)
-						.build(false));
+				RenderType.State.builder()
+						.setLayeringState(VIEW_OFFSET_Z_LAYERING)
+						.setLineState(new LineState(OptionalDouble.of(lineWidth)))
+						.setTransparencyState(NO_TRANSPARENCY)
+						.setOutputState(ITEM_ENTITY_TARGET)
+						.setWriteMaskState(COLOR_DEPTH_WRITE)
+						.createCompositeState(false));
 	}
 
 	public static RenderType getPower() {
-		return makeType("transprotwo:power",
+		return create("transprotwo:power",
 				DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 262144, false, true,
-				RenderType.State.getBuilder()
-						.texture(new RenderState.TextureState(new ResourceLocation(Transprotwo.MOD_ID, "textures/particle/power.png"), false, false))
-						.transparency(new RenderState.TransparencyState("translucent_transparency", () -> {
-							RenderSystem.depthMask(true);
+				RenderType.State.builder()
+						.setTextureState(new RenderState.TextureState(new ResourceLocation(Transprotwo.MOD_ID, "textures/particle/power.png"), false, false))
+						.setTransparencyState(new RenderState.TransparencyState("translucent_transparency", () -> {
+							RenderSystem.depthMask(false);
 							RenderSystem.enableBlend();
 						}, () -> {
 							RenderSystem.disableBlend();
+							RenderSystem.defaultBlendFunc();
+							RenderSystem.depthMask(true);
 						}))
-						.build(true));
+						.setAlphaState(DEFAULT_ALPHA)
+						.createCompositeState(true));
 	}
 
 	public static RenderType getLiquid() {
-		return makeType("transprotwo:liquid",
+		return create("transprotwo:liquid",
 				DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 262144, false, true,
-				RenderType.State.getBuilder()
-						.texture(new RenderState.TextureState(new ResourceLocation(Transprotwo.MOD_ID, "textures/particle/fluid.png"), false, false))
-						.transparency(new RenderState.TransparencyState("translucent_transparency", () -> {
+				RenderType.State.builder()
+						.setTextureState(new RenderState.TextureState(new ResourceLocation(Transprotwo.MOD_ID, "textures/particle/fluid.png"), false, false))
+						.setTransparencyState(new RenderState.TransparencyState("translucent_transparency", () -> {
 							RenderSystem.depthMask(true);
 							RenderSystem.enableBlend();
 						}, () -> {
 							RenderSystem.disableBlend();
+							RenderSystem.defaultBlendFunc();
 						}))
-						.build(true));
+						.createCompositeState(true));
 	}
 }

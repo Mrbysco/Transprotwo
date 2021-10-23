@@ -8,7 +8,6 @@ public class HexFieldWidget extends TextFieldWidget {
 	public HexFieldWidget(FontRenderer font, int x, int y, int width, int height, ITextComponent defaultValue) {
 		super(font, x, y, width, height, defaultValue);
 	}
-	//
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -16,25 +15,25 @@ public class HexFieldWidget extends TextFieldWidget {
 	}
 
 	@Override
-	public void writeText(String textToWrite) {
-		if (this.isValidHexValue(textToWrite)) super.writeText(textToWrite);
+	public void insertText(String textToWrite) {
+		if (this.isValidHexValue(textToWrite)) super.insertText(textToWrite);
 	}
 
 	@Override
-	public String getText() {
-		return (this.isValidHexValue(super.getText()) ? super.getText() : "0");
+	public String getValue() {
+		return (this.isValidHexValue(super.getValue()) ? super.getValue() : "0");
 	}
 
 	@Override
 	protected void setFocused(boolean focused) {
 		super.setFocused(focused);
 		if (!focused) {
-			this.setSelectionPos(this.getText().length());
-			this.setCursorPositionEnd();
+			this.setHighlightPos(this.getValue().length());
+			this.moveCursorToEnd();
 		}
 	}
 
 	protected boolean isValidHexValue(String value) {
-		return value.matches("0[xX][0-9a-fA-F]+");
+		return value.matches("^[0-9A-Fa-f]+$");
 	}
 }

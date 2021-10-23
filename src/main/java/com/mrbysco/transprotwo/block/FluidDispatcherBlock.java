@@ -29,13 +29,13 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if (!worldIn.isRemote && tile instanceof FluidDispatcherTile) {
+	public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+		TileEntity tile = worldIn.getBlockEntity(pos);
+		if (!worldIn.isClientSide && tile instanceof FluidDispatcherTile) {
 			FluidDispatcherTile dispatcherTile = (FluidDispatcherTile) tile;
 			IFluidHandler originHandler = getOriginHandler(state, worldIn, pos);
 			if (!dispatcherTile.getUpgrade().getStackInSlot(0).isEmpty())
-				spawnAsEntity(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
+				popResource(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer abstractTransfer : dispatcherTile.getTransfers()) {
 				if(abstractTransfer instanceof FluidTransfer) {
 					FluidTransfer transfer = (FluidTransfer) abstractTransfer;
@@ -43,23 +43,23 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 				}
 			}
 		}
-		super.onReplaced(state, worldIn, pos, newState, isMoving);
+		super.onRemove(state, worldIn, pos, newState, isMoving);
 	}
 
 	public IFluidHandler getOriginHandler(BlockState state, World world, BlockPos pos) {
-		Direction face = state.get(DirectionalBlock.FACING);
-		if (!world.isAreaLoaded(pos.offset(face), 1) && world.getTileEntity(pos.offset(face)) == null)
+		Direction face = state.getValue(DirectionalBlock.FACING);
+		if (!world.isAreaLoaded(pos.relative(face), 1) && world.getBlockEntity(pos.relative(face)) == null)
 			return null;
-		return FluidHelper.getFluidHandler(world.getTileEntity(pos.offset(face)), face.getOpposite());
+		return FluidHelper.getFluidHandler(world.getBlockEntity(pos.relative(face)), face.getOpposite());
 	}
 
 	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if(tile instanceof FluidDispatcherTile && !worldIn.isRemote && !player.isSneaking()) {
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+		TileEntity tile = worldIn.getBlockEntity(pos);
+		if(tile instanceof FluidDispatcherTile && !worldIn.isClientSide && !player.isShiftKeyDown()) {
 			NetworkHooks.openGui((ServerPlayerEntity) player, (FluidDispatcherTile) tile, pos);
 		}
-		return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+		return super.use(state, worldIn, pos, player, handIn, hit);
 	}
 
 	@Override

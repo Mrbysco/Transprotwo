@@ -15,51 +15,56 @@ public class RenderHelper {
 
 	public static void renderFluid(MatrixStack matrixStack, IRenderTypeBuffer.Impl typeBuffer, FluidStack fluid) {
 		if(fluid != null && !fluid.isEmpty()) {
-			matrixStack.push();
+			matrixStack.pushPose();
 			float scale = 0.25f;
 			matrixStack.scale(scale, scale, scale);
 
-			matrixStack.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
-			matrixStack.rotate(Vector3f.YP.rotationDegrees(90F));
-			matrixStack.rotate(Vector3f.ZP.rotationDegrees(270F));
+			matrixStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
+			matrixStack.mulPose(Vector3f.YP.rotationDegrees(90F));
+			matrixStack.mulPose(Vector3f.ZP.rotationDegrees(270F));
 
 			RenderType type = TransprotwoRenderTypes.getLiquid();
 			IVertexBuilder buffer = typeBuffer.getBuffer(type);
-			Matrix4f matrix = matrixStack.getLast().getMatrix();
+			Matrix4f matrix = matrixStack.last().pose();
 
 			Color color = new Color(fluid.getFluid().getAttributes().getColor(fluid));
+
 			drawQuad(matrix, buffer, color);
 
-			typeBuffer.finish(type);
+			typeBuffer.endBatch(type);
 
-			matrixStack.pop();
+			matrixStack.popPose();
 		}
 	}
 
 	public static void renderPower(MatrixStack matrixStack, IRenderTypeBuffer.Impl typeBuffer, Color color) {
-		matrixStack.push();
-		float scale = 0.25f;
+		matrixStack.pushPose();
+		float scale = 0.1F;
 		matrixStack.scale(scale, scale, scale);
 
-		matrixStack.rotate(Minecraft.getInstance().getRenderManager().getCameraOrientation());
-		matrixStack.rotate(Vector3f.YP.rotationDegrees(90F));
-		matrixStack.rotate(Vector3f.ZP.rotationDegrees(270F));
+		matrixStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
+		matrixStack.mulPose(Vector3f.YP.rotationDegrees(90F));
+		matrixStack.mulPose(Vector3f.ZP.rotationDegrees(270F));
 
 		RenderType type = TransprotwoRenderTypes.getPower();
 		IVertexBuilder buffer = typeBuffer.getBuffer(type);
-		Matrix4f matrix = matrixStack.getLast().getMatrix();
+		Matrix4f matrix = matrixStack.last().pose();
 
 		drawQuad(matrix, buffer, color);
 
-		typeBuffer.finish(type);
+		typeBuffer.endBatch(type);
 
-		matrixStack.pop();
+		matrixStack.popPose();
 	}
 
 	private static void drawQuad(Matrix4f matrix, IVertexBuilder buffer, Color color) {
-		buffer.pos(matrix, 0, 0, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).tex(0, 1).endVertex();
-		buffer.pos(matrix, 0, 0, 1).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).tex(1, 1).endVertex();
-		buffer.pos(matrix, 1, 0, 1).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).tex(1, 0).endVertex();
-		buffer.pos(matrix, 1, 0, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).tex(0, 0).endVertex();
+		float xOffset = -0.75f;
+		float yOffset = -0f;
+		float zOffset = -0.75f;
+
+		buffer.vertex(matrix, 0 + xOffset, yOffset, 1.5f + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(0, 1).endVertex();
+		buffer.vertex(matrix, 1 + xOffset + 0.5f, yOffset, 1.5f + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(1, 1).endVertex();
+		buffer.vertex(matrix, 1 + xOffset + 0.5f, yOffset, 0 + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(1, 0).endVertex();
+		buffer.vertex(matrix, 0 + xOffset, yOffset, 0 + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(0, 0).endVertex();
 	}
 }

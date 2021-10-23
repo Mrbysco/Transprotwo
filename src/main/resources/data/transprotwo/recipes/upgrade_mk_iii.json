@@ -3,15 +3,15 @@
     "item": "transprotwo:upgrade_mk_iii"
   },
   "pattern": [
-    "ueu"
+    "UDU"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
-    "u": {
+    "U": {
       "item": "transprotwo:upgrade_mk_ii"
     },
-    "e": {
-      "item": "minecraft:diamond"
+    "D": {
+      "tag": "forge:gems/diamond"
     }
   }
 }

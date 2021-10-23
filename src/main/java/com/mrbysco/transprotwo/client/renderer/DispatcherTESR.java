@@ -29,11 +29,11 @@ public class DispatcherTESR extends TileEntityRenderer<AbstractDispatcherTile> {
 		final Minecraft mc = Minecraft.getInstance();
 		final ClientPlayerEntity player = mc.player;
 
-		if (player.inventory.getCurrentItem().isEmpty() || player.inventory.getCurrentItem().getItem() != TransprotwoRegistry.LINKER.get())
+		if (player.inventory.getSelected().isEmpty() || player.inventory.getSelected().getItem() != TransprotwoRegistry.LINKER.get())
 			return;
 
-		BlockPos pos = dispatcher.getPos();
-		matrixStack.push();
+		BlockPos pos = dispatcher.getBlockPos();
+		matrixStack.pushPose();
 		float width = 5.0f;
 		RenderType lineType = TransprotwoRenderTypes.getType(width);
 		IVertexBuilder vertexBuilder = bufferIn.getBuffer(lineType);
@@ -45,23 +45,23 @@ public class DispatcherTESR extends TileEntityRenderer<AbstractDispatcherTile> {
 			float x = pSubt.getX() + .5f, y = pSubt.getY() + .5f, z = pSubt.getZ() + .5f;
 			float x2 = 0 + .5f, y2 = 0 + .5f, z2 = 0 + .5f;
 			boolean free = dispatcher.wayFree(pos, p);
-			if (!free && dispatcher.getWorld().getGameTime() / 10 % 2 != 0)
+			if (!free && dispatcher.getLevel().getGameTime() / 10 % 2 != 0)
 				continue;
 
-			if (player.isSneaking()) {
+			if (player.isShiftKeyDown()) {
 				RenderSystem.disableDepthTest();
 			} else {
 				RenderSystem.enableDepthTest();
 			}
-			Matrix4f matrix = matrixStack.getLast().getMatrix();
-			vertexBuilder.pos(matrix, x, y, z).color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f).endVertex();
-			vertexBuilder.pos(matrix, x2, y2, z2).color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f).endVertex();
+			Matrix4f matrix = matrixStack.last().pose();
+			vertexBuilder.vertex(matrix, x, y, z).color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f).endVertex();
+			vertexBuilder.vertex(matrix, x2, y2, z2).color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f).endVertex();
 
 		}
 
 		if (vertexBuilder instanceof IRenderTypeBuffer.Impl) {
-			((IRenderTypeBuffer.Impl) vertexBuilder).finish();
+			((IRenderTypeBuffer.Impl) vertexBuilder).endBatch();
 		}
-		matrixStack.pop();
+		matrixStack.popPose();
 	}
 }

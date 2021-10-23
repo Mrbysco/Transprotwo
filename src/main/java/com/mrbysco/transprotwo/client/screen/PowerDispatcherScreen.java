@@ -4,8 +4,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.client.screen.widget.HexFieldWidget;
 import com.mrbysco.transprotwo.network.PacketHandler;
-import com.mrbysco.transprotwo.network.message.UpdateFluidDispatcherMessage;
+import com.mrbysco.transprotwo.network.message.UpdatePowerDispatcherMessage;
 import com.mrbysco.transprotwo.tile.AbstractDispatcherTile.Mode;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
@@ -27,22 +28,22 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 	public PowerDispatcherScreen(PowerDispatcherContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
 		super(screenContainer, inv, titleIn);
 
-		this.ySize = 172;
+		this.imageHeight = 193;
 	}
 
 	@Override
 	protected void init() {
 		super.init();
 
-		PowerDispatcherContainer container = this.getContainer();
-		this.addButton(this.mode = new Button(149 + guiLeft, 41 + guiTop, 20, 20, new StringTextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
+		PowerDispatcherContainer container = this.getMenu();
+		this.addButton(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, new StringTextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
 			CompoundNBT tag = new CompoundNBT();
 			tag.putBoolean("mode", true);
 			this.updateTile(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new StringTextComponent(Mode.getByID(container.mode[0]).getText()), x, y);
 		}));
-		this.addButton(this.reset = new Button(149 + guiLeft, 64 + guiTop, 20, 20, new StringTextComponent("R"), (button) -> { //reset
+		this.addButton(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, new StringTextComponent("R"), (button) -> { //reset
 			CompoundNBT tag = new CompoundNBT();
 			tag.putBoolean("reset", true);
 			this.updateTile(tag);
@@ -50,19 +51,17 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 			renderTooltip(matrix, new StringTextComponent("Reset"), x, y);
 		}));
 
-		int offsetX = this.width - 20 - 100;
 		for (int i = 0; i < this.colorFields.length; i++) {
-			int x = 1 + offsetX + ((i % 3) * 35);
-			int y = 1 + ((i / 3) * 22);
-			int width = 28;
-			int height = 17;
-			String value = String.valueOf(container.lines[i]);
-			value = value.substring(2);
+			int x = 47 + leftPos;
+			int y = 18 + topPos + (16 * i);
+			int width = 60;
+			int height = 12;
+			String value = Integer.toHexString(container.lines[i]);
 
 			this.colorFields[i] = new HexFieldWidget(this.font, x, y, width, height, new StringTextComponent(String.format("line %s", i + 1)));
-			this.colorFields[i].setText(value);
-			this.colorFields[i].setMaxStringLength(6);
-			this.addListener(this.colorFields[i]);
+			this.colorFields[i].setValue(value);
+			this.colorFields[i].setMaxLength(6);
+			this.addWidget(this.colorFields[i]);
 		}
 
 		dirty = true;
@@ -73,38 +72,92 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 		super.tick();
 
 		if (dirty) {
-			mode.setMessage(new StringTextComponent(Mode.getByID(this.getContainer().mode[0]).toString()));
+			mode.setMessage(new StringTextComponent(Mode.getByID(this.getMenu().mode[0]).toString()));
 			dirty = false;
 		}
+
+		for (HexFieldWidget textField : this.colorFields)
+			textField.tick();
 	}
 
 	@Override
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		this.renderBackground(matrixStack);
-
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
-		this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
+
+		for (HexFieldWidget textField : this.colorFields)
+			textField.render(matrixStack, mouseX, mouseY, partialTicks);
+
+		this.renderTooltip(matrixStack, mouseX, mouseY);
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
-		this.blit(matrixStack, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+	protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
+		this.minecraft.getTextureManager().bind(TEXTURE);
+		this.blit(matrixStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+
+		for(int i = 0; i < this.colorFields.length; i++) {
+			HexFieldWidget field = this.colorFields[i];
+			this.font.draw(matrixStack, "Color" + (i+1) + ":", field.x - (field.getWidth() / 2) - 9, field.y + 2, 4210752);
+		}
 	}
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		if (keyCode == 256) {
+			this.fieldHasUpdated();
+			this.minecraft.setScreen((Screen)null);
+			return true;
+		} else {
+			boolean pressed = super.keyPressed(keyCode, scanCode, modifiers);
+			this.fieldHasUpdated();
+			return pressed;
+		}
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-		this.font.drawText(matrixStack, this.title, (float)this.titleX, (float)this.titleY, 4210752);
-		this.font.drawText(matrixStack, this.playerInventory.getDisplayName(), 8, this.ySize - 96 + 2, 4210752);
+	public boolean charTyped(char codePoint, int modifiers) {
+		boolean typed = super.charTyped(codePoint, modifiers);
+		if(typed) {
+			this.fieldHasUpdated();
+		}
+		return typed;
+	}
+
+	@Override
+	protected void insertText(String text, boolean overwrite) {
+		super.insertText(text, overwrite);
+	}
+
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		for (HexFieldWidget hexField : this.colorFields) {
+			hexField.mouseClicked(mouseX, mouseY, button);
+		}
+
+		return super.mouseClicked(mouseX, mouseY, button);
+	}
+
+	@Override
+	protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+		this.font.draw(matrixStack, this.title, (float)this.titleLabelX, (float)this.titleLabelY, 4210752);
+		this.font.draw(matrixStack, this.inventory.getDisplayName(), 8, this.imageHeight - 96 + 2, 4210752);
+	}
+
+	private void fieldHasUpdated() {
+		CompoundNBT tag = new CompoundNBT();
+		for(int i = 0; i < this.colorFields.length; i++) {
+			String value = this.colorFields[i].getValue();
+			if(!value.isEmpty()) {
+				int decimal = Integer.parseInt(value, 16);
+				tag.putInt("color" + (i + 1), decimal);
+			}
+		}
+		this.updateTile(tag);
 	}
 
 	private void updateTile(CompoundNBT compound) {
 		this.dirty = true;
-		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdateFluidDispatcherMessage(compound, this.getContainer().getTile().getPos()));
+		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdatePowerDispatcherMessage(compound, this.getMenu().getTile().getBlockPos()));
 	}
 }

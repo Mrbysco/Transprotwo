@@ -59,20 +59,20 @@ public class TransprotDatagen {
 
 			@Override
 			protected void addTables() {
-				this.registerLootTable(TransprotwoRegistry.DISPATCHER.get(), BlockLootTables::droppingWithName);
-				this.registerLootTable(TransprotwoRegistry.FLUID_DISPATCHER.get(), BlockLootTables::droppingWithName);
-				this.registerLootTable(TransprotwoRegistry.POWER_DISPATCHER.get(), BlockLootTables::droppingWithName);
+				this.add(TransprotwoRegistry.DISPATCHER.get(), BlockLootTables::createNameableBlockEntityTable);
+				this.add(TransprotwoRegistry.FLUID_DISPATCHER.get(), BlockLootTables::createNameableBlockEntityTable);
+				this.add(TransprotwoRegistry.POWER_DISPATCHER.get(), BlockLootTables::createNameableBlockEntityTable);
 			}
 
 			@Override
 			protected Iterable<Block> getKnownBlocks() {
-				return (Iterable<Block>) TransprotwoRegistry.BLOCKS.getEntries().stream().map(RegistryObject::get)::iterator;
+				return TransprotwoRegistry.BLOCKS.getEntries().stream().map(RegistryObject::get)::iterator;
 			}
 		}
 
 		@Override
 		protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker) {
-			map.forEach((name, table) -> LootTableManager.validateLootTable(validationtracker, name, table));
+			map.forEach((name, table) -> LootTableManager.validate(validationtracker, name, table));
 		}
 	}
 
@@ -83,12 +83,12 @@ public class TransprotDatagen {
 		}
 
 		@Override
-		protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
+		protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
 
 		}
 
 		@Override
-		protected void saveRecipeAdvancement(DirectoryCache cache, JsonObject advancementJson, Path path) {
+		protected void saveAdvancement(DirectoryCache cache, JsonObject advancementJson, Path path) {
 			// Nope
 		}
 	}

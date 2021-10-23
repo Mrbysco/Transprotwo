@@ -47,7 +47,7 @@ public class TransprotConfig {
 					.push("General");
 
 			range = builder
-					.comment("Max distance between dispatcher and inventory [Default: 25]")
+					.comment("Max distance between dispatcher and inventory [Default: 24]")
 					.defineInRange("range", 24, 2, 64);
 
 			builder.pop();

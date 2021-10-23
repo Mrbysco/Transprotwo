@@ -9,7 +9,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class TransprotwoTab {
 	public static final ItemGroup MAIN = new ItemGroup(Transprotwo.MOD_ID) {
 		@OnlyIn(Dist.CLIENT)
-		public ItemStack createIcon() {
+		public ItemStack makeIcon() {
 			return new ItemStack(TransprotwoRegistry.DISPATCHER.get());
 		}
 	};

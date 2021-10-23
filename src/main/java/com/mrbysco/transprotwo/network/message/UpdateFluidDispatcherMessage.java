@@ -21,12 +21,12 @@ public class UpdateFluidDispatcherMessage {
 	}
 
 	public void encode(PacketBuffer buf) {
-		buf.writeCompoundTag(compound);
+		buf.writeNbt(compound);
 		buf.writeBlockPos(tilePos);
 	}
 
 	public static UpdateFluidDispatcherMessage decode(final PacketBuffer packetBuffer) {
-		return new UpdateFluidDispatcherMessage(packetBuffer.readCompoundTag(), packetBuffer.readBlockPos());
+		return new UpdateFluidDispatcherMessage(packetBuffer.readNbt(), packetBuffer.readBlockPos());
 	}
 
 	public void handle(Supplier<Context> context) {
@@ -34,8 +34,8 @@ public class UpdateFluidDispatcherMessage {
 		ctx.enqueueWork(() -> {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
 				ServerPlayerEntity player = ctx.getSender();
-				World world = player.world;
-				TileEntity tile = world.getTileEntity(tilePos);
+				World world = player.level;
+				TileEntity tile = world.getBlockEntity(tilePos);
 				if(tile instanceof FluidDispatcherTile) {
 					FluidDispatcherTile dispatcherTile = (FluidDispatcherTile) tile;
 					if (compound.contains("mode"))
@@ -50,7 +50,7 @@ public class UpdateFluidDispatcherMessage {
 					dispatcherTile.refreshClient();
 				}
 
-				ctx.getSender().openContainer.onCraftMatrixChanged(null);
+				ctx.getSender().containerMenu.slotsChanged(null);
 			}
 		});
 		ctx.setPacketHandled(true);

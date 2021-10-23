@@ -19,7 +19,7 @@ public class FluidHelper {
 	}
 
 	public static boolean hasFluidHandler(IBlockReader world, BlockPos pos, Direction side) {
-		return hasFluidHandler(world.getTileEntity(pos), side);
+		return hasFluidHandler(world.getBlockEntity(pos), side);
 	}
 
 	public static IFluidHandler getFluidHandler(TileEntity tile, Direction side) {

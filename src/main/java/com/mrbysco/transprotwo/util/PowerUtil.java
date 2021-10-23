@@ -17,7 +17,7 @@ public class PowerUtil {
 	}
 
 	public static boolean hasEnergyStorage(IBlockReader world, BlockPos pos, Direction side) {
-		return hasEnergyStorage(world.getTileEntity(pos), side);
+		return hasEnergyStorage(world.getBlockEntity(pos), side);
 	}
 
 	public static IEnergyStorage getEnergyStorage(TileEntity tile, Direction side) {
@@ -33,8 +33,8 @@ public class PowerUtil {
 			return powerStack;
 		IEnergyStorage destHandler = getEnergyStorage(destTile, side);
 		int energyAmount = powerStack.getAmount();
-		int amountFilled = destHandler.receiveEnergy(energyAmount, false);
-		if(amountFilled == energyAmount) {
+		int amountFilled = destHandler.receiveEnergy(powerStack.getAmount(), false);
+		if(amountFilled == energyAmount || amountFilled < 0) {
 			return PowerStack.EMPTY;
 		} else {
 			return new PowerStack(energyAmount - amountFilled);
@@ -44,6 +44,6 @@ public class PowerUtil {
 	public static int canInsert(IEnergyStorage destHandler, PowerStack stack) {
 		if (destHandler == null || stack.isEmpty())
 			return 0;
-		return destHandler.receiveEnergy(stack.getPower(), true);
+		return destHandler.receiveEnergy(stack.getAmount(), true);
 	}
 }

@@ -10,7 +10,7 @@ displayName="Transprot"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/transprotwo"
 authors="Mrbysco, MrRiegel"
 description='''
-Item transport over short distance without cables.
+Transport over short distance without cables.
 '''
 [[dependencies.transprotwo]]
 modId="minecraft"

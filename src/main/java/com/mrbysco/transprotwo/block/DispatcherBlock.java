@@ -26,29 +26,29 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if (!worldIn.isRemote && tile instanceof ItemDispatcherTile) {
+	public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+		TileEntity tile = worldIn.getBlockEntity(pos);
+		if (!worldIn.isClientSide && tile instanceof ItemDispatcherTile) {
 			ItemDispatcherTile dispatcherTile = (ItemDispatcherTile) tile;
 			if (!dispatcherTile.getUpgrade().getStackInSlot(0).isEmpty())
-				spawnAsEntity(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
+				popResource(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer transfer : dispatcherTile.getTransfers()) {
 				if(transfer instanceof ItemTransfer) {
 					ItemTransfer itemTransfer = (ItemTransfer) transfer;
-					InventoryHelper.spawnItemStack(worldIn, pos.getX() + transfer.current.x, pos.getY() + transfer.current.y, pos.getZ() + transfer.current.z, itemTransfer.stack);
+					InventoryHelper.dropItemStack(worldIn, pos.getX() + transfer.current.x, pos.getY() + transfer.current.y, pos.getZ() + transfer.current.z, itemTransfer.stack);
 				}
 			}
 		}
-		super.onReplaced(state, worldIn, pos, newState, isMoving);
+		super.onRemove(state, worldIn, pos, newState, isMoving);
 	}
 
 	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if(tile instanceof AbstractDispatcherTile && !worldIn.isRemote && !player.isSneaking()) {
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+		TileEntity tile = worldIn.getBlockEntity(pos);
+		if(tile instanceof AbstractDispatcherTile && !worldIn.isClientSide && !player.isShiftKeyDown()) {
 			NetworkHooks.openGui((ServerPlayerEntity) player, (AbstractDispatcherTile) tile, pos);
 		}
-		return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+		return super.use(state, worldIn, pos, player, handIn, hit);
 	}
 
 	@Override

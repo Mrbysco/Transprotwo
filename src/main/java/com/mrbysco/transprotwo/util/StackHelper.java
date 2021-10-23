@@ -12,11 +12,11 @@ import java.util.Set;
 public class StackHelper {
 	public static boolean matchAnyTag(ItemStack stack1, ItemStack stack2) {
 		Set<ResourceLocation> tagLocations = stack1.getItem().getTags();
-		ITagCollectionSupplier tagCollection = TagCollectionManager.getManager();
+		ITagCollectionSupplier tagCollection = TagCollectionManager.getInstance();
 		for(ResourceLocation tagLoc : tagLocations) {
-			Tag<Item> tagContents = (Tag<Item>) tagCollection.getItemTags().get(tagLoc);
+			Tag<Item> tagContents = (Tag<Item>) tagCollection.getItems().getTag(tagLoc);
 			if(tagContents != null) {
-				if(stack2.getItem().isIn(tagContents)) {
+				if(stack2.getItem().is(tagContents)) {
 					return true;
 				}
 			}

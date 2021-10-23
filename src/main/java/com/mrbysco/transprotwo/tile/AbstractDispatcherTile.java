@@ -79,12 +79,12 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 	}
 
 	@Override
-	public void read(BlockState state, CompoundNBT compound) {
+	public void load(BlockState state, CompoundNBT compound) {
 		ListNBT targetList = compound.getList("targets", 10);
 		this.targets = Sets.newHashSet();
 		for (int i = 0; i < targetList.size(); i++) {
 			CompoundNBT nbt = targetList.getCompound(i);
-			this.targets.add(new ImmutablePair<BlockPos, Direction>(BlockPos.fromLong(nbt.getLong("pos")), Direction.values()[nbt.getInt("face")]));
+			this.targets.add(new ImmutablePair<BlockPos, Direction>(BlockPos.of(nbt.getLong("pos")), Direction.values()[nbt.getInt("face")]));
 		}
 
 		if (compound.contains("mode"))
@@ -95,11 +95,11 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 		this.upgradeHandler.deserializeNBT(compound.getCompound("upgrade"));
 		this.lastInsertIndex = compound.getInt("index");
 
-		super.read(state, compound);
+		super.load(state, compound);
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT compound) {
+	public CompoundNBT save(CompoundNBT compound) {
 		ListNBT transferList = new ListNBT();
 		for (AbstractTransfer transfer : transfers) {
 			CompoundNBT n = new CompoundNBT();
@@ -111,7 +111,7 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 		ListNBT targetList = new ListNBT();
 		for (Pair<BlockPos, Direction> target : this.targets) {
 			CompoundNBT tag = new CompoundNBT();
-			tag.putLong("pos", target.getLeft().toLong());
+			tag.putLong("pos", target.getLeft().asLong());
 			tag.putLong("face", target.getRight().ordinal());
 			targetList.add(tag);
 		}
@@ -122,7 +122,7 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 		compound.putString("mode", this.mode.toString());
 		compound.putInt("index", this.lastInsertIndex);
 
-		return super.write(compound);
+		return super.save(compound);
 	}
 
 	public boolean wayFree(BlockPos start, BlockPos end) {
@@ -140,7 +140,7 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 		set.remove(start);
 		set.remove(end);
 		for (BlockPos p : set)
-			if (!world.isAirBlock(p))
+			if (!level.isEmptyBlock(p))
 				return false;
 		return true;
 	}
@@ -176,7 +176,7 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 	}
 
 	public Color getColor() {
-		return Color.getHSBColor(((pos.hashCode() * 761) % 360L) / 360f, 1, 1);
+		return Color.getHSBColor(((worldPosition.hashCode() * 761) % 360L) / 360f, 1, 1);
 	}
 
 	public Set<AbstractTransfer> getTransfers() {
@@ -205,45 +205,45 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 
 	@Override
 	public SUpdateTileEntityPacket getUpdatePacket() {
-		return new SUpdateTileEntityPacket(this.pos, 0, getUpdateTag());
+		return new SUpdateTileEntityPacket(this.worldPosition, 0, getUpdateTag());
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
-		this.read(getBlockState(), packet.getNbtCompound());
+		this.load(getBlockState(), packet.getTag());
 	}
 
 	@Override
 	public CompoundNBT getUpdateTag() {
 		CompoundNBT nbt = new CompoundNBT();
-		this.write(nbt);
+		this.save(nbt);
 		return nbt;
 	}
 
 	@Override
 	public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-		this.read(state, tag);
+		this.load(state, tag);
 	}
 
 	@Override
 	public CompoundNBT getTileData() {
 		CompoundNBT nbt = new CompoundNBT();
-		this.write(nbt);
+		this.save(nbt);
 		return nbt;
 	}
 
 	public boolean isUsableByPlayer(PlayerEntity player) {
-		if (this.world.getTileEntity(this.pos) != this) {
+		if (this.level.getBlockEntity(this.worldPosition) != this) {
 			return false;
 		} else {
-			return !(player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) > 64.0D);
+			return !(player.distanceToSqr((double)this.worldPosition.getX() + 0.5D, (double)this.worldPosition.getY() + 0.5D, (double)this.worldPosition.getZ() + 0.5D) > 64.0D);
 		}
 	}
 
 	public void refreshClient() {
-		markDirty();
-		BlockState state = world.getBlockState(pos);
-		world.notifyBlockUpdate(pos, state, state, 2);
+		setChanged();
+		BlockState state = level.getBlockState(worldPosition);
+		level.sendBlockUpdated(worldPosition, state, state, 2);
 	}
 
 	public void resetOptions() {

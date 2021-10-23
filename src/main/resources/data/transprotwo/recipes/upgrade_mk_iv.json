@@ -3,15 +3,15 @@
     "item": "transprotwo:upgrade_mk_iv"
   },
   "pattern": [
-    "ueu"
+    "UEU"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
-    "u": {
+    "U": {
       "item": "transprotwo:upgrade_mk_iii"
     },
-    "e": {
-      "item": "minecraft:emerald"
+    "E": {
+      "tag": "forge:gems/emerald"
     }
   }
 }

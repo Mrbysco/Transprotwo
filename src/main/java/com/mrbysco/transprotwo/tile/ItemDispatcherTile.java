@@ -82,15 +82,15 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 			return true;
 		if (mod && stack1.getItem().getRegistryName().getNamespace().equals(stack2.getItem().getRegistryName().getNamespace()))
 			return true;
-		if (nbt && !ItemStack.areItemStackTagsEqual(stack1, stack2))
+		if (nbt && !ItemStack.tagMatches(stack1, stack2))
 			return false;
-		if (durability && stack1.getDamage() == stack2.getDamage())
+		if (durability && stack1.getDamageValue() == stack2.getDamageValue())
 			return true;
 		return stack1.getItem() == stack2.getItem();
 	}
 
 	@Override
-	public void read(BlockState state, CompoundNBT compound) {
+	public void load(BlockState state, CompoundNBT compound) {
 		ListNBT transferList = compound.getList("transfers", 10);
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
@@ -104,11 +104,11 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 		white = compound.getBoolean("white");
 		mod = compound.getBoolean("mod");
 		stockNum = compound.getInt("stock");
-		super.read(state, compound);
+		super.load(state, compound);
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT compound) {
+	public CompoundNBT save(CompoundNBT compound) {
 		compound.put("filter", filterHandler.serializeNBT());
 
 		compound.putBoolean("tag", tag);
@@ -117,12 +117,12 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 		compound.putBoolean("white", white);
 		compound.putBoolean("mod", mod);
 		compound.putInt("stock", stockNum);
-		return super.write(compound);
+		return super.save(compound);
 	}
 
 	void moveItems() {
 		for (AbstractTransfer tr : getTransfers()) {
-			if (!tr.blocked && world.isAreaLoaded(tr.rec.getLeft(), 1)) {
+			if (!tr.blocked && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
 				tr.prev = new Vector3d(tr.current.x, tr.current.y, tr.current.z);
 				tr.current = tr.current.add(tr.getVec().scale(getSpeed() / tr.getVec().length()));
 			}
@@ -131,31 +131,31 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 
 	@Override
 	protected boolean startTransfer() {
-		if (world.getGameTime() % getFrequence() == 0 && !world.isBlockPowered(pos)) {
-			Direction face = world.getBlockState(pos).get(DirectionalBlock.FACING);
-			if (!world.isAreaLoaded(pos.offset(face),1))
+		if (level.getGameTime() % getFrequence() == 0 && !level.hasNeighborSignal(worldPosition)) {
+			Direction face = level.getBlockState(worldPosition).getValue(DirectionalBlock.FACING);
+			if (!level.isAreaLoaded(worldPosition.relative(face),1))
 				return false;
-			IItemHandler inv = InventoryUtil.getItemHandler(world.getTileEntity(pos.offset(face)), face.getOpposite());
+			IItemHandler inv = InventoryUtil.getItemHandler(level.getBlockEntity(worldPosition.relative(face)), face.getOpposite());
 			if (inv == null)
 				return false;
 			List<Pair<BlockPos, Direction>> lis = Lists.newArrayList();
 			for (Pair<BlockPos, Direction> pp : targets)
-				if (wayFree(pos, pp.getLeft()))
+				if (wayFree(worldPosition, pp.getLeft()))
 					lis.add(pp);
 			if (lis.isEmpty())
 				return false;
 			switch (mode) {
 				case FF:
 					lis.sort((o1, o2) -> {
-						double dis1 = DistanceHelper.getDistance(pos, o2.getLeft());
-						double dis2 = DistanceHelper.getDistance(pos, o1.getLeft());
+						double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
+						double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
 						return Double.compare(dis1, dis2);
 					});
 					break;
 				case NF:
 					lis.sort((o1, o2) -> {
-						double dis1 = DistanceHelper.getDistance(pos, o2.getLeft());
-						double dis2 = DistanceHelper.getDistance(pos, o1.getLeft());
+						double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
+						double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
 						return Double.compare(dis2, dis1);
 					});
 					break;
@@ -191,7 +191,7 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 					}
 					if (blocked)
 						continue;
-					IItemHandler dest = InventoryUtil.getItemHandler(world.getTileEntity(pair.getLeft()), pair.getRight());
+					IItemHandler dest = InventoryUtil.getItemHandler(level.getBlockEntity(pair.getLeft()), pair.getRight());
 					int canInsert = InventoryUtil.canInsert(dest, send);
 					int missing = Integer.MAX_VALUE;
 					if (stockNum > 0) {
@@ -216,13 +216,13 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 					canInsert = Math.min(canInsert, missing);
 					ItemStack x = inv.extractItem(i, canInsert, true);
 					if (!x.isEmpty()) {
-						ItemTransfer tr = new ItemTransfer(pos, pair.getLeft(), pair.getRight(), x);
+						ItemTransfer tr = new ItemTransfer(worldPosition, pair.getLeft(), pair.getRight(), x);
 						if (!wayFree(tr.dis, tr.rec.getLeft()))
 							continue;
 						if (true) {
 							Vector3d vec = tr.getVec().normalize().scale(0.015);
 							CompoundNBT nbt = new CompoundNBT();
-							nbt.putLong("pos", pos.toLong());
+							nbt.putLong("pos", worldPosition.asLong());
 							nbt.putDouble("x", vec.x);
 							nbt.putDouble("y", vec.y);
 							nbt.putDouble("z", vec.z);
@@ -241,19 +241,19 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 
 	@Override
 	public void summonParticles(CompoundNBT nbt) {
-		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getPos(), 32, this.getWorld().getDimensionKey());
+		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getBlockPos(), 32, this.getLevel().dimension());
 	}
 
 	@Override
 	public void tick() {
 		moveItems();
-		if (world.isRemote)
+		if (level.isClientSide)
 			return;
 		boolean needSync = false;
 		Iterator<Pair<BlockPos, Direction>> ite = targets.iterator();
 		while (ite.hasNext()) {
 			Pair<BlockPos, Direction> pa = ite.next();
-			if (!InventoryUtil.hasItemHandler(world, pa.getLeft(), pa.getRight())) {
+			if (!InventoryUtil.hasItemHandler(level, pa.getLeft(), pa.getRight())) {
 				ite.remove();
 				needSync = true;
 			}
@@ -263,16 +263,16 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 			AbstractTransfer t = it.next();
 			if(t instanceof ItemTransfer) {
 				ItemTransfer tr = (ItemTransfer)t;
-				BlockPos currentPos = new BlockPos(getPos().getX() + tr.current.x, getPos().getY() + tr.current.y, getPos().getZ() + tr.current.z);
-				if (tr.rec == null || !InventoryUtil.hasItemHandler(world, tr.rec.getLeft(), tr.rec.getRight()) || (!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !world.isAirBlock(currentPos) && !throughBlocks())) {
-					Block.spawnAsEntity(world, currentPos, tr.stack);
+				BlockPos currentPos = new BlockPos(getBlockPos().getX() + tr.current.x, getBlockPos().getY() + tr.current.y, getBlockPos().getZ() + tr.current.z);
+				if (tr.rec == null || !InventoryUtil.hasItemHandler(level, tr.rec.getLeft(), tr.rec.getRight()) || (!currentPos.equals(worldPosition) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !throughBlocks())) {
+					Block.popResource(level, currentPos, tr.stack);
 					it.remove();
 					needSync = true;
 					continue;
 				}
 				boolean received = tr.rec.getLeft().equals(currentPos);
-				if (received && world.isAreaLoaded(tr.rec.getLeft(), 1)) {
-					ItemStack rest = InventoryUtil.insert(world.getTileEntity(tr.rec.getLeft()), tr.stack, tr.rec.getRight());
+				if (received && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
+					ItemStack rest = InventoryUtil.insert(level.getBlockEntity(tr.rec.getLeft()), tr.stack, tr.rec.getRight());
 					if (!rest.isEmpty()) {
 						tr.stack = rest;
 						for (AbstractTransfer at : transfers) {
@@ -290,9 +290,9 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 						it.remove();
 						needSync = true;
 					}
-					TileEntity tile = world.getTileEntity(tr.rec.getLeft());
+					TileEntity tile = level.getBlockEntity(tr.rec.getLeft());
 					if(tile != null) {
-						tile.markDirty();
+						tile.setChanged();
 					}
 				}
 			}

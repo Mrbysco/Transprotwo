@@ -30,7 +30,7 @@ public class FluidDispatcherContainer extends Container {
 	private static FluidDispatcherTile getTileEntity(final PlayerInventory playerInventory, final PacketBuffer data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null!");
 		Objects.requireNonNull(data, "data cannot be null!");
-		final TileEntity tileAtPos = playerInventory.player.world.getTileEntity(data.readBlockPos());
+		final TileEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
 
 		if (tileAtPos instanceof FluidDispatcherTile) {
 			return (FluidDispatcherTile) tileAtPos;
@@ -71,41 +71,41 @@ public class FluidDispatcherContainer extends Container {
 
 	public void trackValues() {
 		this.mode[0] = tile.getMode().getId();
-		this.trackInt(IntReferenceHolder.create(this.mode, 0));
+		this.addDataSlot(IntReferenceHolder.shared(this.mode, 0));
 
 		this.buttonValues[0] = tile.isWhite() ? 1 : 0;
-		this.trackInt(IntReferenceHolder.create(this.buttonValues, 0));
+		this.addDataSlot(IntReferenceHolder.shared(this.buttonValues, 0));
 		this.buttonValues[1] = tile.isMod() ? 1 : 0;
-		this.trackInt(IntReferenceHolder.create(this.buttonValues, 1));
+		this.addDataSlot(IntReferenceHolder.shared(this.buttonValues, 1));
 	}
 
 	@Override
-	public boolean canInteractWith(PlayerEntity playerIn) {
+	public boolean stillValid(PlayerEntity playerIn) {
 		return this.tile.isUsableByPlayer(playerIn);
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+	public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(index);
+		Slot slot = this.slots.get(index);
 
-		if (slot != null && slot.getHasStack()) {
-			ItemStack itemstack1 = slot.getStack();
+		if (slot != null && slot.hasItem()) {
+			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
 			final int tileSize = 9;
 
 			if (index < tileSize) {
-				if (!this.mergeItemStack(itemstack1, tileSize, inventorySlots.size(), true)) {
+				if (!this.moveItemStackTo(itemstack1, tileSize, slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.mergeItemStack(itemstack1, 0, tileSize, false)) {
+			} else if (!this.moveItemStackTo(itemstack1, 0, tileSize, false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemstack1.isEmpty()) {
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			} else {
-				slot.onSlotChanged();
+				slot.setChanged();
 			}
 
 			if (itemstack1.getCount() == itemstack.getCount()) {
@@ -123,14 +123,14 @@ public class FluidDispatcherContainer extends Container {
 	}
 
 	@Override
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
+	public void broadcastChanges() {
+		super.broadcastChanges();
 	}
 
 	@Override
-	public void onCraftMatrixChanged(IInventory inventoryIn) {
+	public void slotsChanged(IInventory inventoryIn) {
 		if(inventoryIn != null) {
-			super.onCraftMatrixChanged(inventoryIn);
+			super.slotsChanged(inventoryIn);
 		} else {
 			this.mode[0] = tile.getMode().getId();
 			this.buttonValues[0] = tile.isWhite() ? 1 : 0;

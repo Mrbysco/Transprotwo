@@ -12,28 +12,28 @@ public class GhostSlot extends SlotItemHandler {
 	}
 
 	@Override
-	public boolean canTakeStack(PlayerEntity playerIn) {
-		ItemStack holding = playerIn.inventory.getItemStack();
+	public boolean mayPickup(PlayerEntity playerIn) {
+		ItemStack holding = playerIn.inventory.getCarried();
 
 		if (!holding.isEmpty()) {
 			holding = holding.copy();
 			holding.setCount(1);
 		}
-		this.putStack(holding);
+		this.set(holding);
 		return false;
 	}
 
 	@Override
-	public boolean isItemValid(ItemStack stack) {
+	public boolean mayPlace(ItemStack stack) {
 		ItemStack copy = stack.copy();
 		copy.setCount(1);
-		this.putStack(copy);
+		this.set(copy);
 		return false;
 	}
 
 	@Override
-	public ItemStack decrStackSize(int amount) {
-		this.putStack(ItemStack.EMPTY);
+	public ItemStack remove(int amount) {
+		this.set(ItemStack.EMPTY);
 		return ItemStack.EMPTY;
 	}
 }

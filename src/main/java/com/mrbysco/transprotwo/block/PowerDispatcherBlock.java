@@ -6,8 +6,10 @@ import com.mrbysco.transprotwo.tile.transfer.power.PowerTransfer;
 import com.mrbysco.transprotwo.util.PowerUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DirectionalBlock;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -20,6 +22,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 
@@ -28,13 +31,13 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if (!worldIn.isRemote && tile instanceof PowerDispatcherTile) {
+	public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+		TileEntity tile = worldIn.getBlockEntity(pos);
+		if (!worldIn.isClientSide && tile instanceof PowerDispatcherTile) {
 			PowerDispatcherTile dispatcherTile = (PowerDispatcherTile) tile;
 			IEnergyStorage originHandler = getOriginHandler(state, worldIn, pos);
 			if (!dispatcherTile.getUpgrade().getStackInSlot(0).isEmpty())
-				spawnAsEntity(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
+				popResource(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer abstractTransfer : dispatcherTile.getTransfers()) {
 				if(abstractTransfer instanceof PowerTransfer) {
 					PowerTransfer transfer = (PowerTransfer) abstractTransfer;
@@ -42,23 +45,45 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 				}
 			}
 		}
-		super.onReplaced(state, worldIn, pos, newState, isMoving);
+		super.onRemove(state, worldIn, pos, newState, isMoving);
 	}
 
 	public IEnergyStorage getOriginHandler(BlockState state, World world, BlockPos pos) {
-		Direction face = state.get(DirectionalBlock.FACING);
-		if (!world.isAreaLoaded(pos.offset(face), 1) && world.getTileEntity(pos.offset(face)) == null)
+		Direction face = state.getValue(DirectionalBlock.FACING);
+		if (!world.isAreaLoaded(pos.relative(face), 1) && world.getBlockEntity(pos.relative(face)) == null)
 			return null;
-		return PowerUtil.getEnergyStorage(world.getTileEntity(pos.offset(face)), face.getOpposite());
+		return PowerUtil.getEnergyStorage(world.getBlockEntity(pos.relative(face)), face.getOpposite());
 	}
 
 	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if(tile instanceof PowerDispatcherTile && !worldIn.isRemote && !player.isSneaking()) {
+	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+		TileEntity tile = worldIn.getBlockEntity(pos);
+		if(tile instanceof PowerDispatcherTile && !worldIn.isClientSide && !player.isShiftKeyDown()) {
 			NetworkHooks.openGui((ServerPlayerEntity) player, (PowerDispatcherTile) tile, pos);
 		}
-		return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+		return super.use(state, worldIn, pos, player, handIn, hit);
+	}
+
+	@Override
+	public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+		if(placer instanceof PlayerEntity) {
+			PlayerEntity player = (PlayerEntity)placer;
+			//Shy wanted to always have it default to the trans colors when she placed it <3
+			String shyUUID = "7135da42-d327-47bb-bb04-5ba4e212fb32";
+			boolean flag = player.getGameProfile().isComplete() && player.getGameProfile().getId().equals(UUID.fromString(shyUUID));
+			if(flag) {
+				TileEntity tile = worldIn.getBlockEntity(pos);
+				if(tile instanceof PowerDispatcherTile) {
+					PowerDispatcherTile dispatcherTile = (PowerDispatcherTile) tile;
+					dispatcherTile.setLine1(0x55CDFC);
+					dispatcherTile.setLine2(0xF7A8B8);
+					dispatcherTile.setLine3(0xFFFFFF);
+					dispatcherTile.setLine4(0xF7A8B8);
+					dispatcherTile.setLine5(0x55CDFC);
+					dispatcherTile.initializeColors();
+				}
+			}
+		}
 	}
 
 	@Override

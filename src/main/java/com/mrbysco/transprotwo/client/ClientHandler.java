@@ -16,8 +16,8 @@ public class ClientHandler {
 		ClientRegistry.bindTileEntityRenderer(TransprotwoRegistry.FLUID_DISPATCHER_TILE.get(), DispatcherTESR::new);
 		ClientRegistry.bindTileEntityRenderer(TransprotwoRegistry.POWER_DISPATCHER_TILE.get(), DispatcherTESR::new);
 
-		ScreenManager.registerFactory(TransprotwoContainers.DISPATCHER.get(), DispatcherScreen::new);
-		ScreenManager.registerFactory(TransprotwoContainers.FLUID_DISPATCHER.get(), FluidDispatcherScreen::new);
-		ScreenManager.registerFactory(TransprotwoContainers.POWER_DISPATCHER.get(), PowerDispatcherScreen::new);
+		ScreenManager.register(TransprotwoContainers.DISPATCHER.get(), DispatcherScreen::new);
+		ScreenManager.register(TransprotwoContainers.FLUID_DISPATCHER.get(), FluidDispatcherScreen::new);
+		ScreenManager.register(TransprotwoContainers.POWER_DISPATCHER.get(), PowerDispatcherScreen::new);
 	}
 }

@@ -21,7 +21,7 @@ public class InventoryUtil {
 	}
 
 	public static boolean hasItemHandler(IBlockReader world, BlockPos pos, Direction side) {
-		return hasItemHandler(world.getTileEntity(pos), side);
+		return hasItemHandler(world.getBlockEntity(pos), side);
 	}
 
 	public static IItemHandler getItemHandler(TileEntity tile, Direction side) {

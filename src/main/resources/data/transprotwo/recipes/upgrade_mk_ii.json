@@ -3,15 +3,15 @@
     "item": "transprotwo:upgrade_mk_ii"
   },
   "pattern": [
-    "ueu"
+    "UGU"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
-    "u": {
+    "U": {
       "item": "transprotwo:upgrade_mk_i"
     },
-    "e": {
-      "item": "minecraft:gold_ingot"
+    "G": {
+      "tag": "forge:ingots/gold"
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.mrbysco.transprotwo.network;
 
 import com.mrbysco.transprotwo.Transprotwo;
+import com.mrbysco.transprotwo.network.message.ChangeColorMessage;
 import com.mrbysco.transprotwo.network.message.TransferParticleMessage;
 import com.mrbysco.transprotwo.network.message.UpdateDispatcherMessage;
 import com.mrbysco.transprotwo.network.message.UpdateFluidDispatcherMessage;
@@ -28,6 +29,7 @@ public class PacketHandler {
 		CHANNEL.registerMessage(id++, UpdateDispatcherMessage.class, UpdateDispatcherMessage::encode, UpdateDispatcherMessage::decode, UpdateDispatcherMessage::handle);
 		CHANNEL.registerMessage(id++, UpdateFluidDispatcherMessage.class, UpdateFluidDispatcherMessage::encode, UpdateFluidDispatcherMessage::decode, UpdateFluidDispatcherMessage::handle);
 		CHANNEL.registerMessage(id++, UpdatePowerDispatcherMessage.class, UpdatePowerDispatcherMessage::encode, UpdatePowerDispatcherMessage::decode, UpdatePowerDispatcherMessage::handle);
+		CHANNEL.registerMessage(id++, ChangeColorMessage.class, ChangeColorMessage::encode, ChangeColorMessage::decode, ChangeColorMessage::handle);
 		CHANNEL.registerMessage(id++, TransferParticleMessage.class, TransferParticleMessage::encode, TransferParticleMessage::decode, TransferParticleMessage::handle);
 	}
 

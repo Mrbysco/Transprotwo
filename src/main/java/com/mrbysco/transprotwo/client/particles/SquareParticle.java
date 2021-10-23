@@ -26,29 +26,29 @@ public class SquareParticle extends SpriteTexturedParticle {
 		}
 
 		this.setColor(colorR, colorG, colorB);
-		this.maxAge = new Random().nextInt(10) + 5;
-		this.motionX = xSpeed;
-		this.motionY = ySpeed;
-		this.motionZ = zSpeed;
-		this.particleScale = 0.12F;
-		this.selectSpriteRandomly(sprite);
+		this.lifetime = new Random().nextInt(10) + 5;
+		this.xd = xSpeed;
+		this.yd = ySpeed;
+		this.zd = zSpeed;
+		this.quadSize = 0.12F;
+		this.pickSprite(sprite);
 	}
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.xo = this.x;
+		this.yo = this.y;
+		this.zo = this.z;
 
-		this.motionY -= 0.04D * this.particleGravity;
+		this.yd -= 0.04D * this.gravity;
 		if (this.onGround) {
-			this.motionX *= 0.699999988079071D;
-			this.motionZ *= 0.699999988079071D;
+			this.xd *= 0.699999988079071D;
+			this.zd *= 0.699999988079071D;
 		}
-		this.move(this.motionX, this.motionY, this.motionZ);
+		this.move(this.xd, this.yd, this.zd);
 
-		if (this.age++ >= this.maxAge) {
-			this.setExpired();
+		if (this.age++ >= this.lifetime) {
+			this.remove();
 		}
 	}
 

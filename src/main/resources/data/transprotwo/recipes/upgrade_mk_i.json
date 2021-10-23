@@ -4,16 +4,16 @@
   },
   "ingredients": [
     {
-      "item": "minecraft:redstone"
+      "tag": "forge:dusts/redstone"
     },
     {
-      "item": "minecraft:gold_nugget"
+      "tag": "forge:ingots/gold"
     },
     {
       "item": "minecraft:paper"
     },
     {
-      "item": "minecraft:iron_ingot"
+      "tag": "forge:ingots/iron"
     }
   ],
   "type": "minecraft:crafting_shapeless"

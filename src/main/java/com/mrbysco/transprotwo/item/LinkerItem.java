@@ -30,83 +30,83 @@ public class LinkerItem extends Item {
 	}
 
 	@Override
-	public ActionResultType onItemUse(ItemUseContext context) {
-		World worldIn = context.getWorld();
-		if (worldIn.isRemote)
+	public ActionResultType useOn(ItemUseContext context) {
+		World worldIn = context.getLevel();
+		if (worldIn.isClientSide)
 			return ActionResultType.PASS;
 
-		BlockPos pos = context.getPos();
+		BlockPos pos = context.getClickedPos();
 		PlayerEntity player = context.getPlayer();
-		ItemStack stack = context.getItem();
-		if (player.isSneaking()) {
-			if (worldIn.getTileEntity(pos) instanceof AbstractDispatcherTile) {
+		ItemStack stack = context.getItemInHand();
+		if (player.isShiftKeyDown()) {
+			if (worldIn.getBlockEntity(pos) instanceof AbstractDispatcherTile) {
 				CompoundNBT stackTag = stack.hasTag() ? stack.getTag() : new CompoundNBT();
-				stackTag.putLong("pos", pos.toLong());
-				stackTag.putString("dimension", worldIn.getDimensionKey().getLocation().toString());
+				stackTag.putLong("pos", pos.asLong());
+				stackTag.putString("dimension", worldIn.dimension().location().toString());
 				stack.setTag(stackTag);
-				player.sendStatusMessage(new StringTextComponent("Bound to Dispatcher."), true);
+				player.displayClientMessage(new StringTextComponent("Bound to Dispatcher."), true);
 				return ActionResultType.SUCCESS;
 			} else if (stack.hasTag() && stack.getTag().contains("pos")) {
 				CompoundNBT stackTag = stack.getTag();
-				BlockPos tPos = BlockPos.fromLong(stackTag.getLong("pos"));
-				ResourceLocation location = ResourceLocation.tryCreate(stackTag.getString("dimension"));
-				TileEntity tileEntity = worldIn.getTileEntity(pos);
+				BlockPos tPos = BlockPos.of(stackTag.getLong("pos"));
+				ResourceLocation location = ResourceLocation.tryParse(stackTag.getString("dimension"));
+				TileEntity tileEntity = worldIn.getBlockEntity(pos);
 				if(tileEntity != null) {
 					if(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
-						if (worldIn.getDimensionKey().getLocation().equals(location) && worldIn.getTileEntity(tPos) instanceof ItemDispatcherTile) {
-							ItemDispatcherTile tile = (ItemDispatcherTile) worldIn.getTileEntity(tPos);
-							Direction facing = context.getFace();
+						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof ItemDispatcherTile) {
+							ItemDispatcherTile tile = (ItemDispatcherTile) worldIn.getBlockEntity(tPos);
+							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = tile.getTargets().add(pair);
 								if (done) {
-									player.sendStatusMessage(new StringTextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
+									player.displayClientMessage(new StringTextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
 									tile.refreshClient();
 								} else {
-									player.sendStatusMessage(new StringTextComponent("Inventory is already connected."), true);
+									player.displayClientMessage(new StringTextComponent("Inventory is already connected."), true);
 								}
 							} else
-								player.sendStatusMessage(new StringTextComponent("Too far away."), true);
+								player.displayClientMessage(new StringTextComponent("Too far away."), true);
 							return ActionResultType.SUCCESS;
 						}
 					} else if(tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
-						if (worldIn.getDimensionKey().getLocation().equals(location) && worldIn.getTileEntity(tPos) instanceof FluidDispatcherTile) {
-							FluidDispatcherTile tile = (FluidDispatcherTile) worldIn.getTileEntity(tPos);
-							Direction facing = context.getFace();
+						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof FluidDispatcherTile) {
+							FluidDispatcherTile tile = (FluidDispatcherTile) worldIn.getBlockEntity(tPos);
+							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = tile.getTargets().add(pair);
 								if (done) {
-									player.sendStatusMessage(new StringTextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
+									player.displayClientMessage(new StringTextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
 									tile.refreshClient();
 								} else {
-									player.sendStatusMessage(new StringTextComponent("Tank is already connected."), true);
+									player.displayClientMessage(new StringTextComponent("Tank is already connected."), true);
 								}
 							} else
-								player.sendStatusMessage(new StringTextComponent("Too far away."), true);
+								player.displayClientMessage(new StringTextComponent("Too far away."), true);
 							return ActionResultType.SUCCESS;
 						}
 					} else if(tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-						if (worldIn.getDimensionKey().getLocation().equals(location) && worldIn.getTileEntity(tPos) instanceof PowerDispatcherTile) {
-							PowerDispatcherTile tile = (PowerDispatcherTile) worldIn.getTileEntity(tPos);
-							Direction facing = context.getFace();
+						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof PowerDispatcherTile) {
+							PowerDispatcherTile tile = (PowerDispatcherTile) worldIn.getBlockEntity(tPos);
+							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = tile.getTargets().add(pair);
 								if (done) {
-									player.sendStatusMessage(new StringTextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
+									player.displayClientMessage(new StringTextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
 									tile.refreshClient();
 								} else {
-									player.sendStatusMessage(new StringTextComponent("Tank is already connected."), true);
+									player.displayClientMessage(new StringTextComponent("Tank is already connected."), true);
 								}
 							} else
-								player.sendStatusMessage(new StringTextComponent("Too far away."), true);
+								player.displayClientMessage(new StringTextComponent("Too far away."), true);
 							return ActionResultType.SUCCESS;
 						}
 					}
 				}
 			}
 		}
-		return super.onItemUse(context);
+		return super.useOn(context);
 	}
 }

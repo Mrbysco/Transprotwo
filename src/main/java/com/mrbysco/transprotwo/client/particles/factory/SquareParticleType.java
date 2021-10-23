@@ -10,7 +10,7 @@ public class SquareParticleType extends ParticleType<SquareParticleTypeData> {
 	}
 
 	@Override
-	public Codec<SquareParticleTypeData> func_230522_e_() {
+	public Codec<SquareParticleTypeData> codec() {
 		return SquareParticleTypeData.CODEC;
 	}
 }

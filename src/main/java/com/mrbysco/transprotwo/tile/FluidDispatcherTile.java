@@ -98,7 +98,7 @@ public class FluidDispatcherTile extends AbstractDispatcherTile {
 	}
 
 	@Override
-	public void read(BlockState state, CompoundNBT compound) {
+	public void load(BlockState state, CompoundNBT compound) {
 		ListNBT transferList = compound.getList("transfers", 10);
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
@@ -108,21 +108,21 @@ public class FluidDispatcherTile extends AbstractDispatcherTile {
 
 		white = compound.getBoolean("white");
 		mod = compound.getBoolean("mod");
-		super.read(state, compound);
+		super.load(state, compound);
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT compound) {
+	public CompoundNBT save(CompoundNBT compound) {
 		compound.put("filter", filterHandler.serializeNBT());
 
 		compound.putBoolean("white", white);
 		compound.putBoolean("mod", mod);
-		return super.write(compound);
+		return super.save(compound);
 	}
 
 	void moveItems() {
 		for (AbstractTransfer tr : getTransfers()) {
-			if (!tr.blocked && world.isAreaLoaded(tr.rec.getLeft(), 1)) {
+			if (!tr.blocked && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
 				tr.prev = new Vector3d(tr.current.x, tr.current.y, tr.current.z);
 				tr.current = tr.current.add(tr.getVec().scale(getSpeed() / tr.getVec().length()));
 			}
@@ -131,28 +131,28 @@ public class FluidDispatcherTile extends AbstractDispatcherTile {
 
 	@Override
 	protected boolean startTransfer() {
-		if (world.getGameTime() % getFrequence() == 0 && !world.isBlockPowered(pos)) {
+		if (level.getGameTime() % getFrequence() == 0 && !level.hasNeighborSignal(worldPosition)) {
 			IFluidHandler originHandler = getOriginHandler();
 			if (originHandler == null)
 				return false;
 			List<Pair<BlockPos, Direction>> lis = Lists.newArrayList();
 			for (Pair<BlockPos, Direction> pp : targets)
-				if (wayFree(pos, pp.getLeft()))
+				if (wayFree(worldPosition, pp.getLeft()))
 					lis.add(pp);
 			if (lis.isEmpty())
 				return false;
 			switch (mode) {
 				case FF:
 					lis.sort((o1, o2) -> {
-						double dis1 = DistanceHelper.getDistance(pos, o2.getLeft());
-						double dis2 = DistanceHelper.getDistance(pos, o1.getLeft());
+						double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
+						double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
 						return Double.compare(dis1, dis2);
 					});
 					break;
 				case NF:
 					lis.sort((o1, o2) -> {
-						double dis1 = DistanceHelper.getDistance(pos, o2.getLeft());
-						double dis2 = DistanceHelper.getDistance(pos, o1.getLeft());
+						double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
+						double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
 						return Double.compare(dis2, dis1);
 					});
 					break;
@@ -189,20 +189,20 @@ public class FluidDispatcherTile extends AbstractDispatcherTile {
 					if (blocked)
 						continue;
 
-					IFluidHandler dest = FluidHelper.getFluidHandler(world.getTileEntity(pair.getLeft()), pair.getRight());
+					IFluidHandler dest = FluidHelper.getFluidHandler(level.getBlockEntity(pair.getLeft()), pair.getRight());
 					int canInsert = FluidHelper.canInsert(dest, send);
 					if (canInsert <= 0)
 						continue;
 
 					FluidStack x = originHandler.drain(send, FluidAction.SIMULATE);
 					if (!x.isEmpty()) {
-						FluidTransfer tr = new FluidTransfer(pos, pair.getLeft(), pair.getRight(), x);
+						FluidTransfer tr = new FluidTransfer(worldPosition, pair.getLeft(), pair.getRight(), x);
 						if (!wayFree(tr.dis, tr.rec.getLeft()))
 							continue;
 						if (true) {
 							Vector3d vec = tr.getVec().normalize().scale(0.015);
 							CompoundNBT nbt = new CompoundNBT();
-							nbt.putLong("pos", pos.toLong());
+							nbt.putLong("pos", worldPosition.asLong());
 							nbt.putDouble("x", vec.x);
 							nbt.putDouble("y", vec.y);
 							nbt.putDouble("z", vec.z);
@@ -221,19 +221,19 @@ public class FluidDispatcherTile extends AbstractDispatcherTile {
 
 	@Override
 	public void summonParticles(CompoundNBT nbt) {
-		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getPos(), 32, this.getWorld().getDimensionKey());
+		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getBlockPos(), 32, this.getLevel().dimension());
 	}
 
 	@Override
 	public void tick() {
 		moveItems();
-		if (world.isRemote)
+		if (level.isClientSide)
 			return;
 		boolean needSync = false;
 		Iterator<Pair<BlockPos, Direction>> ite = targets.iterator();
 		while (ite.hasNext()) {
 			Pair<BlockPos, Direction> pa = ite.next();
-			if (!FluidHelper.hasFluidHandler(world, pa.getLeft(), pa.getRight())) {
+			if (!FluidHelper.hasFluidHandler(level, pa.getLeft(), pa.getRight())) {
 				ite.remove();
 				needSync = true;
 			}
@@ -248,15 +248,15 @@ public class FluidDispatcherTile extends AbstractDispatcherTile {
 			AbstractTransfer t = it.next();
 			if(t instanceof FluidTransfer) {
 				FluidTransfer tr = (FluidTransfer)t;
-				BlockPos currentPos = new BlockPos(getPos().getX() + tr.current.x, getPos().getY() + tr.current.y, getPos().getZ() + tr.current.z);
-				if (tr.rec == null || !FluidHelper.hasFluidHandler(world, tr.rec.getLeft(), tr.rec.getRight()) || (!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !world.isAirBlock(currentPos) && !throughBlocks())) {
+				BlockPos currentPos = new BlockPos(getBlockPos().getX() + tr.current.x, getBlockPos().getY() + tr.current.y, getBlockPos().getZ() + tr.current.z);
+				if (tr.rec == null || !FluidHelper.hasFluidHandler(level, tr.rec.getLeft(), tr.rec.getRight()) || (!currentPos.equals(worldPosition) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !throughBlocks())) {
 					it.remove();
 					needSync = true;
 					continue;
 				}
 				boolean received = tr.rec.getLeft().equals(currentPos);
-				if (received && world.isAreaLoaded(tr.rec.getLeft(), 1)) {
-					FluidStack rest = FluidHelper.insert(world.getTileEntity(tr.rec.getLeft()), tr.fluidStack, tr.rec.getRight());
+				if (received && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
+					FluidStack rest = FluidHelper.insert(level.getBlockEntity(tr.rec.getLeft()), tr.fluidStack, tr.rec.getRight());
 					if (!rest.isEmpty()) {
 						tr.fluidStack = rest;
 						for (AbstractTransfer at : transfers) {
@@ -274,9 +274,9 @@ public class FluidDispatcherTile extends AbstractDispatcherTile {
 						it.remove();
 						needSync = true;
 					}
-					TileEntity tile = world.getTileEntity(tr.rec.getLeft());
+					TileEntity tile = level.getBlockEntity(tr.rec.getLeft());
 					if(tile != null) {
-						tile.markDirty();
+						tile.setChanged();
 					}
 				}
 			}
@@ -287,10 +287,10 @@ public class FluidDispatcherTile extends AbstractDispatcherTile {
 	}
 
 	public IFluidHandler getOriginHandler() {
-		Direction face = world.getBlockState(pos).get(DirectionalBlock.FACING);
-		if (!world.isAreaLoaded(pos.offset(face), 1) && world.getTileEntity(pos.offset(face)) == null)
+		Direction face = level.getBlockState(worldPosition).getValue(DirectionalBlock.FACING);
+		if (!level.isAreaLoaded(worldPosition.relative(face), 1) && level.getBlockEntity(worldPosition.relative(face)) == null)
 			return null;
-		return FluidHelper.getFluidHandler(world.getTileEntity(pos.offset(face)), face.getOpposite());
+		return FluidHelper.getFluidHandler(level.getBlockEntity(worldPosition.relative(face)), face.getOpposite());
 	}
 
 	public FluidStack getExtractStack(FluidStack currentFluid, int max) {

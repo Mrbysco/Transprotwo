@@ -20,6 +20,6 @@ public class TransprotwoParticles {
 
 	@SubscribeEvent
 	public static void registerFactories(ParticleFactoryRegisterEvent event) {
-		Minecraft.getInstance().particles.registerFactory(SQUARE_TYPE.get(), SquareParticleData::new);
+		Minecraft.getInstance().particleEngine.register(SQUARE_TYPE.get(), SquareParticleData::new);
 	}
 }

@@ -29,7 +29,7 @@ public class PowerDispatcherContainer extends Container {
 	private static PowerDispatcherTile getTileEntity(final PlayerInventory playerInventory, final PacketBuffer data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null!");
 		Objects.requireNonNull(data, "data cannot be null!");
-		final TileEntity tileAtPos = playerInventory.player.world.getTileEntity(data.readBlockPos());
+		final TileEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
 
 		if (tileAtPos instanceof PowerDispatcherTile) {
 			return (PowerDispatcherTile) tileAtPos;
@@ -48,7 +48,7 @@ public class PowerDispatcherContainer extends Container {
 
 		//player inventory here
 		int xPos = 8;
-		int yPos = 90;
+		int yPos = 111;
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 9; ++x) {
 				this.addSlot(new Slot(playerInventoryIn, x + y * 9 + 9, xPos + x * 18, yPos + y * 18));
@@ -64,48 +64,48 @@ public class PowerDispatcherContainer extends Container {
 
 	public void trackValues() {
 		this.mode[0] = tile.getMode().getId();
-		this.trackInt(IntReferenceHolder.create(this.mode, 0));
+		this.addDataSlot(IntReferenceHolder.shared(this.mode, 0));
 
 
 		this.lines[0] = tile.getLine1();
-		this.trackInt(IntReferenceHolder.create(this.lines, 0));
+		this.addDataSlot(IntReferenceHolder.shared(this.lines, 0));
 		this.lines[1] = tile.getLine2();
-		this.trackInt(IntReferenceHolder.create(this.lines, 1));
+		this.addDataSlot(IntReferenceHolder.shared(this.lines, 1));
 		this.lines[2] = tile.getLine3();
-		this.trackInt(IntReferenceHolder.create(this.lines, 2));
+		this.addDataSlot(IntReferenceHolder.shared(this.lines, 2));
 		this.lines[3] = tile.getLine4();
-		this.trackInt(IntReferenceHolder.create(this.lines, 3));
+		this.addDataSlot(IntReferenceHolder.shared(this.lines, 3));
 		this.lines[4] = tile.getLine5();
-		this.trackInt(IntReferenceHolder.create(this.lines, 4));
+		this.addDataSlot(IntReferenceHolder.shared(this.lines, 4));
 	}
 
 	@Override
-	public boolean canInteractWith(PlayerEntity playerIn) {
+	public boolean stillValid(PlayerEntity playerIn) {
 		return this.tile.isUsableByPlayer(playerIn);
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+	public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
-		Slot slot = this.inventorySlots.get(index);
+		Slot slot = this.slots.get(index);
 
-		if (slot != null && slot.getHasStack()) {
-			ItemStack itemstack1 = slot.getStack();
+		if (slot != null && slot.hasItem()) {
+			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
 			final int tileSize = 9;
 
 			if (index < tileSize) {
-				if (!this.mergeItemStack(itemstack1, tileSize, inventorySlots.size(), true)) {
+				if (!this.moveItemStackTo(itemstack1, tileSize, slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.mergeItemStack(itemstack1, 0, tileSize, false)) {
+			} else if (!this.moveItemStackTo(itemstack1, 0, tileSize, false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemstack1.isEmpty()) {
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			} else {
-				slot.onSlotChanged();
+				slot.setChanged();
 			}
 
 			if (itemstack1.getCount() == itemstack.getCount()) {
@@ -123,14 +123,14 @@ public class PowerDispatcherContainer extends Container {
 	}
 
 	@Override
-	public void detectAndSendChanges() {
-		super.detectAndSendChanges();
+	public void broadcastChanges() {
+		super.broadcastChanges();
 	}
 
 	@Override
-	public void onCraftMatrixChanged(IInventory inventoryIn) {
+	public void slotsChanged(IInventory inventoryIn) {
 		if(inventoryIn != null) {
-			super.onCraftMatrixChanged(inventoryIn);
+			super.slotsChanged(inventoryIn);
 		} else {
 			this.mode[0] = tile.getMode().getId();
 			//TODO BLAH BLAH LINES

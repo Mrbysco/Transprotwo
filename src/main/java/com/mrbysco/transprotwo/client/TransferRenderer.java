@@ -41,14 +41,14 @@ public class TransferRenderer {
 		final Minecraft mc = Minecraft.getInstance();
 		MatrixStack matrixStack = event.getMatrixStack();
 		try {
-			if(mc.world != null && mc.player != null) {
-				for (int i = 0; i < mc.world.loadedTileEntityList.size(); i++) {
-					TileEntity t = mc.world.loadedTileEntityList.get(i);
-					if (t instanceof ItemDispatcherTile && getDistance(mc.player, t.getPos().getX(), t.getPos().getY(), t.getPos().getZ()) < 32)
-						renderItemTransfers(matrixStack, (ItemDispatcherTile) t, t.getPos().getX(), t.getPos().getY(), t.getPos().getZ(), event.getPartialTicks());
-					if (t instanceof FluidDispatcherTile && getDistance(mc.player, t.getPos().getX(), t.getPos().getY(), t.getPos().getZ()) < 32)
-						renderFluidTransfers(matrixStack, (FluidDispatcherTile) t, t.getPos().getX(), t.getPos().getY(), t.getPos().getZ(), event.getPartialTicks());
-					if (t instanceof PowerDispatcherTile && getDistance(mc.player, t.getPos().getX(), t.getPos().getY(), t.getPos().getZ()) < 32)
+			if(mc.level != null && mc.player != null) {
+				for (int i = 0; i < mc.level.blockEntityList.size(); i++) {
+					TileEntity t = mc.level.blockEntityList.get(i);
+					if (t instanceof ItemDispatcherTile && getDistance(mc.player, t.getBlockPos().getX(), t.getBlockPos().getY(), t.getBlockPos().getZ()) < 32)
+						renderItemTransfers(matrixStack, (ItemDispatcherTile) t, t.getBlockPos().getX(), t.getBlockPos().getY(), t.getBlockPos().getZ(), event.getPartialTicks());
+					if (t instanceof FluidDispatcherTile && getDistance(mc.player, t.getBlockPos().getX(), t.getBlockPos().getY(), t.getBlockPos().getZ()) < 32)
+						renderFluidTransfers(matrixStack, (FluidDispatcherTile) t, t.getBlockPos().getX(), t.getBlockPos().getY(), t.getBlockPos().getZ(), event.getPartialTicks());
+					if (t instanceof PowerDispatcherTile && getDistance(mc.player, t.getBlockPos().getX(), t.getBlockPos().getY(), t.getBlockPos().getZ()) < 32)
 						renderEnergyBeam(matrixStack, (PowerDispatcherTile) t, event.getPartialTicks());
 				}
 			}
@@ -57,9 +57,9 @@ public class TransferRenderer {
 	}
 
 	private double getDistance(PlayerEntity player, double x, double y, double z) {
-		float f = (float)(player.getPosX() - x);
-		float f1 = (float)(player.getPosY() - y);
-		float f2 = (float)(player.getPosZ() - z);
+		float f = (float)(player.getX() - x);
+		float f1 = (float)(player.getY() - y);
+		float f2 = (float)(player.getZ() - z);
 		return MathHelper.sqrt(f * f + f1 * f1 + f2 * f2);
 	}
 
@@ -68,13 +68,13 @@ public class TransferRenderer {
 			return;
 
 		final Minecraft mc = Minecraft.getInstance();
-		final Vector3d projectedView = mc.gameRenderer.getActiveRenderInfo().getProjectedView();
-		final IRenderTypeBuffer.Impl typeBuffer = mc.getRenderTypeBuffers().getBufferSource();
+		final Vector3d projectedView = mc.gameRenderer.getMainCamera().getPosition();
+		final IRenderTypeBuffer.Impl typeBuffer = mc.renderBuffers().bufferSource();
 		for (AbstractTransfer abstractTransfer : te.getTransfers()) {
 			if(abstractTransfer instanceof ItemTransfer) {
 				ItemTransfer transfer = (ItemTransfer) abstractTransfer;
 
-				matrixStack.push();
+				matrixStack.pushPose();
 				matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 				matrixStack.translate(x, y, z);
 				Vector3d cur = transfer.prev == null ? transfer.current : new Vector3d(
@@ -83,27 +83,27 @@ public class TransferRenderer {
 						transfer.prev.z + (transfer.current.z - transfer.prev.z) * partialTicks);
 				matrixStack.translate(cur.x, cur.y, cur.z);
 
-				int combinedLightIn = WorldRenderer.getCombinedLight(mc.world, new BlockPos(cur.add(x, y, z)));
-				if (mc.gameSettings.graphicFanciness.func_238162_a_() > 0 && !mc.isGamePaused()) {
+				int combinedLightIn = WorldRenderer.getLightColor(mc.level, new BlockPos(cur.add(x, y, z)));
+				if (mc.options.graphicsMode.getId() > 0 && !mc.isPaused()) {
 					float rotation = (float) (720.0 * ((System.currentTimeMillis() + transfer.turn) & 0x3FFFL) / 0x3FFFL);
-					matrixStack.rotate(Vector3f.YP.rotationDegrees(rotation));
+					matrixStack.mulPose(Vector3f.YP.rotationDegrees(rotation));
 				}
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
 				RenderSystem.disableDepthTest();
 				ItemRenderer itemRenderer = mc.getItemRenderer();
-				itemRenderer.renderItem(transfer.stack, TransformType.FIXED, combinedLightIn, OverlayTexture.NO_OVERLAY, matrixStack, typeBuffer);
+				itemRenderer.renderStatic(transfer.stack, TransformType.FIXED, combinedLightIn, OverlayTexture.NO_OVERLAY, matrixStack, typeBuffer);
 				if (transfer.stack.getCount() > 1) {
 					matrixStack.translate(.08, .08, .08);
-					itemRenderer.renderItem(transfer.stack, TransformType.FIXED, combinedLightIn, OverlayTexture.NO_OVERLAY, matrixStack, typeBuffer);
+					itemRenderer.renderStatic(transfer.stack, TransformType.FIXED, combinedLightIn, OverlayTexture.NO_OVERLAY, matrixStack, typeBuffer);
 					if (transfer.stack.getCount() >= 16) {
 						matrixStack.translate(.08, .08, .08);
-						itemRenderer.renderItem(transfer.stack, TransformType.FIXED, combinedLightIn, OverlayTexture.NO_OVERLAY, matrixStack, typeBuffer);
+						itemRenderer.renderStatic(transfer.stack, TransformType.FIXED, combinedLightIn, OverlayTexture.NO_OVERLAY, matrixStack, typeBuffer);
 					}
 				}
 				RenderSystem.enableDepthTest();
 
-				typeBuffer.finish();
-				matrixStack.pop();
+				typeBuffer.endBatch();
+				matrixStack.popPose();
 			}
 		}
 	}
@@ -113,13 +113,13 @@ public class TransferRenderer {
 			return;
 
 		final Minecraft mc = Minecraft.getInstance();
-		final Vector3d projectedView = mc.gameRenderer.getActiveRenderInfo().getProjectedView();
-		final IRenderTypeBuffer.Impl typeBuffer = mc.getRenderTypeBuffers().getBufferSource();
+		final Vector3d projectedView = mc.gameRenderer.getMainCamera().getPosition();
+		final IRenderTypeBuffer.Impl typeBuffer = mc.renderBuffers().bufferSource();
 		for (AbstractTransfer abstractTransfer : te.getTransfers()) {
 			if(abstractTransfer instanceof FluidTransfer) {
 				FluidTransfer transfer = (FluidTransfer) abstractTransfer;
 
-				matrixStack.push();
+				matrixStack.pushPose();
 				matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 				matrixStack.translate(x, y, z);
 				Vector3d cur = transfer.prev == null ? transfer.current : new Vector3d(
@@ -141,7 +141,7 @@ public class TransferRenderer {
 				}
 				RenderSystem.enableDepthTest();
 
-				matrixStack.pop();
+				matrixStack.popPose();
 			}
 		}
 	}
@@ -151,24 +151,20 @@ public class TransferRenderer {
 			return;
 
 		final Minecraft mc = Minecraft.getInstance();
-		final Vector3d projectedView = mc.gameRenderer.getActiveRenderInfo().getProjectedView();
-		final IRenderTypeBuffer.Impl typeBuffer = mc.getRenderTypeBuffers().getBufferSource();
+		final Vector3d projectedView = mc.gameRenderer.getMainCamera().getPosition();
+		final IRenderTypeBuffer.Impl typeBuffer = mc.renderBuffers().bufferSource();
 
-		BlockPos pos = dispatcher.getPos();
-		matrixStack.push();
+		BlockPos pos = dispatcher.getBlockPos();
+		matrixStack.pushPose();
 		matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
-		float width = 4.0f;
-		RenderType lineType = TransprotwoRenderTypes.getType(width);
-		IVertexBuilder vertexBuilder = typeBuffer.getBuffer(lineType);
 		Color[] colors = dispatcher.getColors();
 
 		for (AbstractTransfer abstractTransfer : dispatcher.getTransfers()) {
 			if(abstractTransfer instanceof PowerTransfer) {
 				PowerTransfer transfer = (PowerTransfer) abstractTransfer;
 
-				matrixStack.push();
-				matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
-				matrixStack.translate(dispatcher.getPos().getX(), dispatcher.getPos().getY(), dispatcher.getPos().getZ());
+				matrixStack.pushPose();
+				matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
 				Vector3d cur = transfer.prev == null ? transfer.current : new Vector3d(
 						transfer.prev.x + (transfer.current.x - transfer.prev.x) * partialTicks,
 						transfer.prev.y + (transfer.current.y - transfer.prev.y) * partialTicks,
@@ -177,53 +173,46 @@ public class TransferRenderer {
 
 				RenderSystem.disableDepthTest();
 				RenderHelper.renderPower(matrixStack, typeBuffer, colors[2]);
-				int stackAmount = transfer.powerStack.getAmount();
-				if (stackAmount > 1) {
-					matrixStack.translate(.08, .08, .08);
-					RenderHelper.renderPower(matrixStack, typeBuffer, colors[2]);
-					if (stackAmount >= 16) {
-						matrixStack.translate(.08, .08, .08);
-						RenderHelper.renderPower(matrixStack, typeBuffer, colors[2]);
-					}
-				}
 				RenderSystem.enableDepthTest();
 
-				matrixStack.pop();
+				matrixStack.popPose();
 			}
 		}
+		matrixStack.popPose();
+
+		matrixStack.pushPose();
+		matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
+		float width = 4.0f;
+		RenderType lineType = TransprotwoRenderTypes.getType(width);
+		IVertexBuilder vertexBuilder = typeBuffer.getBuffer(lineType);
+
 		for (Pair<BlockPos, Direction> pa : dispatcher.getTargets()) {
 			BlockPos p = pa.getLeft();
 			float x = p.getX() + .5f, y = p.getY() + .5f, z = p.getZ() + .5f;
 			float x2 = pos.getX() + .5f, y2 = pos.getY() + .5f, z2 = pos.getZ() + .5f;
 			boolean free = dispatcher.wayFree(pos, p);
-			if (!free && dispatcher.getWorld().getGameTime() / 10 % 2 != 0)
+			if (!free && dispatcher.getLevel().getGameTime() / 10 % 2 != 0)
 				continue;
 
-			if (mc.player.isSneaking()) {
-				RenderSystem.disableDepthTest();
-			} else {
-				RenderSystem.enableDepthTest();
-			}
-			Matrix4f matrix = matrixStack.getLast().getMatrix();
+			Matrix4f matrix = matrixStack.last().pose();
 
 			float offset = 0.015F;
 			float initialOffset = offset * 2;
-			Direction dir = Direction.getFacingFromVector(x - x2, y - y2, z - z2);
-			if(y != y2 && (dir == Direction.UP || dir == Direction.DOWN)) {
-				for(int i = 0; i < 5; i++) {
-					vertexBuilder.pos(matrix, x - initialOffset + (i * offset), y, z).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
-					vertexBuilder.pos(matrix, x2 - initialOffset + (i * offset), y2, z2).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
-				}
-			} else {
-				for(int i = 0; i < 5; i++) {
-					vertexBuilder.pos(matrix, x, y - initialOffset + (i * offset), z).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
-					vertexBuilder.pos(matrix, x2, y2 - initialOffset + (i * offset), z2).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
+			Direction dir = Direction.getNearest(x - x2, y - y2, z - z2);
+			boolean flag = y != y2 && (dir == Direction.UP || dir == Direction.DOWN);
+
+			for(int i = 0; i < 5; i++) {
+				if(flag) {
+					vertexBuilder.vertex(matrix, x - initialOffset + (i * offset), y, z).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
+					vertexBuilder.vertex(matrix, x2 - initialOffset + (i * offset), y2, z2).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
+				} else {
+					vertexBuilder.vertex(matrix, x, y - initialOffset + (i * offset), z).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
+					vertexBuilder.vertex(matrix, x2, y2 - initialOffset + (i * offset), z2).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
 				}
 			}
 		}
 
-		typeBuffer.finish(lineType);
-
-		matrixStack.pop();
+		typeBuffer.endBatch(lineType);
+		matrixStack.popPose();
 	}
 }

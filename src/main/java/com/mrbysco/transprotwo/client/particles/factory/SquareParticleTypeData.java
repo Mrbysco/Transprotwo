@@ -21,14 +21,14 @@ public class SquareParticleTypeData implements IParticleData {
 	static final IParticleData.IDeserializer<SquareParticleTypeData> DESERIALIZER = new IParticleData.IDeserializer<SquareParticleTypeData>() {
 
 		@Override
-		public SquareParticleTypeData deserialize(ParticleType<SquareParticleTypeData> type, StringReader reader) throws CommandSyntaxException {
+		public SquareParticleTypeData fromCommand(ParticleType<SquareParticleTypeData> type, StringReader reader) throws CommandSyntaxException {
 			reader.expect(' ');
 			return new SquareParticleTypeData(type, ParticleColor.deserialize(reader.readString()));
 		}
 
 		@Override
-		public SquareParticleTypeData read(ParticleType<SquareParticleTypeData> type, PacketBuffer buffer) {
-			return new SquareParticleTypeData(type, ParticleColor.deserialize(buffer.readString()));
+		public SquareParticleTypeData fromNetwork(ParticleType<SquareParticleTypeData> type, PacketBuffer buffer) {
+			return new SquareParticleTypeData(type, ParticleColor.deserialize(buffer.readUtf()));
 		}
 	};
 
@@ -47,10 +47,10 @@ public class SquareParticleTypeData implements IParticleData {
 	}
 
 	@Override
-	public void write(PacketBuffer buffer) {}
+	public void writeToNetwork(PacketBuffer buffer) {}
 
 	@Override
-	public String getParameters() {
+	public String writeToString() {
 		return null;
 	}
 }

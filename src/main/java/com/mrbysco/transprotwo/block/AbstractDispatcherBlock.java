@@ -14,27 +14,27 @@ import net.minecraft.world.IBlockReader;
 import javax.annotation.Nullable;
 
 public abstract class AbstractDispatcherBlock extends DirectionalBlock {
-	protected static final VoxelShape NORTH_SHAPE = Block.makeCuboidShape(1, 1, 0, 15, 15, 8);
-	protected static final VoxelShape SOUTH_SHAPE = Block.makeCuboidShape(1, 1, 8, 15, 15, 16);
-	protected static final VoxelShape WEST_SHAPE = Block.makeCuboidShape(0, 1, 1, 8, 15, 15);
-	protected static final VoxelShape EAST_SHAPE = Block.makeCuboidShape(8, 1, 1, 16, 15, 15);
-	protected static final VoxelShape DOWN_SHAPE = Block.makeCuboidShape(1, 0, 1, 15, 8, 15);
-	protected static final VoxelShape TOP_SHAPE = Block.makeCuboidShape(1, 8, 1, 15, 16, 15);
+	protected static final VoxelShape NORTH_SHAPE = Block.box(1, 1, 0, 15, 15, 8);
+	protected static final VoxelShape SOUTH_SHAPE = Block.box(1, 1, 8, 15, 15, 16);
+	protected static final VoxelShape WEST_SHAPE = Block.box(0, 1, 1, 8, 15, 15);
+	protected static final VoxelShape EAST_SHAPE = Block.box(8, 1, 1, 16, 15, 15);
+	protected static final VoxelShape DOWN_SHAPE = Block.box(1, 0, 1, 15, 8, 15);
+	protected static final VoxelShape TOP_SHAPE = Block.box(1, 8, 1, 15, 16, 15);
 
 	public AbstractDispatcherBlock(Properties properties) {
 		super(properties);
-		this.setDefaultState(this.getDefaultState().with(FACING, Direction.DOWN));
+		this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.DOWN));
 	}
 
 	@Nullable
 	@Override
 	public BlockState getStateForPlacement(BlockItemUseContext context) {
-		return this.getDefaultState().with(FACING, context.getFace().getOpposite());
+		return this.defaultBlockState().setValue(FACING, context.getClickedFace().getOpposite());
 	}
 
 	@Override
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-		switch (state.get(FACING)) {
+		switch (state.getValue(FACING)) {
 			default:
 				return NORTH_SHAPE;
 			case SOUTH:
@@ -51,7 +51,7 @@ public abstract class AbstractDispatcherBlock extends DirectionalBlock {
 	}
 
 	@Override
-	protected void fillStateContainer(Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
 		builder.add(FACING);
 	}
 }

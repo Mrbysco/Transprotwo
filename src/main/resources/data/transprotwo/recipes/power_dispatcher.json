@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "transprotwo:power_dispatcher",
+    "count": 2
+  },
+  "pattern": [
+    "EIE",
+    "IRI",
+    "I I"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "E": {
+      "tag": "forge:ender_pearls"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
+  }
+}

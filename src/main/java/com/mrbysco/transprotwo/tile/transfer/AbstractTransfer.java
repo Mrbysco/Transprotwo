@@ -20,16 +20,16 @@ public abstract class AbstractTransfer {
 	}
 
 	public void readFromNBT(CompoundNBT compound) {
-		dis = BlockPos.fromLong(compound.getLong("dis"));
-		rec = new ImmutablePair<>(BlockPos.fromLong(compound.getLong("rec")), Direction.values()[compound.getInt("face")]);
+		dis = BlockPos.of(compound.getLong("dis"));
+		rec = new ImmutablePair<>(BlockPos.of(compound.getLong("rec")), Direction.values()[compound.getInt("face")]);
 		current = new Vector3d(compound.getDouble("xx"), compound.getDouble("yy"), compound.getDouble("zz"));
 		blocked = compound.getBoolean("blocked");
 		turn = compound.getInt("turn");
 	}
 
 	public CompoundNBT writeToNBT(CompoundNBT compound) {
-		compound.putLong("dis", dis.toLong());
-		compound.putLong("rec", rec.getLeft().toLong());
+		compound.putLong("dis", dis.asLong());
+		compound.putLong("rec", rec.getLeft().asLong());
 		compound.putInt("face", rec.getRight().ordinal());
 		compound.putDouble("xx", current.x);
 		compound.putDouble("yy", current.y);

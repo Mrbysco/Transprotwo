@@ -16,7 +16,7 @@ public class SquareParticleData implements IParticleFactory<SquareParticleTypeDa
 	}
 
 	@Override
-	public Particle makeParticle(SquareParticleTypeData data, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+	public Particle createParticle(SquareParticleTypeData data, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
 		return new SquareParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, data.color.getRed(), data.color.getGreen(), data.color.getBlue(), this.spriteSet);
 	}
 
