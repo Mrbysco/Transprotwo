@@ -10,9 +10,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler {
 	private static final String PROTOCOL_VERSION = "1";
@@ -34,6 +34,6 @@ public class PacketHandler {
 	}
 
 	public static void sendToNearbyPlayers(Object message, BlockPos pos, double radius, ResourceKey<Level> dim) {
-		CHANNEL.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(pos.getX(), pos.getY(), pos.getZ(), radius, dim)), message);
+		CHANNEL.send(net.minecraftforge.network.PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(pos.getX(), pos.getY(), pos.getZ(), radius, dim)), message);
 	}
 }

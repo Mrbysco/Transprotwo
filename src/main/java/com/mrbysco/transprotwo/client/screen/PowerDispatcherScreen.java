@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatcherContainer> {
 	private final ResourceLocation TEXTURE = new ResourceLocation(Transprotwo.MOD_ID, "textures/gui/container/power_dispatcher.png");

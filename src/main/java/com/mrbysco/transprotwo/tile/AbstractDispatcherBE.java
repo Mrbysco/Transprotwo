@@ -205,7 +205,7 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 
 	@Override
 	public ClientboundBlockEntityDataPacket getUpdatePacket() {
-		return new ClientboundBlockEntityDataPacket(this.worldPosition, 0, getUpdateTag());
+		return ClientboundBlockEntityDataPacket.create(this);
 	}
 
 	@Override

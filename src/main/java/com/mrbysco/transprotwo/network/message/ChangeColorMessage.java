@@ -3,7 +3,7 @@ package com.mrbysco.transprotwo.network.message;
 import com.mrbysco.transprotwo.client.ClientHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent.Context;
+import net.minecraftforge.network.NetworkEvent.Context;
 
 import java.util.function.Supplier;
 

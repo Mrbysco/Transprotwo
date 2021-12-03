@@ -17,7 +17,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 public class DispatcherScreen extends AbstractContainerScreen<DispatcherContainer> {
 	private final ResourceLocation TEXTURE = new ResourceLocation(Transprotwo.MOD_ID, "textures/gui/container/dispatcher.png");

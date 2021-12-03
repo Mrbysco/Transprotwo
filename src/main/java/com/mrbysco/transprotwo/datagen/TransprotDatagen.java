@@ -21,7 +21,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 import java.nio.file.Path;
@@ -73,8 +73,8 @@ public class TransprotDatagen {
 		}
 
 		@Override
-		protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
-			map.forEach((name, table) -> LootTables.validate(validationtracker, name, table));
+		protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationContext) {
+			map.forEach((name, table) -> LootTables.validate(validationContext, name, table));
 		}
 	}
 
