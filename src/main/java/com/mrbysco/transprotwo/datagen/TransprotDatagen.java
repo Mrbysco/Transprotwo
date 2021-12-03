@@ -4,25 +4,25 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DirectoryCache;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.LootTableProvider;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.loot.LootParameterSet;
-import net.minecraft.loot.LootParameterSets;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTable.Builder;
-import net.minecraft.loot.LootTableManager;
-import net.minecraft.loot.ValidationTracker;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.HashCache;
+import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootTable.Builder;
+import net.minecraft.world.level.storage.loot.LootTables;
+import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static com.mrbysco.transprotwo.registry.TransprotwoRegistry.*;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class TransprotDatagen {
@@ -51,17 +53,17 @@ public class TransprotDatagen {
 
 
 		@Override
-		protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, Builder>>>, LootParameterSet>> getTables() {
-			return ImmutableList.of(Pair.of(TransprotBlocks::new, LootParameterSets.BLOCK));
+		protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, Builder>>>, LootContextParamSet>> getTables() {
+			return ImmutableList.of(Pair.of(TransprotBlocks::new, LootContextParamSets.BLOCK));
 		}
 
-		private static class TransprotBlocks extends BlockLootTables {
+		private static class TransprotBlocks extends BlockLoot {
 
 			@Override
 			protected void addTables() {
-				this.add(TransprotwoRegistry.DISPATCHER.get(), BlockLootTables::createNameableBlockEntityTable);
-				this.add(TransprotwoRegistry.FLUID_DISPATCHER.get(), BlockLootTables::createNameableBlockEntityTable);
-				this.add(TransprotwoRegistry.POWER_DISPATCHER.get(), BlockLootTables::createNameableBlockEntityTable);
+				this.add(DISPATCHER.get(), BlockLoot::createNameableBlockEntityTable);
+				this.add(FLUID_DISPATCHER.get(), BlockLoot::createNameableBlockEntityTable);
+				this.add(POWER_DISPATCHER.get(), BlockLoot::createNameableBlockEntityTable);
 			}
 
 			@Override
@@ -71,8 +73,8 @@ public class TransprotDatagen {
 		}
 
 		@Override
-		protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker) {
-			map.forEach((name, table) -> LootTableManager.validate(validationtracker, name, table));
+		protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
+			map.forEach((name, table) -> LootTables.validate(validationtracker, name, table));
 		}
 	}
 
@@ -83,12 +85,12 @@ public class TransprotDatagen {
 		}
 
 		@Override
-		protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+		protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
 
 		}
 
 		@Override
-		protected void saveAdvancement(DirectoryCache cache, JsonObject advancementJson, Path path) {
+		protected void saveAdvancement(HashCache cache, JsonObject advancementJson, Path path) {
 			// Nope
 		}
 	}

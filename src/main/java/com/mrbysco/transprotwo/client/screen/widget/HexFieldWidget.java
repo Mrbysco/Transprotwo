@@ -1,11 +1,11 @@
 package com.mrbysco.transprotwo.client.screen.widget;
 
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
-public class HexFieldWidget extends TextFieldWidget {
-	public HexFieldWidget(FontRenderer font, int x, int y, int width, int height, ITextComponent defaultValue) {
+public class HexFieldWidget extends EditBox {
+	public HexFieldWidget(Font font, int x, int y, int width, int height, Component defaultValue) {
 		super(font, x, y, width, height, defaultValue);
 	}
 

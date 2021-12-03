@@ -1,44 +1,42 @@
 package com.mrbysco.transprotwo.network.message;
 
-import com.mrbysco.transprotwo.tile.ItemDispatcherTile;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import com.mrbysco.transprotwo.tile.ItemDispatcherBE;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent.Context;
 
 import java.util.function.Supplier;
 
 public class UpdateDispatcherMessage {
-	private final CompoundNBT compound;
+	private final CompoundTag compound;
 	public BlockPos tilePos;
 
-	public UpdateDispatcherMessage(CompoundNBT tag, BlockPos tilePos) {
+	public UpdateDispatcherMessage(CompoundTag tag, BlockPos tilePos) {
 		this.compound = tag;
 		this.tilePos = tilePos;
 	}
 
-	public void encode(PacketBuffer buf) {
+	public void encode(FriendlyByteBuf buf) {
 		buf.writeNbt(compound);
 		buf.writeBlockPos(tilePos);
 	}
 
-	public static UpdateDispatcherMessage decode(final PacketBuffer packetBuffer) {
+	public static UpdateDispatcherMessage decode(final FriendlyByteBuf packetBuffer) {
 		return new UpdateDispatcherMessage(packetBuffer.readNbt(), packetBuffer.readBlockPos());
 	}
 
 	public void handle(Supplier<Context> context) {
-		NetworkEvent.Context ctx = context.get();
+		Context ctx = context.get();
 		ctx.enqueueWork(() -> {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
-				ServerPlayerEntity player = ctx.getSender();
-				World world = player.level;
-				TileEntity tile = world.getBlockEntity(tilePos);
-				if(tile instanceof ItemDispatcherTile) {
-					ItemDispatcherTile dispatcherTile = (ItemDispatcherTile) tile;
+				ServerPlayer player = ctx.getSender();
+				Level world = player.level;
+				BlockEntity tile = world.getBlockEntity(tilePos);
+				if(tile instanceof ItemDispatcherBE dispatcherTile) {
 					if (compound.contains("mode"))
 						dispatcherTile.cycleMode();
 					if(compound.contains("tag"))

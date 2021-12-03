@@ -4,11 +4,11 @@ import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.client.particles.factory.SquareParticleType;
 import com.mrbysco.transprotwo.client.particles.factory.SquareParticleTypeData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.particles.ParticleType;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

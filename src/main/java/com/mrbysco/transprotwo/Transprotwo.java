@@ -1,14 +1,12 @@
 package com.mrbysco.transprotwo;
 
 import com.mrbysco.transprotwo.client.ClientHandler;
-import com.mrbysco.transprotwo.client.TransferRenderer;
 import com.mrbysco.transprotwo.client.particles.TransprotwoParticles;
 import com.mrbysco.transprotwo.config.TransprotConfig;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.registry.TransprotwoContainers;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -35,14 +33,14 @@ public class Transprotwo {
 
         TransprotwoRegistry.ITEMS.register(eventBus);
         TransprotwoRegistry.BLOCKS.register(eventBus);
-        TransprotwoRegistry.TILES.register(eventBus);
+        TransprotwoRegistry.BLOCK_ENTITIES.register(eventBus);
         TransprotwoContainers.CONTAINERS.register(eventBus);
 
         TransprotwoParticles.PARTICLE_TYPES.register(eventBus);
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             eventBus.addListener(ClientHandler::onClientSetup);
-            MinecraftForge.EVENT_BUS.register(new TransferRenderer());
+            eventBus.addListener(ClientHandler::registerEntityRenders);
         });
     }
 

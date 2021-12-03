@@ -1,22 +1,24 @@
 package com.mrbysco.transprotwo.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.client.screen.widget.HexFieldWidget;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.UpdatePowerDispatcherMessage;
-import com.mrbysco.transprotwo.tile.AbstractDispatcherTile.Mode;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import com.mrbysco.transprotwo.tile.AbstractDispatcherBE.Mode;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
-public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContainer> {
+public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatcherContainer> {
 	private final ResourceLocation TEXTURE = new ResourceLocation(Transprotwo.MOD_ID, "textures/gui/container/power_dispatcher.png");
 
 	private Button mode, reset;
@@ -25,7 +27,7 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 
 	private final HexFieldWidget[] colorFields = new HexFieldWidget[5];
 
-	public PowerDispatcherScreen(PowerDispatcherContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+	public PowerDispatcherScreen(PowerDispatcherContainer screenContainer, Inventory inv, Component titleIn) {
 		super(screenContainer, inv, titleIn);
 
 		this.imageHeight = 193;
@@ -36,19 +38,19 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 		super.init();
 
 		PowerDispatcherContainer container = this.getMenu();
-		this.addButton(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, new StringTextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
-			CompoundNBT tag = new CompoundNBT();
+		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, new TextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
+			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mode", true);
 			this.updateTile(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new StringTextComponent(Mode.getByID(container.mode[0]).getText()), x, y);
+			renderTooltip(matrix, new TextComponent(Mode.getByID(container.mode[0]).getText()), x, y);
 		}));
-		this.addButton(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, new StringTextComponent("R"), (button) -> { //reset
-			CompoundNBT tag = new CompoundNBT();
+		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, new TextComponent("R"), (button) -> { //reset
+			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("reset", true);
 			this.updateTile(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new StringTextComponent("Reset"), x, y);
+			renderTooltip(matrix, new TextComponent("Reset"), x, y);
 		}));
 
 		for (int i = 0; i < this.colorFields.length; i++) {
@@ -58,7 +60,7 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 			int height = 12;
 			String value = Integer.toHexString(container.lines[i]);
 
-			this.colorFields[i] = new HexFieldWidget(this.font, x, y, width, height, new StringTextComponent(String.format("line %s", i + 1)));
+			this.colorFields[i] = new HexFieldWidget(this.font, x, y, width, height, new TextComponent(String.format("line %s", i + 1)));
 			this.colorFields[i].setValue(value);
 			this.colorFields[i].setMaxLength(6);
 			this.addWidget(this.colorFields[i]);
@@ -68,11 +70,11 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
+	public void containerTick() {
+		super.containerTick();
 
 		if (dirty) {
-			mode.setMessage(new StringTextComponent(Mode.getByID(this.getMenu().mode[0]).toString()));
+			mode.setMessage(new TextComponent(Mode.getByID(this.getMenu().mode[0]).toString()));
 			dirty = false;
 		}
 
@@ -81,7 +83,7 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		this.renderBackground(matrixStack);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 
@@ -92,8 +94,9 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 	}
 
 	@Override
-	protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
-		this.minecraft.getTextureManager().bind(TEXTURE);
+	protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, TEXTURE);
 		this.blit(matrixStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
 		for(int i = 0; i < this.colorFields.length; i++) {
@@ -139,13 +142,13 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 	}
 
 	@Override
-	protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+	protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
 		this.font.draw(matrixStack, this.title, (float)this.titleLabelX, (float)this.titleLabelY, 4210752);
-		this.font.draw(matrixStack, this.inventory.getDisplayName(), 8, this.imageHeight - 96 + 2, 4210752);
+		this.font.draw(matrixStack, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 4210752);
 	}
 
 	private void fieldHasUpdated() {
-		CompoundNBT tag = new CompoundNBT();
+		CompoundTag tag = new CompoundTag();
 		for(int i = 0; i < this.colorFields.length; i++) {
 			String value = this.colorFields[i].getValue();
 			if(!value.isEmpty()) {
@@ -156,7 +159,7 @@ public class PowerDispatcherScreen extends ContainerScreen<PowerDispatcherContai
 		this.updateTile(tag);
 	}
 
-	private void updateTile(CompoundNBT compound) {
+	private void updateTile(CompoundTag compound) {
 		this.dirty = true;
 		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdatePowerDispatcherMessage(compound, this.getMenu().getTile().getBlockPos()));
 	}

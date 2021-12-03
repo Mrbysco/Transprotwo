@@ -2,38 +2,37 @@ package com.mrbysco.transprotwo.client;
 
 import com.mrbysco.transprotwo.client.particles.SquareParticleData;
 import com.mrbysco.transprotwo.config.TransprotConfig;
-import com.mrbysco.transprotwo.tile.PowerDispatcherTile;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import com.mrbysco.transprotwo.tile.PowerDispatcherBE;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
 
 public class ClientHelper {
 	public static void resetColors(BlockPos pos) {
 		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-		net.minecraft.world.World world = mc.level;
-		TileEntity tile = world.getBlockEntity(pos);
-		if(tile instanceof PowerDispatcherTile) {
-			PowerDispatcherTile dispatcherTile = (PowerDispatcherTile) tile;
+		net.minecraft.world.level.Level world = mc.level;
+		BlockEntity tile = world.getBlockEntity(pos);
+		if(tile instanceof PowerDispatcherBE dispatcherTile) {
 			dispatcherTile.initializeColors();
 		}
 	}
 
-	public static void summonParticles(CompoundNBT compound) {
+	public static void summonParticles(CompoundTag compound) {
 		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-		net.minecraft.world.World world = mc.level;
+		net.minecraft.world.level.Level world = mc.level;
 
 		summonParticles(world, compound);
 	}
 
-	public static void summonParticles(World world, CompoundNBT nbt) {
+	public static void summonParticles(Level world, CompoundTag nbt) {
 		if (!TransprotConfig.CLIENT.showParticles.get())
 			return;
 		BlockPos pos = BlockPos.of(nbt.getLong("pos"));
-		Vector3d vec = new Vector3d(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
+		Vec3 vec = new Vec3(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
 		double dx = vec.x, dy = vec.y, dz = vec.z;
 		for (int i = 0; i < 7; i++) {
 			double xx = (new Random().nextDouble() - .5) / 2.3;

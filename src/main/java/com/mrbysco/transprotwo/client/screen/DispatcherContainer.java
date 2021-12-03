@@ -3,44 +3,44 @@ package com.mrbysco.transprotwo.client.screen;
 import com.mrbysco.transprotwo.client.screen.slots.GhostSlot;
 import com.mrbysco.transprotwo.client.screen.slots.UpgradeSlot;
 import com.mrbysco.transprotwo.registry.TransprotwoContainers;
-import com.mrbysco.transprotwo.tile.ItemDispatcherTile;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IntReferenceHolder;
+import com.mrbysco.transprotwo.tile.ItemDispatcherBE;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Objects;
 
-public class DispatcherContainer extends Container {
-	private ItemDispatcherTile tile;
-	private PlayerEntity player;
+public class DispatcherContainer extends AbstractContainerMenu {
+	private ItemDispatcherBE tile;
+	private Player player;
 
 	public final int[] mode = new int[1];
 	public final int[] stockNum = new int[1];
 	public final int[] buttonValues = new int[5];
 
-	public DispatcherContainer(final int windowId, final PlayerInventory playerInventory, final PacketBuffer data) {
+	public DispatcherContainer(final int windowId, final Inventory playerInventory, final FriendlyByteBuf data) {
 		this(windowId, playerInventory, getTileEntity(playerInventory, data));
 	}
 
-	private static ItemDispatcherTile getTileEntity(final PlayerInventory playerInventory, final PacketBuffer data) {
+	private static ItemDispatcherBE getTileEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null!");
 		Objects.requireNonNull(data, "data cannot be null!");
-		final TileEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
+		final BlockEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
 
-		if (tileAtPos instanceof ItemDispatcherTile) {
-			return (ItemDispatcherTile) tileAtPos;
+		if (tileAtPos instanceof ItemDispatcherBE) {
+			return (ItemDispatcherBE) tileAtPos;
 		}
 
 		throw new IllegalStateException("Tile entity is not correct! " + tileAtPos);
 	}
 
-	public DispatcherContainer(int id, PlayerInventory playerInventoryIn, ItemDispatcherTile tile) {
+	public DispatcherContainer(int id, Inventory playerInventoryIn, ItemDispatcherBE tile) {
 		super(TransprotwoContainers.DISPATCHER.get(), id);
 		this.tile = tile;
 		this.player = playerInventoryIn.player;
@@ -72,30 +72,30 @@ public class DispatcherContainer extends Container {
 
 	public void trackValues() {
 		this.stockNum[0] = tile.getStockNum();
-		this.addDataSlot(IntReferenceHolder.shared(this.stockNum, 0));
+		this.addDataSlot(DataSlot.shared(this.stockNum, 0));
 
 		this.mode[0] = tile.getMode().getId();
-		this.addDataSlot(IntReferenceHolder.shared(this.mode, 0));
+		this.addDataSlot(DataSlot.shared(this.mode, 0));
 
 		this.buttonValues[0] = tile.isTag() ? 1 : 0;
-		this.addDataSlot(IntReferenceHolder.shared(this.buttonValues, 0));
+		this.addDataSlot(DataSlot.shared(this.buttonValues, 0));
 		this.buttonValues[1] = tile.isDurability() ? 1 : 0;
-		this.addDataSlot(IntReferenceHolder.shared(this.buttonValues, 1));
+		this.addDataSlot(DataSlot.shared(this.buttonValues, 1));
 		this.buttonValues[2] = tile.isNbt() ? 1 : 0;
-		this.addDataSlot(IntReferenceHolder.shared(this.buttonValues, 2));
+		this.addDataSlot(DataSlot.shared(this.buttonValues, 2));
 		this.buttonValues[3] = tile.isWhite() ? 1 : 0;
-		this.addDataSlot(IntReferenceHolder.shared(this.buttonValues, 3));
+		this.addDataSlot(DataSlot.shared(this.buttonValues, 3));
 		this.buttonValues[4] = tile.isMod() ? 1 : 0;
-		this.addDataSlot(IntReferenceHolder.shared(this.buttonValues, 4));
+		this.addDataSlot(DataSlot.shared(this.buttonValues, 4));
 	}
 
 	@Override
-	public boolean stillValid(PlayerEntity playerIn) {
+	public boolean stillValid(Player playerIn) {
 		return this.tile.isUsableByPlayer(playerIn);
 	}
 
 	@Override
-	public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
+	public ItemStack quickMoveStack(Player playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.slots.get(index);
 
@@ -128,7 +128,7 @@ public class DispatcherContainer extends Container {
 		return itemstack;
 	}
 
-	public ItemDispatcherTile getTile() {
+	public ItemDispatcherBE getTile() {
 		return tile;
 	}
 
@@ -138,7 +138,7 @@ public class DispatcherContainer extends Container {
 	}
 
 	@Override
-	public void slotsChanged(IInventory inventoryIn) {
+	public void slotsChanged(Container inventoryIn) {
 		if(inventoryIn != null) {
 			super.slotsChanged(inventoryIn);
 		} else {

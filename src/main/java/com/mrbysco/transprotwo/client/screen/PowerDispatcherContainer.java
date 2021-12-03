@@ -2,43 +2,43 @@ package com.mrbysco.transprotwo.client.screen;
 
 import com.mrbysco.transprotwo.client.screen.slots.UpgradeSlot;
 import com.mrbysco.transprotwo.registry.TransprotwoContainers;
-import com.mrbysco.transprotwo.tile.PowerDispatcherTile;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IntReferenceHolder;
+import com.mrbysco.transprotwo.tile.PowerDispatcherBE;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Objects;
 
-public class PowerDispatcherContainer extends Container {
-	private PowerDispatcherTile tile;
-	private PlayerEntity player;
+public class PowerDispatcherContainer extends AbstractContainerMenu {
+	private PowerDispatcherBE tile;
+	private Player player;
 
 	public final int[] mode = new int[1];
 	public final int[] lines = new int[5];
 
-	public PowerDispatcherContainer(final int windowId, final PlayerInventory playerInventory, final PacketBuffer data) {
+	public PowerDispatcherContainer(final int windowId, final Inventory playerInventory, final FriendlyByteBuf data) {
 		this(windowId, playerInventory, getTileEntity(playerInventory, data));
 	}
 
-	private static PowerDispatcherTile getTileEntity(final PlayerInventory playerInventory, final PacketBuffer data) {
+	private static PowerDispatcherBE getTileEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null!");
 		Objects.requireNonNull(data, "data cannot be null!");
-		final TileEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
+		final BlockEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
 
-		if (tileAtPos instanceof PowerDispatcherTile) {
-			return (PowerDispatcherTile) tileAtPos;
+		if (tileAtPos instanceof PowerDispatcherBE) {
+			return (PowerDispatcherBE) tileAtPos;
 		}
 
 		throw new IllegalStateException("Tile entity is not correct! " + tileAtPos);
 	}
 
-	public PowerDispatcherContainer(int id, PlayerInventory playerInventoryIn, PowerDispatcherTile tile) {
+	public PowerDispatcherContainer(int id, Inventory playerInventoryIn, PowerDispatcherBE tile) {
 		super(TransprotwoContainers.POWER_DISPATCHER.get(), id);
 		this.tile = tile;
 		this.player = playerInventoryIn.player;
@@ -64,28 +64,28 @@ public class PowerDispatcherContainer extends Container {
 
 	public void trackValues() {
 		this.mode[0] = tile.getMode().getId();
-		this.addDataSlot(IntReferenceHolder.shared(this.mode, 0));
+		this.addDataSlot(DataSlot.shared(this.mode, 0));
 
 
 		this.lines[0] = tile.getLine1();
-		this.addDataSlot(IntReferenceHolder.shared(this.lines, 0));
+		this.addDataSlot(DataSlot.shared(this.lines, 0));
 		this.lines[1] = tile.getLine2();
-		this.addDataSlot(IntReferenceHolder.shared(this.lines, 1));
+		this.addDataSlot(DataSlot.shared(this.lines, 1));
 		this.lines[2] = tile.getLine3();
-		this.addDataSlot(IntReferenceHolder.shared(this.lines, 2));
+		this.addDataSlot(DataSlot.shared(this.lines, 2));
 		this.lines[3] = tile.getLine4();
-		this.addDataSlot(IntReferenceHolder.shared(this.lines, 3));
+		this.addDataSlot(DataSlot.shared(this.lines, 3));
 		this.lines[4] = tile.getLine5();
-		this.addDataSlot(IntReferenceHolder.shared(this.lines, 4));
+		this.addDataSlot(DataSlot.shared(this.lines, 4));
 	}
 
 	@Override
-	public boolean stillValid(PlayerEntity playerIn) {
+	public boolean stillValid(Player playerIn) {
 		return this.tile.isUsableByPlayer(playerIn);
 	}
 
 	@Override
-	public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
+	public ItemStack quickMoveStack(Player playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.slots.get(index);
 
@@ -118,7 +118,7 @@ public class PowerDispatcherContainer extends Container {
 		return itemstack;
 	}
 
-	public PowerDispatcherTile getTile() {
+	public PowerDispatcherBE getTile() {
 		return tile;
 	}
 
@@ -128,7 +128,7 @@ public class PowerDispatcherContainer extends Container {
 	}
 
 	@Override
-	public void slotsChanged(IInventory inventoryIn) {
+	public void slotsChanged(Container inventoryIn) {
 		if(inventoryIn != null) {
 			super.slotsChanged(inventoryIn);
 		} else {

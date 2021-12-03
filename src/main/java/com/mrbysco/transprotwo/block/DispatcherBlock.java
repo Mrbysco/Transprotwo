@@ -1,21 +1,23 @@
 package com.mrbysco.transprotwo.block;
 
-import com.mrbysco.transprotwo.tile.AbstractDispatcherTile;
-import com.mrbysco.transprotwo.tile.ItemDispatcherTile;
+import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
+import com.mrbysco.transprotwo.tile.AbstractDispatcherBE;
+import com.mrbysco.transprotwo.tile.ItemDispatcherBE;
 import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.tile.transfer.ItemTransfer;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -26,39 +28,42 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		TileEntity tile = worldIn.getBlockEntity(pos);
-		if (!worldIn.isClientSide && tile instanceof ItemDispatcherTile) {
-			ItemDispatcherTile dispatcherTile = (ItemDispatcherTile) tile;
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+		BlockEntity tile = level.getBlockEntity(pos);
+		if (!level.isClientSide && tile instanceof ItemDispatcherBE dispatcherTile) {
 			if (!dispatcherTile.getUpgrade().getStackInSlot(0).isEmpty())
-				popResource(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
+				popResource(level, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer transfer : dispatcherTile.getTransfers()) {
-				if(transfer instanceof ItemTransfer) {
-					ItemTransfer itemTransfer = (ItemTransfer) transfer;
-					InventoryHelper.dropItemStack(worldIn, pos.getX() + transfer.current.x, pos.getY() + transfer.current.y, pos.getZ() + transfer.current.z, itemTransfer.stack);
+				if(transfer instanceof ItemTransfer itemTransfer) {
+					Containers.dropItemStack(level, pos.getX() + transfer.current.x, pos.getY() + transfer.current.y, pos.getZ() + transfer.current.z, itemTransfer.stack);
 				}
 			}
 		}
-		super.onRemove(state, worldIn, pos, newState, isMoving);
+		super.onRemove(state, level, pos, newState, isMoving);
 	}
 
 	@Override
-	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-		TileEntity tile = worldIn.getBlockEntity(pos);
-		if(tile instanceof AbstractDispatcherTile && !worldIn.isClientSide && !player.isShiftKeyDown()) {
-			NetworkHooks.openGui((ServerPlayerEntity) player, (AbstractDispatcherTile) tile, pos);
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+		BlockEntity tile = level.getBlockEntity(pos);
+		if(tile instanceof AbstractDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
+			NetworkHooks.openGui((ServerPlayer) player, (AbstractDispatcherBE) tile, pos);
 		}
-		return super.use(state, worldIn, pos, player, handIn, hit);
-	}
-
-	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return true;
+		return super.use(state, level, pos, player, handIn, hit);
 	}
 
 	@Nullable
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return new ItemDispatcherTile();
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new ItemDispatcherBE(pos, state);
+	}
+
+	@Nullable
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+		return createDispatcherTicker(level, type, TransprotwoRegistry.DISPATCHER_BLOCK_ENTITY.get());
+	}
+
+	@Nullable
+	protected static <T extends BlockEntity> BlockEntityTicker<T> createDispatcherTicker(Level level, BlockEntityType<T> p_151989_, BlockEntityType<? extends ItemDispatcherBE> p_151990_) {
+		return level.isClientSide ? createTickerHelper(p_151989_, p_151990_, ItemDispatcherBE::clientTick) : createTickerHelper(p_151989_, p_151990_, ItemDispatcherBE::serverTick);
 	}
 }

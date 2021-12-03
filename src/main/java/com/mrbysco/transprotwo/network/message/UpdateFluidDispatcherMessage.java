@@ -1,31 +1,31 @@
 package com.mrbysco.transprotwo.network.message;
 
-import com.mrbysco.transprotwo.tile.FluidDispatcherTile;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import com.mrbysco.transprotwo.tile.FluidDispatcherBE;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent.Context;
 
 import java.util.function.Supplier;
 
 public class UpdateFluidDispatcherMessage {
-	private final CompoundNBT compound;
+	private final CompoundTag compound;
 	public BlockPos tilePos;
 
-	public UpdateFluidDispatcherMessage(CompoundNBT tag, BlockPos tilePos) {
+	public UpdateFluidDispatcherMessage(CompoundTag tag, BlockPos tilePos) {
 		this.compound = tag;
 		this.tilePos = tilePos;
 	}
 
-	public void encode(PacketBuffer buf) {
+	public void encode(FriendlyByteBuf buf) {
 		buf.writeNbt(compound);
 		buf.writeBlockPos(tilePos);
 	}
 
-	public static UpdateFluidDispatcherMessage decode(final PacketBuffer packetBuffer) {
+	public static UpdateFluidDispatcherMessage decode(final FriendlyByteBuf packetBuffer) {
 		return new UpdateFluidDispatcherMessage(packetBuffer.readNbt(), packetBuffer.readBlockPos());
 	}
 
@@ -33,11 +33,10 @@ public class UpdateFluidDispatcherMessage {
 		Context ctx = context.get();
 		ctx.enqueueWork(() -> {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
-				ServerPlayerEntity player = ctx.getSender();
-				World world = player.level;
-				TileEntity tile = world.getBlockEntity(tilePos);
-				if(tile instanceof FluidDispatcherTile) {
-					FluidDispatcherTile dispatcherTile = (FluidDispatcherTile) tile;
+				ServerPlayer player = ctx.getSender();
+				Level world = player.level;
+				BlockEntity tile = world.getBlockEntity(tilePos);
+				if(tile instanceof FluidDispatcherBE dispatcherTile) {
 					if (compound.contains("mode"))
 						dispatcherTile.cycleMode();
 					if(compound.contains("white"))

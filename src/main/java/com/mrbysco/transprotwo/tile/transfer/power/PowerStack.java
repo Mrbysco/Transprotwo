@@ -1,6 +1,6 @@
 package com.mrbysco.transprotwo.tile.transfer.power;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 public class PowerStack {
 	public static final PowerStack EMPTY = new PowerStack(0);
@@ -14,7 +14,7 @@ public class PowerStack {
 		updateEmpty();
 	}
 
-	public static PowerStack read(CompoundNBT nbt) {
+	public static PowerStack read(CompoundTag nbt) {
 		if (nbt == null) {
 			return EMPTY;
 		}
@@ -24,7 +24,7 @@ public class PowerStack {
 		return stack;
 	}
 
-	public CompoundNBT write(CompoundNBT nbt) {
+	public CompoundTag write(CompoundTag nbt) {
 		nbt.putInt("Amount", amount);
 		return nbt;
 	}

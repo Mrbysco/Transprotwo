@@ -1,9 +1,9 @@
 package com.mrbysco.transprotwo.util;
 
-import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.core.Vec3i;
 
 public class DistanceHelper {
-	public static double getDistance(Vector3i from, Vector3i to) {
+	public static double getDistance(Vec3i from, Vec3i to) {
 		double d0 = (double)(from.getX() - to.getX());
 		double d1 = (double)(from.getY() - to.getY());
 		double d2 = (double)(from.getZ() - to.getZ());

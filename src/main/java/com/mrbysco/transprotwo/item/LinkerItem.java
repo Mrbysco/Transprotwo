@@ -1,23 +1,23 @@
 package com.mrbysco.transprotwo.item;
 
 import com.mrbysco.transprotwo.config.TransprotConfig;
-import com.mrbysco.transprotwo.tile.AbstractDispatcherTile;
-import com.mrbysco.transprotwo.tile.FluidDispatcherTile;
-import com.mrbysco.transprotwo.tile.ItemDispatcherTile;
-import com.mrbysco.transprotwo.tile.PowerDispatcherTile;
+import com.mrbysco.transprotwo.tile.AbstractDispatcherBE;
+import com.mrbysco.transprotwo.tile.FluidDispatcherBE;
+import com.mrbysco.transprotwo.tile.ItemDispatcherBE;
+import com.mrbysco.transprotwo.tile.PowerDispatcherBE;
 import com.mrbysco.transprotwo.util.DistanceHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -30,78 +30,75 @@ public class LinkerItem extends Item {
 	}
 
 	@Override
-	public ActionResultType useOn(ItemUseContext context) {
-		World worldIn = context.getLevel();
+	public InteractionResult useOn(UseOnContext context) {
+		Level worldIn = context.getLevel();
 		if (worldIn.isClientSide)
-			return ActionResultType.PASS;
+			return InteractionResult.PASS;
 
 		BlockPos pos = context.getClickedPos();
-		PlayerEntity player = context.getPlayer();
+		Player player = context.getPlayer();
 		ItemStack stack = context.getItemInHand();
 		if (player.isShiftKeyDown()) {
-			if (worldIn.getBlockEntity(pos) instanceof AbstractDispatcherTile) {
-				CompoundNBT stackTag = stack.hasTag() ? stack.getTag() : new CompoundNBT();
+			if (worldIn.getBlockEntity(pos) instanceof AbstractDispatcherBE) {
+				CompoundTag stackTag = stack.hasTag() ? stack.getTag() : new CompoundTag();
 				stackTag.putLong("pos", pos.asLong());
 				stackTag.putString("dimension", worldIn.dimension().location().toString());
 				stack.setTag(stackTag);
-				player.displayClientMessage(new StringTextComponent("Bound to Dispatcher."), true);
-				return ActionResultType.SUCCESS;
+				player.displayClientMessage(new TextComponent("Bound to Dispatcher."), true);
+				return InteractionResult.SUCCESS;
 			} else if (stack.hasTag() && stack.getTag().contains("pos")) {
-				CompoundNBT stackTag = stack.getTag();
+				CompoundTag stackTag = stack.getTag();
 				BlockPos tPos = BlockPos.of(stackTag.getLong("pos"));
 				ResourceLocation location = ResourceLocation.tryParse(stackTag.getString("dimension"));
-				TileEntity tileEntity = worldIn.getBlockEntity(pos);
+				BlockEntity tileEntity = worldIn.getBlockEntity(pos);
 				if(tileEntity != null) {
 					if(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
-						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof ItemDispatcherTile) {
-							ItemDispatcherTile tile = (ItemDispatcherTile) worldIn.getBlockEntity(tPos);
+						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof ItemDispatcherBE tile) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = tile.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(new StringTextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
+									player.displayClientMessage(new TextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
 									tile.refreshClient();
 								} else {
-									player.displayClientMessage(new StringTextComponent("Inventory is already connected."), true);
+									player.displayClientMessage(new TextComponent("Inventory is already connected."), true);
 								}
 							} else
-								player.displayClientMessage(new StringTextComponent("Too far away."), true);
-							return ActionResultType.SUCCESS;
+								player.displayClientMessage(new TextComponent("Too far away."), true);
+							return InteractionResult.SUCCESS;
 						}
 					} else if(tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
-						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof FluidDispatcherTile) {
-							FluidDispatcherTile tile = (FluidDispatcherTile) worldIn.getBlockEntity(tPos);
+						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof FluidDispatcherBE tile) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = tile.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(new StringTextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
+									player.displayClientMessage(new TextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
 									tile.refreshClient();
 								} else {
-									player.displayClientMessage(new StringTextComponent("Tank is already connected."), true);
+									player.displayClientMessage(new TextComponent("Tank is already connected."), true);
 								}
 							} else
-								player.displayClientMessage(new StringTextComponent("Too far away."), true);
-							return ActionResultType.SUCCESS;
+								player.displayClientMessage(new TextComponent("Too far away."), true);
+							return InteractionResult.SUCCESS;
 						}
 					} else if(tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof PowerDispatcherTile) {
-							PowerDispatcherTile tile = (PowerDispatcherTile) worldIn.getBlockEntity(tPos);
+						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof PowerDispatcherBE tile) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = tile.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(new StringTextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
+									player.displayClientMessage(new TextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
 									tile.refreshClient();
 								} else {
-									player.displayClientMessage(new StringTextComponent("Tank is already connected."), true);
+									player.displayClientMessage(new TextComponent("Tank is already connected."), true);
 								}
 							} else
-								player.displayClientMessage(new StringTextComponent("Too far away."), true);
-							return ActionResultType.SUCCESS;
+								player.displayClientMessage(new TextComponent("Too far away."), true);
+							return InteractionResult.SUCCESS;
 						}
 					}
 				}

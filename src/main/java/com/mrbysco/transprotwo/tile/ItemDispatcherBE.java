@@ -12,21 +12,22 @@ import com.mrbysco.transprotwo.tile.transfer.ItemTransfer;
 import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.InventoryUtil;
 import com.mrbysco.transprotwo.util.StackHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DirectionalBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -37,7 +38,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class ItemDispatcherTile extends AbstractDispatcherTile {
+public class ItemDispatcherBE extends AbstractDispatcherBE {
 	private boolean tag = false;
 	private boolean durability = true;
 	private boolean nbt = false;
@@ -49,18 +50,18 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 
 	private int stockNum = 0;
 
-	public ItemDispatcherTile() {
-		super(TransprotwoRegistry.DISPATCHER_TILE.get());
+	public ItemDispatcherBE(BlockPos pos, BlockState state) {
+		super(TransprotwoRegistry.DISPATCHER_BLOCK_ENTITY.get(), pos, state);
 	}
 
 	@Override
-	public ITextComponent getDisplayName() {
-		return new TranslationTextComponent(Transprotwo.MOD_ID + ".container.dispatcher");
+	public Component getDisplayName() {
+		return new TranslatableComponent(Transprotwo.MOD_ID + ".container.dispatcher");
 	}
 
 	@Nullable
 	@Override
-	public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity playerEntity) {
+	public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player playerEntity) {
 		return new DispatcherContainer(id, playerInv, this);
 	}
 
@@ -90,8 +91,8 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 	}
 
 	@Override
-	public void load(BlockState state, CompoundNBT compound) {
-		ListNBT transferList = compound.getList("transfers", 10);
+	public void load(CompoundTag compound) {
+		ListTag transferList = compound.getList("transfers", 10);
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
 			this.transfers.add(ItemTransfer.loadFromNBT(transferList.getCompound(i)));
@@ -104,11 +105,11 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 		white = compound.getBoolean("white");
 		mod = compound.getBoolean("mod");
 		stockNum = compound.getInt("stock");
-		super.load(state, compound);
+		super.load(compound);
 	}
 
 	@Override
-	public CompoundNBT save(CompoundNBT compound) {
+	public CompoundTag save(CompoundTag compound) {
 		compound.put("filter", filterHandler.serializeNBT());
 
 		compound.putBoolean("tag", tag);
@@ -123,7 +124,7 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 	void moveItems() {
 		for (AbstractTransfer tr : getTransfers()) {
 			if (!tr.blocked && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
-				tr.prev = new Vector3d(tr.current.x, tr.current.y, tr.current.z);
+				tr.prev = new Vec3(tr.current.x, tr.current.y, tr.current.z);
 				tr.current = tr.current.add(tr.getVec().scale(getSpeed() / tr.getVec().length()));
 			}
 		}
@@ -145,24 +146,18 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 			if (lis.isEmpty())
 				return false;
 			switch (mode) {
-				case FF:
-					lis.sort((o1, o2) -> {
-						double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
-						double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
-						return Double.compare(dis1, dis2);
-					});
-					break;
-				case NF:
-					lis.sort((o1, o2) -> {
-						double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
-						double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
-						return Double.compare(dis2, dis1);
-					});
-					break;
-				case RA:
-					Collections.shuffle(lis);
-					break;
-				case RR:
+				case FF -> lis.sort((o1, o2) -> {
+					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
+					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
+					return Double.compare(dis1, dis2);
+				});
+				case NF -> lis.sort((o1, o2) -> {
+					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
+					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
+					return Double.compare(dis2, dis1);
+				});
+				case RA -> Collections.shuffle(lis);
+				case RR -> {
 					if (lastInsertIndex + 1 >= lis.size())
 						lastInsertIndex = 0;
 					else
@@ -172,9 +167,9 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 						k.add(lis.get((lastInsertIndex + i) % lis.size()));
 					}
 					lis = Lists.newArrayList(k);
-					break;
-				default:
-					break;
+				}
+				default -> {
+				}
 			}
 			for (Pair<BlockPos, Direction> pair : lis)
 				for (int i = 0; i < inv.getSlots(); i++) {
@@ -220,8 +215,8 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 						if (!wayFree(tr.dis, tr.rec.getLeft()))
 							continue;
 						if (true) {
-							Vector3d vec = tr.getVec().normalize().scale(0.015);
-							CompoundNBT nbt = new CompoundNBT();
+							Vec3 vec = tr.getVec().normalize().scale(0.015);
+							CompoundTag nbt = new CompoundTag();
 							nbt.putLong("pos", worldPosition.asLong());
 							nbt.putDouble("x", vec.x);
 							nbt.putDouble("y", vec.y);
@@ -240,17 +235,18 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 	}
 
 	@Override
-	public void summonParticles(CompoundNBT nbt) {
+	public void summonParticles(CompoundTag nbt) {
 		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getBlockPos(), 32, this.getLevel().dimension());
 	}
 
-	@Override
-	public void tick() {
-		moveItems();
-		if (level.isClientSide)
-			return;
+	public static void clientTick(Level level, BlockPos pos, BlockState state, ItemDispatcherBE dispatcherTile) {
+		dispatcherTile.moveItems();
+	}
+
+	public static void serverTick(Level level, BlockPos pos, BlockState state, ItemDispatcherBE dispatcherTile) {
+		dispatcherTile.moveItems();
 		boolean needSync = false;
-		Iterator<Pair<BlockPos, Direction>> ite = targets.iterator();
+		Iterator<Pair<BlockPos, Direction>> ite = dispatcherTile.targets.iterator();
 		while (ite.hasNext()) {
 			Pair<BlockPos, Direction> pa = ite.next();
 			if (!InventoryUtil.hasItemHandler(level, pa.getLeft(), pa.getRight())) {
@@ -258,13 +254,13 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 				needSync = true;
 			}
 		}
-		Iterator<AbstractTransfer> it = transfers.iterator();
+		Iterator<AbstractTransfer> it = dispatcherTile.transfers.iterator();
 		while (it.hasNext()) {
 			AbstractTransfer t = it.next();
-			if(t instanceof ItemTransfer) {
-				ItemTransfer tr = (ItemTransfer)t;
-				BlockPos currentPos = new BlockPos(getBlockPos().getX() + tr.current.x, getBlockPos().getY() + tr.current.y, getBlockPos().getZ() + tr.current.z);
-				if (tr.rec == null || !InventoryUtil.hasItemHandler(level, tr.rec.getLeft(), tr.rec.getRight()) || (!currentPos.equals(worldPosition) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !throughBlocks())) {
+			if(t instanceof ItemTransfer tr) {
+				BlockPos currentPos = new BlockPos(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
+				if (tr.rec == null || !InventoryUtil.hasItemHandler(level, tr.rec.getLeft(), tr.rec.getRight()) ||
+						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !dispatcherTile.throughBlocks())) {
 					Block.popResource(level, currentPos, tr.stack);
 					it.remove();
 					needSync = true;
@@ -275,7 +271,7 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 					ItemStack rest = InventoryUtil.insert(level.getBlockEntity(tr.rec.getLeft()), tr.stack, tr.rec.getRight());
 					if (!rest.isEmpty()) {
 						tr.stack = rest;
-						for (AbstractTransfer at : transfers) {
+						for (AbstractTransfer at : dispatcherTile.transfers) {
 							if (at.rec.equals(tr.rec)) {
 								if (!at.blocked)
 									needSync = true;
@@ -283,23 +279,23 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 							}
 						}
 					} else {
-						for (AbstractTransfer at : transfers) {
+						for (AbstractTransfer at : dispatcherTile.transfers) {
 							if (at.rec.equals(tr.rec))
 								at.blocked = false;
 						}
 						it.remove();
 						needSync = true;
 					}
-					TileEntity tile = level.getBlockEntity(tr.rec.getLeft());
+					BlockEntity tile = level.getBlockEntity(tr.rec.getLeft());
 					if(tile != null) {
 						tile.setChanged();
 					}
 				}
 			}
 		}
-		boolean started = startTransfer();
+		boolean started = dispatcherTile.startTransfer();
 		if (needSync || started)
-			refreshClient();
+			dispatcherTile.refreshClient();
 	}
 
 	public ItemStackHandler getFilter() {
@@ -375,7 +371,7 @@ public class ItemDispatcherTile extends AbstractDispatcherTile {
 
 
 	@Override
-	protected void invalidateCaps() {
+	public void invalidateCaps() {
 		super.invalidateCaps();
 		filterCap.invalidate();
 	}

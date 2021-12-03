@@ -1,9 +1,9 @@
 package com.mrbysco.transprotwo.network.message;
 
 import com.mrbysco.transprotwo.client.ClientHelper;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent.Context;
 
 import java.util.function.Supplier;
 
@@ -14,11 +14,11 @@ public class ChangeColorMessage {
 		this.tilePos = tilePos;
 	}
 
-	public void encode(PacketBuffer buf) {
+	public void encode(FriendlyByteBuf buf) {
 		buf.writeBlockPos(tilePos);
 	}
 
-	public static ChangeColorMessage decode(final PacketBuffer packetBuffer) {
+	public static ChangeColorMessage decode(final FriendlyByteBuf packetBuffer) {
 		return new ChangeColorMessage(packetBuffer.readBlockPos());
 	}
 

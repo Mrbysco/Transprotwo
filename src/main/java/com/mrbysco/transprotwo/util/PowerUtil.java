@@ -1,26 +1,26 @@
 package com.mrbysco.transprotwo.util;
 
 import com.mrbysco.transprotwo.tile.transfer.power.PowerStack;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.Container;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
 public class PowerUtil {
-	public static boolean hasEnergyStorage(TileEntity tile, Direction side) {
+	public static boolean hasEnergyStorage(BlockEntity tile, Direction side) {
 		if (tile == null)
 			return false;
-		return tile.getCapability(CapabilityEnergy.ENERGY, side).isPresent() || tile instanceof IInventory;
+		return tile.getCapability(CapabilityEnergy.ENERGY, side).isPresent() || tile instanceof Container;
 	}
 
-	public static boolean hasEnergyStorage(IBlockReader world, BlockPos pos, Direction side) {
+	public static boolean hasEnergyStorage(BlockGetter world, BlockPos pos, Direction side) {
 		return hasEnergyStorage(world.getBlockEntity(pos), side);
 	}
 
-	public static IEnergyStorage getEnergyStorage(TileEntity tile, Direction side) {
+	public static IEnergyStorage getEnergyStorage(BlockEntity tile, Direction side) {
 		if (tile == null)
 			return null;
 		if (tile.getCapability(CapabilityEnergy.ENERGY, side).isPresent())
@@ -28,7 +28,7 @@ public class PowerUtil {
 		return null;
 	}
 
-	public static PowerStack insert(TileEntity destTile, PowerStack powerStack, Direction side) {
+	public static PowerStack insert(BlockEntity destTile, PowerStack powerStack, Direction side) {
 		if (destTile == null)
 			return powerStack;
 		IEnergyStorage destHandler = getEnergyStorage(destTile, side);

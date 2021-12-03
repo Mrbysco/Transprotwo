@@ -6,13 +6,13 @@ import com.mrbysco.transprotwo.network.message.TransferParticleMessage;
 import com.mrbysco.transprotwo.network.message.UpdateDispatcherMessage;
 import com.mrbysco.transprotwo.network.message.UpdateFluidDispatcherMessage;
 import com.mrbysco.transprotwo.network.message.UpdatePowerDispatcherMessage;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 
 public class PacketHandler {
 	private static final String PROTOCOL_VERSION = "1";
@@ -33,7 +33,7 @@ public class PacketHandler {
 		CHANNEL.registerMessage(id++, TransferParticleMessage.class, TransferParticleMessage::encode, TransferParticleMessage::decode, TransferParticleMessage::handle);
 	}
 
-	public static void sendToNearbyPlayers(Object message, BlockPos pos, double radius, RegistryKey<World> dim) {
+	public static void sendToNearbyPlayers(Object message, BlockPos pos, double radius, ResourceKey<Level> dim) {
 		CHANNEL.send(PacketDistributor.NEAR.with(PacketDistributor.TargetPoint.p(pos.getX(), pos.getY(), pos.getZ(), radius, dim)), message);
 	}
 }

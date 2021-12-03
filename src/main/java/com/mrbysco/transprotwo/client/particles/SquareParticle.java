@@ -1,16 +1,16 @@
 package com.mrbysco.transprotwo.client.particles;
 
 import com.mrbysco.transprotwo.client.particles.factory.ParticleRenderTypes;
-import net.minecraft.client.particle.IAnimatedSprite;
-import net.minecraft.client.particle.IParticleRenderType;
-import net.minecraft.client.particle.SpriteTexturedParticle;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 
 import java.util.Random;
 
-public class SquareParticle extends SpriteTexturedParticle {
+public class SquareParticle extends TextureSheetParticle {
 
-	protected SquareParticle(ClientWorld world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, float r, float g, float b, IAnimatedSprite sprite) {
+	protected SquareParticle(ClientLevel world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, float r, float g, float b, SpriteSet sprite) {
 		super(world, x, y, z, 0, 0, 0);
 		float colorR = r;
 		float colorG = g;
@@ -53,7 +53,7 @@ public class SquareParticle extends SpriteTexturedParticle {
 	}
 
 	@Override
-	public IParticleRenderType getRenderType() {
+	public ParticleRenderType getRenderType() {
 		return ParticleRenderTypes.SQUARE_RENDER;
 	}
 }

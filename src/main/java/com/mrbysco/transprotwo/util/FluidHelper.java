@@ -1,28 +1,28 @@
 package com.mrbysco.transprotwo.util;
 
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.Container;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class FluidHelper {
-	public static boolean hasFluidHandler(TileEntity tile, Direction side) {
+	public static boolean hasFluidHandler(BlockEntity tile, Direction side) {
 		if (tile == null)
 			return false;
-		return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).isPresent() || tile instanceof IInventory;
+		return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).isPresent() || tile instanceof Container;
 	}
 
-	public static boolean hasFluidHandler(IBlockReader world, BlockPos pos, Direction side) {
+	public static boolean hasFluidHandler(BlockGetter world, BlockPos pos, Direction side) {
 		return hasFluidHandler(world.getBlockEntity(pos), side);
 	}
 
-	public static IFluidHandler getFluidHandler(TileEntity tile, Direction side) {
+	public static IFluidHandler getFluidHandler(BlockEntity tile, Direction side) {
 		if (tile == null)
 			return null;
 		if (tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).isPresent())
@@ -30,7 +30,7 @@ public class FluidHelper {
 		return null;
 	}
 
-	public static FluidStack insert(TileEntity destTile, FluidStack fluidStack, Direction side) {
+	public static FluidStack insert(BlockEntity destTile, FluidStack fluidStack, Direction side) {
 		if (destTile == null)
 			return fluidStack;
 		IFluidHandler destHandler = getFluidHandler(destTile, side);

@@ -1,7 +1,7 @@
 package com.mrbysco.transprotwo.item;
 
 import com.mrbysco.transprotwo.util.Boost;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public class UpgradeItem extends Item {
 	private int upgrade;

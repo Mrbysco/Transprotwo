@@ -4,20 +4,20 @@ import com.google.common.collect.Sets;
 import com.mrbysco.transprotwo.item.UpgradeItem;
 import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.util.Boost;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.util.Set;
 
-public abstract class AbstractDispatcherTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public abstract class AbstractDispatcherBE extends BlockEntity implements MenuProvider {
 	protected Set<Pair<BlockPos, Direction>> targets = Sets.newHashSet();
 	protected Set<AbstractTransfer> transfers = Sets.newHashSet();
 	protected Mode mode = Mode.NF;
@@ -47,8 +47,8 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 	};
 	protected LazyOptional<IItemHandler> upgradeCap = LazyOptional.of(() -> upgradeHandler);
 
-	public AbstractDispatcherTile(TileEntityType<? extends AbstractDispatcherTile> tileEntityTypeIn) {
-		super(tileEntityTypeIn);
+	public AbstractDispatcherBE(BlockEntityType<? extends AbstractDispatcherBE> tileEntityTypeIn, BlockPos pos, BlockState state) {
+		super(tileEntityTypeIn, pos, state);
 	}
 
 	public enum Mode {
@@ -79,11 +79,11 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 	}
 
 	@Override
-	public void load(BlockState state, CompoundNBT compound) {
-		ListNBT targetList = compound.getList("targets", 10);
+	public void load(CompoundTag compound) {
+		ListTag targetList = compound.getList("targets", 10);
 		this.targets = Sets.newHashSet();
 		for (int i = 0; i < targetList.size(); i++) {
-			CompoundNBT nbt = targetList.getCompound(i);
+			CompoundTag nbt = targetList.getCompound(i);
 			this.targets.add(new ImmutablePair<BlockPos, Direction>(BlockPos.of(nbt.getLong("pos")), Direction.values()[nbt.getInt("face")]));
 		}
 
@@ -95,22 +95,22 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 		this.upgradeHandler.deserializeNBT(compound.getCompound("upgrade"));
 		this.lastInsertIndex = compound.getInt("index");
 
-		super.load(state, compound);
+		super.load(compound);
 	}
 
 	@Override
-	public CompoundNBT save(CompoundNBT compound) {
-		ListNBT transferList = new ListNBT();
+	public CompoundTag save(CompoundTag compound) {
+		ListTag transferList = new ListTag();
 		for (AbstractTransfer transfer : transfers) {
-			CompoundNBT n = new CompoundNBT();
+			CompoundTag n = new CompoundTag();
 			transfer.writeToNBT(n);
 			transferList.add(n);
 		}
 		compound.put("transfers", transferList);
 
-		ListNBT targetList = new ListNBT();
+		ListTag targetList = new ListTag();
 		for (Pair<BlockPos, Direction> target : this.targets) {
-			CompoundNBT tag = new CompoundNBT();
+			CompoundTag tag = new CompoundTag();
 			tag.putLong("pos", target.getLeft().asLong());
 			tag.putLong("face", target.getRight().ordinal());
 			targetList.add(tag);
@@ -128,9 +128,9 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 	public boolean wayFree(BlockPos start, BlockPos end) {
 		if (throughBlocks())
 			return true;
-		Vector3d p1 = new Vector3d(start.getX(), start.getY(), start.getZ()).add(.5, .5, .5);
-		Vector3d p2 = new Vector3d(end.getX(), end.getY(), end.getZ()).add(.5, .5, .5);
-		Vector3d d = new Vector3d(end.getX() - start.getX(), end.getY() - start.getY(), end.getZ() - start.getZ());
+		Vec3 p1 = new Vec3(start.getX(), start.getY(), start.getZ()).add(.5, .5, .5);
+		Vec3 p2 = new Vec3(end.getX(), end.getY(), end.getZ()).add(.5, .5, .5);
+		Vec3 d = new Vec3(end.getX() - start.getX(), end.getY() - start.getY(), end.getZ() - start.getZ());
 		d = d.normalize().scale(0.25);
 		Set<BlockPos> set = Sets.newHashSet();
 		while (p1.distanceTo(p2) > 0.5) {
@@ -171,7 +171,7 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 		return false;
 	}
 
-	public void summonParticles(CompoundNBT nbt) {
+	public void summonParticles(CompoundTag nbt) {
 
 	}
 
@@ -204,35 +204,35 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 	}
 
 	@Override
-	public SUpdateTileEntityPacket getUpdatePacket() {
-		return new SUpdateTileEntityPacket(this.worldPosition, 0, getUpdateTag());
+	public ClientboundBlockEntityDataPacket getUpdatePacket() {
+		return new ClientboundBlockEntityDataPacket(this.worldPosition, 0, getUpdateTag());
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
-		this.load(getBlockState(), packet.getTag());
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+		this.load(packet.getTag());
 	}
 
 	@Override
-	public CompoundNBT getUpdateTag() {
-		CompoundNBT nbt = new CompoundNBT();
+	public CompoundTag getUpdateTag() {
+		CompoundTag nbt = new CompoundTag();
 		this.save(nbt);
 		return nbt;
 	}
 
 	@Override
-	public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-		this.load(state, tag);
+	public void handleUpdateTag(CompoundTag tag) {
+		this.load(tag);
 	}
 
 	@Override
-	public CompoundNBT getTileData() {
-		CompoundNBT nbt = new CompoundNBT();
+	public CompoundTag getTileData() {
+		CompoundTag nbt = new CompoundTag();
 		this.save(nbt);
 		return nbt;
 	}
 
-	public boolean isUsableByPlayer(PlayerEntity player) {
+	public boolean isUsableByPlayer(Player player) {
 		if (this.level.getBlockEntity(this.worldPosition) != this) {
 			return false;
 		} else {
@@ -251,8 +251,14 @@ public abstract class AbstractDispatcherTile extends TileEntity implements ITick
 	}
 
 	@Override
-	protected void invalidateCaps() {
+	public void invalidateCaps() {
 		super.invalidateCaps();
 		upgradeCap.invalidate();
+	}
+
+	@Override
+	public AABB getRenderBoundingBox() {
+		// our render bounding box should always be the full block in case we're covered
+		return new AABB(this.worldPosition).inflate(16);
 	}
 }

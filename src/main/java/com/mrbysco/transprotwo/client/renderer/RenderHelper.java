@@ -1,70 +1,74 @@
 package com.mrbysco.transprotwo.client.renderer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.awt.Color;
 
 public class RenderHelper {
 
-	public static void renderFluid(MatrixStack matrixStack, IRenderTypeBuffer.Impl typeBuffer, FluidStack fluid) {
+	public static void renderFluid(PoseStack poseStack, MultiBufferSource bufferSource, FluidStack fluid) {
 		if(fluid != null && !fluid.isEmpty()) {
-			matrixStack.pushPose();
+			poseStack.pushPose();
 			float scale = 0.25f;
-			matrixStack.scale(scale, scale, scale);
+			poseStack.scale(scale, scale, scale);
 
-			matrixStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
-			matrixStack.mulPose(Vector3f.YP.rotationDegrees(90F));
-			matrixStack.mulPose(Vector3f.ZP.rotationDegrees(270F));
+			poseStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
+			poseStack.mulPose(Vector3f.YP.rotationDegrees(90F));
+			poseStack.mulPose(Vector3f.ZP.rotationDegrees(270F));
 
 			RenderType type = TransprotwoRenderTypes.getLiquid();
-			IVertexBuilder buffer = typeBuffer.getBuffer(type);
-			Matrix4f matrix = matrixStack.last().pose();
+			VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
+			Matrix4f pose = poseStack.last().pose();
 
 			Color color = new Color(fluid.getFluid().getAttributes().getColor(fluid));
 
-			drawQuad(matrix, buffer, color);
+			drawQuad(pose, vertexConsumer, color);
 
-			typeBuffer.endBatch(type);
+			if (bufferSource instanceof MultiBufferSource.BufferSource bufferSource1) {
+				bufferSource1.endBatch(type);
+			}
 
-			matrixStack.popPose();
+			poseStack.popPose();
 		}
 	}
 
-	public static void renderPower(MatrixStack matrixStack, IRenderTypeBuffer.Impl typeBuffer, Color color) {
-		matrixStack.pushPose();
+	public static void renderPower(PoseStack poseStack, MultiBufferSource bufferSource, Color color) {
+		poseStack.pushPose();
 		float scale = 0.1F;
-		matrixStack.scale(scale, scale, scale);
+		poseStack.scale(scale, scale, scale);
 
-		matrixStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
-		matrixStack.mulPose(Vector3f.YP.rotationDegrees(90F));
-		matrixStack.mulPose(Vector3f.ZP.rotationDegrees(270F));
+		poseStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
+		poseStack.mulPose(Vector3f.YP.rotationDegrees(90F));
+		poseStack.mulPose(Vector3f.ZP.rotationDegrees(270F));
 
 		RenderType type = TransprotwoRenderTypes.getPower();
-		IVertexBuilder buffer = typeBuffer.getBuffer(type);
-		Matrix4f matrix = matrixStack.last().pose();
+		VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
+		Matrix4f pose = poseStack.last().pose();
 
-		drawQuad(matrix, buffer, color);
+		drawQuad(pose, vertexConsumer, color);
 
-		typeBuffer.endBatch(type);
+		if (bufferSource instanceof MultiBufferSource.BufferSource bufferSource1) {
+			bufferSource1.endBatch(type);
+		}
 
-		matrixStack.popPose();
+		poseStack.popPose();
 	}
 
-	private static void drawQuad(Matrix4f matrix, IVertexBuilder buffer, Color color) {
+	private static void drawQuad(Matrix4f pose, VertexConsumer vertexConsumer, Color color) {
 		float xOffset = -0.75f;
 		float yOffset = -0f;
 		float zOffset = -0.75f;
 
-		buffer.vertex(matrix, 0 + xOffset, yOffset, 1.5f + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(0, 1).endVertex();
-		buffer.vertex(matrix, 1 + xOffset + 0.5f, yOffset, 1.5f + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(1, 1).endVertex();
-		buffer.vertex(matrix, 1 + xOffset + 0.5f, yOffset, 0 + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(1, 0).endVertex();
-		buffer.vertex(matrix, 0 + xOffset, yOffset, 0 + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(0, 0).endVertex();
+		vertexConsumer.vertex(pose, 0 + xOffset, yOffset, 1.5f + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(0, 1).endVertex();
+		vertexConsumer.vertex(pose, 1 + xOffset + 0.5f, yOffset, 1.5f + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(1, 1).endVertex();
+		vertexConsumer.vertex(pose, 1 + xOffset + 0.5f, yOffset, 0 + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(1, 0).endVertex();
+		vertexConsumer.vertex(pose, 0 + xOffset, yOffset, 0 + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(0, 0).endVertex();
 	}
 }

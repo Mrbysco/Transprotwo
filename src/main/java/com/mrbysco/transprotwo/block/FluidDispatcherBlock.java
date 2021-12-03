@@ -1,24 +1,26 @@
 package com.mrbysco.transprotwo.block;
 
-import com.mrbysco.transprotwo.tile.FluidDispatcherTile;
+import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
+import com.mrbysco.transprotwo.tile.FluidDispatcherBE;
 import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.tile.transfer.FluidTransfer;
 import com.mrbysco.transprotwo.util.FluidHelper;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DirectionalBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -29,16 +31,14 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		TileEntity tile = worldIn.getBlockEntity(pos);
-		if (!worldIn.isClientSide && tile instanceof FluidDispatcherTile) {
-			FluidDispatcherTile dispatcherTile = (FluidDispatcherTile) tile;
+	public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+		BlockEntity tile = worldIn.getBlockEntity(pos);
+		if (!worldIn.isClientSide && tile instanceof FluidDispatcherBE dispatcherTile) {
 			IFluidHandler originHandler = getOriginHandler(state, worldIn, pos);
 			if (!dispatcherTile.getUpgrade().getStackInSlot(0).isEmpty())
 				popResource(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer abstractTransfer : dispatcherTile.getTransfers()) {
-				if(abstractTransfer instanceof FluidTransfer) {
-					FluidTransfer transfer = (FluidTransfer) abstractTransfer;
+				if(abstractTransfer instanceof FluidTransfer transfer) {
 					originHandler.fill(transfer.fluidStack, FluidAction.EXECUTE);
 				}
 			}
@@ -46,7 +46,7 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 		super.onRemove(state, worldIn, pos, newState, isMoving);
 	}
 
-	public IFluidHandler getOriginHandler(BlockState state, World world, BlockPos pos) {
+	public IFluidHandler getOriginHandler(BlockState state, Level world, BlockPos pos) {
 		Direction face = state.getValue(DirectionalBlock.FACING);
 		if (!world.isAreaLoaded(pos.relative(face), 1) && world.getBlockEntity(pos.relative(face)) == null)
 			return null;
@@ -54,22 +54,27 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-		TileEntity tile = worldIn.getBlockEntity(pos);
-		if(tile instanceof FluidDispatcherTile && !worldIn.isClientSide && !player.isShiftKeyDown()) {
-			NetworkHooks.openGui((ServerPlayerEntity) player, (FluidDispatcherTile) tile, pos);
+	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+		BlockEntity tile = worldIn.getBlockEntity(pos);
+		if(tile instanceof FluidDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
+			NetworkHooks.openGui((ServerPlayer) player, (FluidDispatcherBE) tile, pos);
 		}
 		return super.use(state, worldIn, pos, player, handIn, hit);
 	}
 
+	@Nullable
 	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return true;
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new FluidDispatcherBE(pos, state);
 	}
 
 	@Nullable
-	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return new FluidDispatcherTile();
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+		return createDispatcherTicker(level, type, TransprotwoRegistry.FLUID_DISPATCHER_BLOCK_ENTITY.get());
+	}
+
+	@Nullable
+	protected static <T extends BlockEntity> BlockEntityTicker<T> createDispatcherTicker(Level level, BlockEntityType<T> p_151989_, BlockEntityType<? extends FluidDispatcherBE> p_151990_) {
+		return level.isClientSide ? createTickerHelper(p_151989_, p_151990_, FluidDispatcherBE::clientTick) : createTickerHelper(p_151989_, p_151990_, FluidDispatcherBE::serverTick);
 	}
 }

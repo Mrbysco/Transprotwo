@@ -1,8 +1,8 @@
 package com.mrbysco.transprotwo.tile.transfer;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fluids.FluidStack;
 
 public class FluidTransfer extends AbstractTransfer {
@@ -17,20 +17,20 @@ public class FluidTransfer extends AbstractTransfer {
 		this.fluidStack = stack;
 	}
 
-	public void readFromNBT(CompoundNBT compound) {
-		CompoundNBT tag = compound.getCompound("fluidstack");
+	public void readFromNBT(CompoundTag compound) {
+		CompoundTag tag = compound.getCompound("fluidstack");
 		fluidStack = FluidStack.loadFluidStackFromNBT(tag);
 		super.readFromNBT(compound);
 	}
 
-	public CompoundNBT writeToNBT(CompoundNBT compound) {
-		CompoundNBT tag = new CompoundNBT();
+	public CompoundTag writeToNBT(CompoundTag compound) {
+		CompoundTag tag = new CompoundTag();
 		fluidStack.writeToNBT(tag);
 		compound.put("fluidstack", tag);
 		return super.writeToNBT(compound);
 	}
 
-	public static FluidTransfer loadFromNBT(CompoundNBT nbt) {
+	public static FluidTransfer loadFromNBT(CompoundTag nbt) {
 		FluidTransfer transfer = new FluidTransfer();
 		transfer.readFromNBT(nbt);
 		return transfer;

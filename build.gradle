@@ -16,7 +16,7 @@ version = "${version}"
 group = "com.mrbysco.transprotwo"
 archivesBaseName = "Transprotwo-${mc_version}"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
+java.toolchain.languageVersion = JavaLanguageVersion.of(16) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
@@ -97,6 +97,9 @@ repositories {
     maven {
         name = "Curse Maven"
         url = 'https://www.cursemaven.com'
+        content {
+            includeGroup "curse.maven"
+        }
     }
 }
 
@@ -106,7 +109,7 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 
-    implementation fg.deobf("curse.maven:cyclic-239286:3525767")
+    runtimeOnly fg.deobf("curse.maven:cyclic-239286:3542462")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

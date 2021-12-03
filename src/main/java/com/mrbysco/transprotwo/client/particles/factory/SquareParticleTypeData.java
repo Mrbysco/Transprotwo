@@ -5,11 +5,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mrbysco.transprotwo.client.particles.TransprotwoParticles;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleType;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class SquareParticleTypeData implements IParticleData {
+public class SquareParticleTypeData implements ParticleOptions {
 	private ParticleType<SquareParticleTypeData> type;
 	public static final Codec<SquareParticleTypeData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 					Codec.FLOAT.fieldOf("r").forGetter(d -> d.color.getRed()),
@@ -18,7 +18,7 @@ public class SquareParticleTypeData implements IParticleData {
 			.apply(instance, SquareParticleTypeData::new));
 	public ParticleColor color;
 	@SuppressWarnings("deprecation")
-	static final IParticleData.IDeserializer<SquareParticleTypeData> DESERIALIZER = new IParticleData.IDeserializer<SquareParticleTypeData>() {
+	static final ParticleOptions.Deserializer<SquareParticleTypeData> DESERIALIZER = new ParticleOptions.Deserializer<SquareParticleTypeData>() {
 
 		@Override
 		public SquareParticleTypeData fromCommand(ParticleType<SquareParticleTypeData> type, StringReader reader) throws CommandSyntaxException {
@@ -27,7 +27,7 @@ public class SquareParticleTypeData implements IParticleData {
 		}
 
 		@Override
-		public SquareParticleTypeData fromNetwork(ParticleType<SquareParticleTypeData> type, PacketBuffer buffer) {
+		public SquareParticleTypeData fromNetwork(ParticleType<SquareParticleTypeData> type, FriendlyByteBuf buffer) {
 			return new SquareParticleTypeData(type, ParticleColor.deserialize(buffer.readUtf()));
 		}
 	};
@@ -47,7 +47,7 @@ public class SquareParticleTypeData implements IParticleData {
 	}
 
 	@Override
-	public void writeToNetwork(PacketBuffer buffer) {}
+	public void writeToNetwork(FriendlyByteBuf buffer) {}
 
 	@Override
 	public String writeToString() {

@@ -1,9 +1,9 @@
 package com.mrbysco.transprotwo.tile.transfer.power;
 
 import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 
 public class PowerTransfer extends AbstractTransfer {
 	public PowerStack powerStack;
@@ -17,20 +17,20 @@ public class PowerTransfer extends AbstractTransfer {
 		this.powerStack = stack;
 	}
 
-	public void readFromNBT(CompoundNBT compound) {
-		CompoundNBT tag = compound.getCompound("power");
+	public void readFromNBT(CompoundTag compound) {
+		CompoundTag tag = compound.getCompound("power");
 		powerStack = PowerStack.read(tag);
 		super.readFromNBT(compound);
 	}
 
-	public CompoundNBT writeToNBT(CompoundNBT compound) {
-		CompoundNBT tag = new CompoundNBT();
+	public CompoundTag writeToNBT(CompoundTag compound) {
+		CompoundTag tag = new CompoundTag();
 		powerStack.write(tag);
 		compound.put("power", tag);
 		return super.writeToNBT(compound);
 	}
 
-	public static PowerTransfer loadFromNBT(CompoundNBT nbt) {
+	public static PowerTransfer loadFromNBT(CompoundTag nbt) {
 		PowerTransfer transfer = new PowerTransfer();
 		transfer.readFromNBT(nbt);
 		return transfer;

@@ -1,9 +1,9 @@
 package com.mrbysco.transprotwo.tile.transfer;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemTransfer extends AbstractTransfer {
 	public ItemStack stack;
@@ -17,20 +17,20 @@ public class ItemTransfer extends AbstractTransfer {
 		this.stack = stack;
 	}
 
-	public void readFromNBT(CompoundNBT compound) {
-		CompoundNBT tag = compound.getCompound("stack");
+	public void readFromNBT(CompoundTag compound) {
+		CompoundTag tag = compound.getCompound("stack");
 		stack = ItemStack.of(tag);
 		super.readFromNBT(compound);
 	}
 
-	public CompoundNBT writeToNBT(CompoundNBT compound) {
-		CompoundNBT tag = new CompoundNBT();
+	public CompoundTag writeToNBT(CompoundTag compound) {
+		CompoundTag tag = new CompoundTag();
 		stack.save(tag);
 		compound.put("stack", tag);
 		return super.writeToNBT(compound);
 	}
 
-	public static ItemTransfer loadFromNBT(CompoundNBT nbt) {
+	public static ItemTransfer loadFromNBT(CompoundTag nbt) {
 		ItemTransfer transfer = new ItemTransfer();
 		transfer.readFromNBT(nbt);
 		return transfer;
