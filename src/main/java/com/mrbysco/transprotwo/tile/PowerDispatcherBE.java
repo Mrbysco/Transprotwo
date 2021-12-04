@@ -75,14 +75,13 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag compound) {
+	public void saveAdditional(CompoundTag compound) {
+		super.saveAdditional(compound);
 		compound.putInt("line1", this.line1);
 		compound.putInt("line2", this.line2);
 		compound.putInt("line3", this.line3);
 		compound.putInt("line4", this.line4);
 		compound.putInt("line5", this.line5);
-
-		return super.save(compound);
 	}
 
 	void moveItems() {

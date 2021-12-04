@@ -113,12 +113,12 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag compound) {
+	public void saveAdditional(CompoundTag compound) {
+		super.saveAdditional(compound);
 		compound.put("filter", filterHandler.serializeNBT());
 
 		compound.putBoolean("white", white);
 		compound.putBoolean("mod", mod);
-		return super.save(compound);
 	}
 
 	void moveItems() {

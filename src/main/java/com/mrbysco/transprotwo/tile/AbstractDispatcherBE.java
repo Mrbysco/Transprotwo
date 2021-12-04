@@ -100,6 +100,12 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 
 	@Override
 	public CompoundTag save(CompoundTag compound) {
+		saveAdditional(compound);
+		return super.save(compound);
+	}
+
+	@Override
+	public void saveAdditional(CompoundTag compound) {
 		ListTag transferList = new ListTag();
 		for (AbstractTransfer transfer : transfers) {
 			CompoundTag n = new CompoundTag();
@@ -121,8 +127,6 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 		compound.put("targets", targetList);
 		compound.putString("mode", this.mode.toString());
 		compound.putInt("index", this.lastInsertIndex);
-
-		return super.save(compound);
 	}
 
 	public boolean wayFree(BlockPos start, BlockPos end) {
@@ -216,7 +220,7 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 	@Override
 	public CompoundTag getUpdateTag() {
 		CompoundTag nbt = new CompoundTag();
-		this.save(nbt);
+		this.saveAdditional(nbt);
 		return nbt;
 	}
 
@@ -228,7 +232,7 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 	@Override
 	public CompoundTag getTileData() {
 		CompoundTag nbt = new CompoundTag();
-		this.save(nbt);
+		this.saveAdditional(nbt);
 		return nbt;
 	}
 

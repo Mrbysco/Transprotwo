@@ -109,7 +109,8 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag compound) {
+	public void saveAdditional(CompoundTag compound) {
+		super.saveAdditional(compound);
 		compound.put("filter", filterHandler.serializeNBT());
 
 		compound.putBoolean("tag", tag);
@@ -118,7 +119,6 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 		compound.putBoolean("white", white);
 		compound.putBoolean("mod", mod);
 		compound.putInt("stock", stockNum);
-		return super.save(compound);
 	}
 
 	void moveItems() {
