@@ -28,8 +28,8 @@ public class ParticleRenderTypes {
 		}
 
 		@Override
-		public void end(Tesselator tessellator) {
-			tessellator.end();
+		public void end(Tesselator tesselator) {
+			tesselator.end();
 			RenderSystem.enableDepthTest();
 //			RenderSystem.enableAlphaTest();
 			RenderSystem.depthMask(true);
