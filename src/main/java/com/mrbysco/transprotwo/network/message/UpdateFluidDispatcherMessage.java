@@ -1,6 +1,6 @@
 package com.mrbysco.transprotwo.network.message;
 
-import com.mrbysco.transprotwo.tile.FluidDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -13,16 +13,16 @@ import java.util.function.Supplier;
 
 public class UpdateFluidDispatcherMessage {
 	private final CompoundTag compound;
-	public BlockPos tilePos;
+	public BlockPos blockEntityPos;
 
-	public UpdateFluidDispatcherMessage(CompoundTag tag, BlockPos tilePos) {
+	public UpdateFluidDispatcherMessage(CompoundTag tag, BlockPos blockEntityPos) {
 		this.compound = tag;
-		this.tilePos = tilePos;
+		this.blockEntityPos = blockEntityPos;
 	}
 
 	public void encode(FriendlyByteBuf buf) {
 		buf.writeNbt(compound);
-		buf.writeBlockPos(tilePos);
+		buf.writeBlockPos(blockEntityPos);
 	}
 
 	public static UpdateFluidDispatcherMessage decode(final FriendlyByteBuf packetBuffer) {
@@ -35,18 +35,18 @@ public class UpdateFluidDispatcherMessage {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
 				ServerPlayer player = ctx.getSender();
 				Level world = player.level;
-				BlockEntity tile = world.getBlockEntity(tilePos);
-				if(tile instanceof FluidDispatcherBE dispatcherTile) {
+				BlockEntity blockEntity = world.getBlockEntity(blockEntityPos);
+				if(blockEntity instanceof FluidDispatcherBE fluidDispatcher) {
 					if (compound.contains("mode"))
-						dispatcherTile.cycleMode();
+						fluidDispatcher.cycleMode();
 					if(compound.contains("white"))
-						dispatcherTile.toggleWhite();
+						fluidDispatcher.toggleWhite();
 					if(compound.contains("reset"))
-						dispatcherTile.resetOptions();
+						fluidDispatcher.resetOptions();
 					if(compound.contains("mod"))
-						dispatcherTile.toggleMod();
+						fluidDispatcher.toggleMod();
 
-					dispatcherTile.refreshClient();
+					fluidDispatcher.refreshClient();
 				}
 
 				ctx.getSender().containerMenu.slotsChanged(null);

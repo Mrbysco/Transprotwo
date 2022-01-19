@@ -1,4 +1,4 @@
-package com.mrbysco.transprotwo.tile.transfer;
+package com.mrbysco.transprotwo.blockentity.transfer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

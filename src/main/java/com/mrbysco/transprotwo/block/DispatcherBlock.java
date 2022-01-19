@@ -1,10 +1,10 @@
 package com.mrbysco.transprotwo.block;
 
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
-import com.mrbysco.transprotwo.tile.AbstractDispatcherBE;
-import com.mrbysco.transprotwo.tile.ItemDispatcherBE;
-import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
-import com.mrbysco.transprotwo.tile.transfer.ItemTransfer;
+import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.ItemTransfer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
@@ -29,11 +29,11 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 
 	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		BlockEntity tile = level.getBlockEntity(pos);
-		if (!level.isClientSide && tile instanceof ItemDispatcherBE dispatcherTile) {
-			if (!dispatcherTile.getUpgrade().getStackInSlot(0).isEmpty())
-				popResource(level, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
-			for (AbstractTransfer transfer : dispatcherTile.getTransfers()) {
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if (!level.isClientSide && blockEntity instanceof ItemDispatcherBE itemDispatcher) {
+			if (!itemDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
+				popResource(level, pos, itemDispatcher.getUpgrade().getStackInSlot(0));
+			for (AbstractTransfer transfer : itemDispatcher.getTransfers()) {
 				if(transfer instanceof ItemTransfer itemTransfer) {
 					Containers.dropItemStack(level, pos.getX() + transfer.current.x, pos.getY() + transfer.current.y, pos.getZ() + transfer.current.z, itemTransfer.stack);
 				}
@@ -44,9 +44,9 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 
 	@Override
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-		BlockEntity tile = level.getBlockEntity(pos);
-		if(tile instanceof AbstractDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
-			NetworkHooks.openGui((ServerPlayer) player, (AbstractDispatcherBE) tile, pos);
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if(blockEntity instanceof AbstractDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
+			NetworkHooks.openGui((ServerPlayer) player, (AbstractDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, level, pos, player, handIn, hit);
 	}

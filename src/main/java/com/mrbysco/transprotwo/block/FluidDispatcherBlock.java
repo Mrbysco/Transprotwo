@@ -1,9 +1,9 @@
 package com.mrbysco.transprotwo.block;
 
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
-import com.mrbysco.transprotwo.tile.FluidDispatcherBE;
-import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
-import com.mrbysco.transprotwo.tile.transfer.FluidTransfer;
+import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.FluidTransfer;
 import com.mrbysco.transprotwo.util.FluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,12 +32,12 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 
 	@Override
 	public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		BlockEntity tile = worldIn.getBlockEntity(pos);
-		if (!worldIn.isClientSide && tile instanceof FluidDispatcherBE dispatcherTile) {
+		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+		if (!worldIn.isClientSide && blockEntity instanceof FluidDispatcherBE fluidDispatcher) {
 			IFluidHandler originHandler = getOriginHandler(state, worldIn, pos);
-			if (!dispatcherTile.getUpgrade().getStackInSlot(0).isEmpty())
-				popResource(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
-			for (AbstractTransfer abstractTransfer : dispatcherTile.getTransfers()) {
+			if (!fluidDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
+				popResource(worldIn, pos, fluidDispatcher.getUpgrade().getStackInSlot(0));
+			for (AbstractTransfer abstractTransfer : fluidDispatcher.getTransfers()) {
 				if(abstractTransfer instanceof FluidTransfer transfer) {
 					originHandler.fill(transfer.fluidStack, FluidAction.EXECUTE);
 				}
@@ -55,9 +55,9 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 
 	@Override
 	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-		BlockEntity tile = worldIn.getBlockEntity(pos);
-		if(tile instanceof FluidDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
-			NetworkHooks.openGui((ServerPlayer) player, (FluidDispatcherBE) tile, pos);
+		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+		if(blockEntity instanceof FluidDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
+			NetworkHooks.openGui((ServerPlayer) player, (FluidDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, worldIn, pos, player, handIn, hit);
 	}

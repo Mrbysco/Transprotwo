@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import com.mrbysco.transprotwo.client.renderer.TransprotwoRenderTypes;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
-import com.mrbysco.transprotwo.tile.AbstractDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;

@@ -12,28 +12,28 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class FluidHelper {
-	public static boolean hasFluidHandler(BlockEntity tile, Direction side) {
-		if (tile == null)
+	public static boolean hasFluidHandler(BlockEntity blockEntity, Direction side) {
+		if (blockEntity == null)
 			return false;
-		return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).isPresent() || tile instanceof Container;
+		return blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).isPresent() || blockEntity instanceof Container;
 	}
 
 	public static boolean hasFluidHandler(BlockGetter world, BlockPos pos, Direction side) {
 		return hasFluidHandler(world.getBlockEntity(pos), side);
 	}
 
-	public static IFluidHandler getFluidHandler(BlockEntity tile, Direction side) {
-		if (tile == null)
+	public static IFluidHandler getFluidHandler(BlockEntity blockEntity, Direction side) {
+		if (blockEntity == null)
 			return null;
-		if (tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).isPresent())
-			return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).orElse(null);
+		if (blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).isPresent())
+			return blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).orElse(null);
 		return null;
 	}
 
-	public static FluidStack insert(BlockEntity destTile, FluidStack fluidStack, Direction side) {
-		if (destTile == null)
+	public static FluidStack insert(BlockEntity destBlockEntity, FluidStack fluidStack, Direction side) {
+		if (destBlockEntity == null)
 			return fluidStack;
-		IFluidHandler destHandler = getFluidHandler(destTile, side);
+		IFluidHandler destHandler = getFluidHandler(destBlockEntity, side);
 		int fluidAmount = fluidStack.getAmount();
 		Fluid fluid = fluidStack.getFluid();
 		int amountFilled = destHandler.fill(fluidStack, FluidAction.EXECUTE);

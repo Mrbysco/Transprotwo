@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.UpdateFluidDispatcherMessage;
-import com.mrbysco.transprotwo.tile.AbstractDispatcherBE.Mode;
+import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE.Mode;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -40,28 +40,28 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, new TextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mode", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(Mode.getByID(container.mode[0]).getText()), x, y);
 		}));
 		this.addRenderableWidget(this.white = new Button(63 + leftPos, 16 + topPos, 20, 20, TextComponent.EMPTY, (button) -> { //whitelist
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("white", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(container.buttonValues[0] == 1 ? "Whitelist" : "Blacklist"), x, y);
 		}));
 		this.addRenderableWidget(this.mod = new Button(107 + leftPos, 16 + topPos, 20, 20, new TextComponent("MO"), (button) -> { //mod
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mod", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(container.buttonValues[1] == 1 ? "Check Mod ID" : "Ignore Mod ID"), x, y);
 		}));
 		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, new TextComponent("R"), (button) -> { //reset
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("reset", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent("Reset"), x, y);
 		}));
@@ -113,8 +113,8 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 	}
 
 
-	private void updateTile(CompoundTag compound) {
+	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdateFluidDispatcherMessage(compound, this.getMenu().getTile().getBlockPos()));
+		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdateFluidDispatcherMessage(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

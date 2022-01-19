@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.UpdateDispatcherMessage;
-import com.mrbysco.transprotwo.tile.AbstractDispatcherBE.Mode;
+import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE.Mode;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -41,61 +41,61 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, new TextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mode", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(Mode.getByID(container.mode[0]).getText()), x, y);
 		}));
 		this.addRenderableWidget(this.tag = new Button(85 + leftPos, 16 + topPos, 20, 20, TextComponent.EMPTY, (button) -> { //tag
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("tag", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(container.buttonValues[0] == 1 ? "Check Tag" : "Ignore Tag"), x, y);
 		}));
 		this.addRenderableWidget(this.durability = new Button(63 + leftPos, 16 + topPos, 20, 20, new TextComponent("ME"), (button) -> { //durability
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("durability", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(container.buttonValues[1] == 1 ? "Check Durability" : "Ignore Durability"), x, y);
 		}));
 		this.addRenderableWidget(this.nbt = new Button(107 + leftPos, 16 + topPos, 20, 20, new TextComponent("N"), (button) -> { //nbt
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("nbt", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(container.buttonValues[2] == 1 ? "Check NBT" : "Ignore NBT"), x, y);
 		}));
 		this.addRenderableWidget(this.white = new Button(107 + leftPos, 38 + topPos, 20, 20, TextComponent.EMPTY, (button) -> { //whitelist
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("white", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(container.buttonValues[3] == 1 ? "Whitelist" : "Blacklist"), x, y);
 		}));
 		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, new TextComponent("R"), (button) -> { //reset
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("reset", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent("Reset"), x, y);
 		}));
 		this.addRenderableWidget(this.mod = new Button(63 + leftPos, 38 + topPos, 20, 20, new TextComponent("MO"), (button) -> { //mod
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mod", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(container.buttonValues[4] == 1 ? "Check Mod ID" : "Ignore Mod ID"), x, y);
 		}));
 		this.addRenderableWidget(this.minus = new Button(63 + leftPos, 63 + topPos, 14, 20, new TextComponent("-"), (button) -> { //decrease
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("stockDown", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}));
 		this.addRenderableWidget(this.plus = new Button(113 + leftPos, 63 + topPos, 14, 20, new TextComponent("+"), (button) -> { //add
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("stockUp", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}));
 		dirty = true;
 	}
@@ -162,8 +162,8 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 	}
 
 
-	private void updateTile(CompoundTag compound) {
+	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdateDispatcherMessage(compound, this.getMenu().getTile().getBlockPos()));
+		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdateDispatcherMessage(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

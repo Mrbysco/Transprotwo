@@ -1,6 +1,6 @@
 package com.mrbysco.transprotwo.network.message;
 
-import com.mrbysco.transprotwo.tile.ItemDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -13,16 +13,16 @@ import java.util.function.Supplier;
 
 public class UpdateDispatcherMessage {
 	private final CompoundTag compound;
-	public BlockPos tilePos;
+	public BlockPos blockEntityPos;
 
-	public UpdateDispatcherMessage(CompoundTag tag, BlockPos tilePos) {
+	public UpdateDispatcherMessage(CompoundTag tag, BlockPos blockEntityPos) {
 		this.compound = tag;
-		this.tilePos = tilePos;
+		this.blockEntityPos = blockEntityPos;
 	}
 
 	public void encode(FriendlyByteBuf buf) {
 		buf.writeNbt(compound);
-		buf.writeBlockPos(tilePos);
+		buf.writeBlockPos(blockEntityPos);
 	}
 
 	public static UpdateDispatcherMessage decode(final FriendlyByteBuf packetBuffer) {
@@ -35,28 +35,28 @@ public class UpdateDispatcherMessage {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
 				ServerPlayer player = ctx.getSender();
 				Level world = player.level;
-				BlockEntity tile = world.getBlockEntity(tilePos);
-				if(tile instanceof ItemDispatcherBE dispatcherTile) {
+				BlockEntity blockEntity = world.getBlockEntity(blockEntityPos);
+				if(blockEntity instanceof ItemDispatcherBE itemDispatcher) {
 					if (compound.contains("mode"))
-						dispatcherTile.cycleMode();
+						itemDispatcher.cycleMode();
 					if(compound.contains("tag"))
-						dispatcherTile.toggleTag();
+						itemDispatcher.toggleTag();
 					if(compound.contains("durability"))
-						dispatcherTile.toggleDurability();
+						itemDispatcher.toggleDurability();
 					if(compound.contains("nbt"))
-						dispatcherTile.toggleNbt();
+						itemDispatcher.toggleNbt();
 					if(compound.contains("white"))
-						dispatcherTile.toggleWhite();
+						itemDispatcher.toggleWhite();
 					if(compound.contains("reset"))
-						dispatcherTile.resetOptions();
+						itemDispatcher.resetOptions();
 					if(compound.contains("mod"))
-						dispatcherTile.toggleMod();
+						itemDispatcher.toggleMod();
 					if(compound.contains("stockUp"))
-						dispatcherTile.incrementStockNum();
+						itemDispatcher.incrementStockNum();
 					if(compound.contains("stockDown"))
-						dispatcherTile.decreaseStockNum();
+						itemDispatcher.decreaseStockNum();
 
-					dispatcherTile.refreshClient();
+					itemDispatcher.refreshClient();
 				}
 
 				ctx.getSender().containerMenu.slotsChanged(null);

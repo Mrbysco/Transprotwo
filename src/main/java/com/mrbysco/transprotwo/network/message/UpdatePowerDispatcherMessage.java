@@ -1,7 +1,7 @@
 package com.mrbysco.transprotwo.network.message;
 
 import com.mrbysco.transprotwo.network.PacketHandler;
-import com.mrbysco.transprotwo.tile.PowerDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,16 +14,16 @@ import java.util.function.Supplier;
 
 public class UpdatePowerDispatcherMessage {
 	private final CompoundTag compound;
-	public BlockPos tilePos;
+	public BlockPos blockEntityPos;
 
-	public UpdatePowerDispatcherMessage(CompoundTag tag, BlockPos tilePos) {
+	public UpdatePowerDispatcherMessage(CompoundTag tag, BlockPos blockEntityPos) {
 		this.compound = tag;
-		this.tilePos = tilePos;
+		this.blockEntityPos = blockEntityPos;
 	}
 
 	public void encode(FriendlyByteBuf buf) {
 		buf.writeNbt(compound);
-		buf.writeBlockPos(tilePos);
+		buf.writeBlockPos(blockEntityPos);
 	}
 
 	public static UpdatePowerDispatcherMessage decode(final FriendlyByteBuf packetBuffer) {
@@ -36,24 +36,24 @@ public class UpdatePowerDispatcherMessage {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
 				ServerPlayer player = ctx.getSender();
 				Level world = player.level;
-				BlockEntity tile = world.getBlockEntity(tilePos);
-				if(tile instanceof PowerDispatcherBE dispatcherTile) {
+				BlockEntity blockEntity = world.getBlockEntity(blockEntityPos);
+				if(blockEntity instanceof PowerDispatcherBE powerDispatcher) {
 					if (compound.contains("mode"))
-						dispatcherTile.cycleMode();
+						powerDispatcher.cycleMode();
 					if(compound.contains("reset"))
-						dispatcherTile.resetOptions();
+						powerDispatcher.resetOptions();
 					if(compound.contains("color1"))
-						dispatcherTile.setLine1(compound.getInt("color1"));
+						powerDispatcher.setLine1(compound.getInt("color1"));
 					if(compound.contains("color2"))
-						dispatcherTile.setLine2(compound.getInt("color2"));
+						powerDispatcher.setLine2(compound.getInt("color2"));
 					if(compound.contains("color3"))
-						dispatcherTile.setLine3(compound.getInt("color3"));
+						powerDispatcher.setLine3(compound.getInt("color3"));
 					if(compound.contains("color4"))
-						dispatcherTile.setLine4(compound.getInt("color4"));
+						powerDispatcher.setLine4(compound.getInt("color4"));
 					if(compound.contains("color5"))
-						dispatcherTile.setLine5(compound.getInt("color5"));
-					dispatcherTile.refreshClient();
-					PacketHandler.sendToNearbyPlayers(new ChangeColorMessage(tilePos), tilePos, 32, world.dimension());
+						powerDispatcher.setLine5(compound.getInt("color5"));
+					powerDispatcher.refreshClient();
+					PacketHandler.sendToNearbyPlayers(new ChangeColorMessage(blockEntityPos), blockEntityPos, 32, world.dimension());
 				}
 
 				ctx.getSender().containerMenu.slotsChanged(null);

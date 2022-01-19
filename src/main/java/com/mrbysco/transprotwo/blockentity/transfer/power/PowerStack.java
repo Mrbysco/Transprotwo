@@ -1,4 +1,4 @@
-package com.mrbysco.transprotwo.tile.transfer.power;
+package com.mrbysco.transprotwo.blockentity.transfer.power;
 
 import net.minecraft.nbt.CompoundTag;
 

@@ -1,9 +1,9 @@
 package com.mrbysco.transprotwo.block;
 
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
-import com.mrbysco.transprotwo.tile.PowerDispatcherBE;
-import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
-import com.mrbysco.transprotwo.tile.transfer.power.PowerTransfer;
+import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.power.PowerTransfer;
 import com.mrbysco.transprotwo.util.PowerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,12 +34,12 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 
 	@Override
 	public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		BlockEntity tile = worldIn.getBlockEntity(pos);
-		if (!worldIn.isClientSide && tile instanceof PowerDispatcherBE dispatcherTile) {
+		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+		if (!worldIn.isClientSide && blockEntity instanceof PowerDispatcherBE powerDispatcher) {
 			IEnergyStorage originHandler = getOriginHandler(state, worldIn, pos);
-			if (!dispatcherTile.getUpgrade().getStackInSlot(0).isEmpty())
-				popResource(worldIn, pos, dispatcherTile.getUpgrade().getStackInSlot(0));
-			for (AbstractTransfer abstractTransfer : dispatcherTile.getTransfers()) {
+			if (!powerDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
+				popResource(worldIn, pos, powerDispatcher.getUpgrade().getStackInSlot(0));
+			for (AbstractTransfer abstractTransfer : powerDispatcher.getTransfers()) {
 				if(abstractTransfer instanceof PowerTransfer transfer) {
 					originHandler.receiveEnergy(transfer.powerStack.getAmount(), false);
 				}
@@ -57,9 +57,9 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 
 	@Override
 	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-		BlockEntity tile = worldIn.getBlockEntity(pos);
-		if(tile instanceof PowerDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
-			NetworkHooks.openGui((ServerPlayer) player, (PowerDispatcherBE) tile, pos);
+		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+		if(blockEntity instanceof PowerDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
+			NetworkHooks.openGui((ServerPlayer) player, (PowerDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, worldIn, pos, player, handIn, hit);
 	}
@@ -71,14 +71,14 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 			String shyUUID = "7135da42-d327-47bb-bb04-5ba4e212fb32";
 			boolean flag = player.getGameProfile().isComplete() && player.getGameProfile().getId().equals(UUID.fromString(shyUUID));
 			if(flag) {
-				BlockEntity tile = worldIn.getBlockEntity(pos);
-				if(tile instanceof PowerDispatcherBE dispatcherTile) {
-					dispatcherTile.setLine1(0x55CDFC);
-					dispatcherTile.setLine2(0xF7A8B8);
-					dispatcherTile.setLine3(0xFFFFFF);
-					dispatcherTile.setLine4(0xF7A8B8);
-					dispatcherTile.setLine5(0x55CDFC);
-					dispatcherTile.initializeColors();
+				BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+				if(blockEntity instanceof PowerDispatcherBE powerDispatcher) {
+					powerDispatcher.setLine1(0x55CDFC);
+					powerDispatcher.setLine2(0xF7A8B8);
+					powerDispatcher.setLine3(0xFFFFFF);
+					powerDispatcher.setLine4(0xF7A8B8);
+					powerDispatcher.setLine5(0x55CDFC);
+					powerDispatcher.initializeColors();
 				}
 			}
 		}

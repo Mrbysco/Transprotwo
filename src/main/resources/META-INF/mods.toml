@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[38,)"
+loaderVersion="[39,)"
 issueTrackerURL="https://github.com/Mrbysco/Transprotwo/issues"
 license="GNU Lesser General Public License v3.0"
 
@@ -15,6 +15,12 @@ Transport over short distance without cables.
 [[dependencies.transprotwo]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.18,1.19)"
+versionRange="[1.18.1,1.19)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.transprotwo]]
+modId="forge"
+mandatory=true
+versionRange="[39.0.45,)"
 ordering="NONE"
 side="BOTH"

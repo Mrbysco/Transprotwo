@@ -2,7 +2,7 @@ package com.mrbysco.transprotwo.client;
 
 import com.mrbysco.transprotwo.client.particles.SquareParticleData;
 import com.mrbysco.transprotwo.config.TransprotConfig;
-import com.mrbysco.transprotwo.tile.PowerDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -15,9 +15,9 @@ public class ClientHelper {
 	public static void resetColors(BlockPos pos) {
 		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
 		net.minecraft.world.level.Level world = mc.level;
-		BlockEntity tile = world.getBlockEntity(pos);
-		if(tile instanceof PowerDispatcherBE dispatcherTile) {
-			dispatcherTile.initializeColors();
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		if(blockEntity instanceof PowerDispatcherBE powerDispatcher) {
+			powerDispatcher.initializeColors();
 		}
 	}
 

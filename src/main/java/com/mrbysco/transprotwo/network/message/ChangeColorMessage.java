@@ -8,14 +8,14 @@ import net.minecraftforge.network.NetworkEvent.Context;
 import java.util.function.Supplier;
 
 public class ChangeColorMessage {
-	public BlockPos tilePos;
+	public BlockPos blockEntityPos;
 
-	public ChangeColorMessage(BlockPos tilePos) {
-		this.tilePos = tilePos;
+	public ChangeColorMessage(BlockPos blockEntityPos) {
+		this.blockEntityPos = blockEntityPos;
 	}
 
 	public void encode(FriendlyByteBuf buf) {
-		buf.writeBlockPos(tilePos);
+		buf.writeBlockPos(blockEntityPos);
 	}
 
 	public static ChangeColorMessage decode(final FriendlyByteBuf packetBuffer) {
@@ -26,7 +26,7 @@ public class ChangeColorMessage {
 		Context ctx = context.get();
 		ctx.enqueueWork(() -> {
 			if (ctx.getDirection().getReceptionSide().isClient()) {
-				ClientHelper.resetColors(tilePos);
+				ClientHelper.resetColors(blockEntityPos);
 			}
 		});
 		ctx.setPacketHandled(true);

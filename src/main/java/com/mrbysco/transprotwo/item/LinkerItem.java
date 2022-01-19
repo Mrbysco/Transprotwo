@@ -1,10 +1,10 @@
 package com.mrbysco.transprotwo.item;
 
 import com.mrbysco.transprotwo.config.TransprotConfig;
-import com.mrbysco.transprotwo.tile.AbstractDispatcherBE;
-import com.mrbysco.transprotwo.tile.FluidDispatcherBE;
-import com.mrbysco.transprotwo.tile.ItemDispatcherBE;
-import com.mrbysco.transprotwo.tile.PowerDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import com.mrbysco.transprotwo.util.DistanceHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -50,17 +50,17 @@ public class LinkerItem extends Item {
 				CompoundTag stackTag = stack.getTag();
 				BlockPos tPos = BlockPos.of(stackTag.getLong("pos"));
 				ResourceLocation location = ResourceLocation.tryParse(stackTag.getString("dimension"));
-				BlockEntity tileEntity = worldIn.getBlockEntity(pos);
-				if(tileEntity != null) {
-					if(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
-						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof ItemDispatcherBE tile) {
+				BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+				if(blockEntity != null) {
+					if(blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
+						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof ItemDispatcherBE itemDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
-								boolean done = tile.getTargets().add(pair);
+								boolean done = itemDispatcher.getTargets().add(pair);
 								if (done) {
 									player.displayClientMessage(new TextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
-									tile.refreshClient();
+									itemDispatcher.refreshClient();
 								} else {
 									player.displayClientMessage(new TextComponent("Inventory is already connected."), true);
 								}
@@ -68,15 +68,15 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(new TextComponent("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if(tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
-						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof FluidDispatcherBE tile) {
+					} else if(blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
+						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof FluidDispatcherBE fluidDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
-								boolean done = tile.getTargets().add(pair);
+								boolean done = fluidDispatcher.getTargets().add(pair);
 								if (done) {
 									player.displayClientMessage(new TextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
-									tile.refreshClient();
+									fluidDispatcher.refreshClient();
 								} else {
 									player.displayClientMessage(new TextComponent("Tank is already connected."), true);
 								}
@@ -84,15 +84,15 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(new TextComponent("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if(tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof PowerDispatcherBE tile) {
+					} else if(blockEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof PowerDispatcherBE powerDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
-								boolean done = tile.getTargets().add(pair);
+								boolean done = powerDispatcher.getTargets().add(pair);
 								if (done) {
 									player.displayClientMessage(new TextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
-									tile.refreshClient();
+									powerDispatcher.refreshClient();
 								} else {
 									player.displayClientMessage(new TextComponent("Tank is already connected."), true);
 								}

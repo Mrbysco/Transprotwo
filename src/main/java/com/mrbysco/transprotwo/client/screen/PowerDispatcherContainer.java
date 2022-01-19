@@ -2,7 +2,7 @@ package com.mrbysco.transprotwo.client.screen;
 
 import com.mrbysco.transprotwo.client.screen.slots.UpgradeSlot;
 import com.mrbysco.transprotwo.registry.TransprotwoContainers;
-import com.mrbysco.transprotwo.tile.PowerDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,35 +16,35 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.Objects;
 
 public class PowerDispatcherContainer extends AbstractContainerMenu {
-	private PowerDispatcherBE tile;
+	private PowerDispatcherBE blockEntity;
 	private Player player;
 
 	public final int[] mode = new int[1];
 	public final int[] lines = new int[5];
 
 	public PowerDispatcherContainer(final int windowId, final Inventory playerInventory, final FriendlyByteBuf data) {
-		this(windowId, playerInventory, getTileEntity(playerInventory, data));
+		this(windowId, playerInventory, getBlockEntity(playerInventory, data));
 	}
 
-	private static PowerDispatcherBE getTileEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
+	private static PowerDispatcherBE getBlockEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null!");
 		Objects.requireNonNull(data, "data cannot be null!");
-		final BlockEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
+		final BlockEntity blockEntityAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
 
-		if (tileAtPos instanceof PowerDispatcherBE) {
-			return (PowerDispatcherBE) tileAtPos;
+		if (blockEntityAtPos instanceof PowerDispatcherBE) {
+			return (PowerDispatcherBE) blockEntityAtPos;
 		}
 
-		throw new IllegalStateException("Tile entity is not correct! " + tileAtPos);
+		throw new IllegalStateException("Block entity is not correct! " + blockEntityAtPos);
 	}
 
-	public PowerDispatcherContainer(int id, Inventory playerInventoryIn, PowerDispatcherBE tile) {
+	public PowerDispatcherContainer(int id, Inventory playerInventoryIn, PowerDispatcherBE powerDispatcher) {
 		super(TransprotwoContainers.POWER_DISPATCHER.get(), id);
-		this.tile = tile;
+		this.blockEntity = powerDispatcher;
 		this.player = playerInventoryIn.player;
 
 		//Upgrade slot
-		this.addSlot(new UpgradeSlot(tile.getUpgrade(), 0, 152, 20));
+		this.addSlot(new UpgradeSlot(powerDispatcher.getUpgrade(), 0, 152, 20));
 
 		//player inventory here
 		int xPos = 8;
@@ -63,25 +63,25 @@ public class PowerDispatcherContainer extends AbstractContainerMenu {
 	}
 
 	public void trackValues() {
-		this.mode[0] = tile.getMode().getId();
+		this.mode[0] = blockEntity.getMode().getId();
 		this.addDataSlot(DataSlot.shared(this.mode, 0));
 
 
-		this.lines[0] = tile.getLine1();
+		this.lines[0] = blockEntity.getLine1();
 		this.addDataSlot(DataSlot.shared(this.lines, 0));
-		this.lines[1] = tile.getLine2();
+		this.lines[1] = blockEntity.getLine2();
 		this.addDataSlot(DataSlot.shared(this.lines, 1));
-		this.lines[2] = tile.getLine3();
+		this.lines[2] = blockEntity.getLine3();
 		this.addDataSlot(DataSlot.shared(this.lines, 2));
-		this.lines[3] = tile.getLine4();
+		this.lines[3] = blockEntity.getLine4();
 		this.addDataSlot(DataSlot.shared(this.lines, 3));
-		this.lines[4] = tile.getLine5();
+		this.lines[4] = blockEntity.getLine5();
 		this.addDataSlot(DataSlot.shared(this.lines, 4));
 	}
 
 	@Override
 	public boolean stillValid(Player playerIn) {
-		return this.tile.isUsableByPlayer(playerIn);
+		return this.blockEntity.isUsableByPlayer(playerIn);
 	}
 
 	@Override
@@ -118,8 +118,8 @@ public class PowerDispatcherContainer extends AbstractContainerMenu {
 		return itemstack;
 	}
 
-	public PowerDispatcherBE getTile() {
-		return tile;
+	public PowerDispatcherBE getBlockEntity() {
+		return blockEntity;
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class PowerDispatcherContainer extends AbstractContainerMenu {
 		if(inventoryIn != null) {
 			super.slotsChanged(inventoryIn);
 		} else {
-			this.mode[0] = tile.getMode().getId();
+			this.mode[0] = blockEntity.getMode().getId();
 			//TODO BLAH BLAH LINES
 		}
 	}

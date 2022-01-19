@@ -1,4 +1,4 @@
-package com.mrbysco.transprotwo.tile;
+package com.mrbysco.transprotwo.blockentity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -7,9 +7,9 @@ import com.mrbysco.transprotwo.client.screen.PowerDispatcherContainer;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.TransferParticleMessage;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
-import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
-import com.mrbysco.transprotwo.tile.transfer.power.PowerStack;
-import com.mrbysco.transprotwo.tile.transfer.power.PowerTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.power.PowerStack;
+import com.mrbysco.transprotwo.blockentity.transfer.power.PowerTransfer;
 import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.PowerUtil;
 import net.minecraft.core.BlockPos;
@@ -181,14 +181,14 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getBlockPos(), 32, this.getLevel().dimension());
 	}
 
-	public static void clientTick(Level level, BlockPos pos, BlockState state, PowerDispatcherBE dispatcherTile) {
-		dispatcherTile.moveItems();
+	public static void clientTick(Level level, BlockPos pos, BlockState state, PowerDispatcherBE powerDispatcher) {
+		powerDispatcher.moveItems();
 	}
 
-	public static void serverTick(Level level, BlockPos pos, BlockState state, PowerDispatcherBE dispatcherTile) {
-		dispatcherTile.moveItems();
+	public static void serverTick(Level level, BlockPos pos, BlockState state, PowerDispatcherBE powerDispatcher) {
+		powerDispatcher.moveItems();
 		boolean needSync = false;
-		Iterator<Pair<BlockPos, Direction>> ite = dispatcherTile.targets.iterator();
+		Iterator<Pair<BlockPos, Direction>> ite = powerDispatcher.targets.iterator();
 		while (ite.hasNext()) {
 			Pair<BlockPos, Direction> pa = ite.next();
 			if (!PowerUtil.hasEnergyStorage(level, pa.getLeft(), pa.getRight())) {
@@ -197,17 +197,17 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 			}
 		}
 
-		IEnergyStorage originHandler = dispatcherTile.getOriginHandler();
+		IEnergyStorage originHandler = powerDispatcher.getOriginHandler();
 		if (originHandler == null)
 			return;
 
-		Iterator<AbstractTransfer> it = dispatcherTile.transfers.iterator();
+		Iterator<AbstractTransfer> it = powerDispatcher.transfers.iterator();
 		while (it.hasNext()) {
 			AbstractTransfer t = it.next();
 			if(t instanceof PowerTransfer tr) {
 				BlockPos currentPos = new BlockPos(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
 				if (tr.rec == null || !PowerUtil.hasEnergyStorage(level, tr.rec.getLeft(), tr.rec.getRight()) ||
-						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !dispatcherTile.throughBlocks())) {
+						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !powerDispatcher.throughBlocks())) {
 					it.remove();
 					needSync = true;
 					continue;
@@ -217,7 +217,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 					PowerStack rest = PowerUtil.insert(level.getBlockEntity(tr.rec.getLeft()), tr.powerStack, tr.rec.getRight());
 					if (!rest.isEmpty()) {
 						tr.powerStack = rest;
-						for (AbstractTransfer at : dispatcherTile.transfers) {
+						for (AbstractTransfer at : powerDispatcher.transfers) {
 							if (at.rec.equals(tr.rec)) {
 								if (!at.blocked)
 									needSync = true;
@@ -225,23 +225,23 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 							}
 						}
 					} else {
-						for (AbstractTransfer at : dispatcherTile.transfers) {
+						for (AbstractTransfer at : powerDispatcher.transfers) {
 							if (at.rec.equals(tr.rec))
 								at.blocked = false;
 						}
 						it.remove();
 						needSync = true;
 					}
-					BlockEntity tile = level.getBlockEntity(tr.rec.getLeft());
-					if(tile != null) {
-						tile.setChanged();
+					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getLeft());
+					if(blockEntity != null) {
+						blockEntity.setChanged();
 					}
 				}
 			}
 		}
-		boolean started = dispatcherTile.startTransfer();
+		boolean started = powerDispatcher.startTransfer();
 		if (needSync || started)
-			dispatcherTile.refreshClient();
+			powerDispatcher.refreshClient();
 	}
 
 	public IEnergyStorage getOriginHandler() {

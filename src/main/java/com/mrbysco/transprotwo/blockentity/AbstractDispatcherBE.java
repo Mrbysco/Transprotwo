@@ -1,8 +1,8 @@
-package com.mrbysco.transprotwo.tile;
+package com.mrbysco.transprotwo.blockentity;
 
 import com.google.common.collect.Sets;
+import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.item.UpgradeItem;
-import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.util.Boost;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -47,8 +47,8 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 	};
 	protected LazyOptional<IItemHandler> upgradeCap = LazyOptional.of(() -> upgradeHandler);
 
-	public AbstractDispatcherBE(BlockEntityType<? extends AbstractDispatcherBE> tileEntityTypeIn, BlockPos pos, BlockState state) {
-		super(tileEntityTypeIn, pos, state);
+	public AbstractDispatcherBE(BlockEntityType<? extends AbstractDispatcherBE> blockEntityType, BlockPos pos, BlockState state) {
+		super(blockEntityType, pos, state);
 	}
 
 	public enum Mode {
@@ -96,12 +96,6 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 		this.lastInsertIndex = compound.getInt("index");
 
 		super.load(compound);
-	}
-
-	@Override
-	public CompoundTag save(CompoundTag compound) {
-		saveAdditional(compound);
-		return super.save(compound);
 	}
 
 	@Override

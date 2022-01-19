@@ -3,7 +3,7 @@ package com.mrbysco.transprotwo.client.screen;
 import com.mrbysco.transprotwo.client.screen.slots.GhostSlot;
 import com.mrbysco.transprotwo.client.screen.slots.UpgradeSlot;
 import com.mrbysco.transprotwo.registry.TransprotwoContainers;
-import com.mrbysco.transprotwo.tile.ItemDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.Objects;
 
 public class DispatcherContainer extends AbstractContainerMenu {
-	private ItemDispatcherBE tile;
+	private ItemDispatcherBE blockEntity;
 	private Player player;
 
 	public final int[] mode = new int[1];
@@ -25,34 +25,34 @@ public class DispatcherContainer extends AbstractContainerMenu {
 	public final int[] buttonValues = new int[5];
 
 	public DispatcherContainer(final int windowId, final Inventory playerInventory, final FriendlyByteBuf data) {
-		this(windowId, playerInventory, getTileEntity(playerInventory, data));
+		this(windowId, playerInventory, getBlockEntity(playerInventory, data));
 	}
 
-	private static ItemDispatcherBE getTileEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
+	private static ItemDispatcherBE getBlockEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null!");
 		Objects.requireNonNull(data, "data cannot be null!");
-		final BlockEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
+		final BlockEntity blockEntityAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
 
-		if (tileAtPos instanceof ItemDispatcherBE) {
-			return (ItemDispatcherBE) tileAtPos;
+		if (blockEntityAtPos instanceof ItemDispatcherBE itemDispatcher) {
+			return itemDispatcher;
 		}
 
-		throw new IllegalStateException("Tile entity is not correct! " + tileAtPos);
+		throw new IllegalStateException("Block entity is not correct! " + blockEntityAtPos);
 	}
 
-	public DispatcherContainer(int id, Inventory playerInventoryIn, ItemDispatcherBE tile) {
+	public DispatcherContainer(int id, Inventory playerInventoryIn, ItemDispatcherBE itemDispatcher) {
 		super(TransprotwoContainers.DISPATCHER.get(), id);
-		this.tile = tile;
+		this.blockEntity = itemDispatcher;
 		this.player = playerInventoryIn.player;
 
 		//Filter slots
 		for(int i = 0; i < 3; ++i) {
 			for(int j = 0; j < 3; ++j) {
-				this.addSlot(new GhostSlot(tile.getFilter(), j + i * 3, 8 + j * 18, 20 + i * 18));
+				this.addSlot(new GhostSlot(itemDispatcher.getFilter(), j + i * 3, 8 + j * 18, 20 + i * 18));
 			}
 		}
 		//Upgrade slot
-		this.addSlot(new UpgradeSlot(tile.getUpgrade(), 0, 152, 20));
+		this.addSlot(new UpgradeSlot(itemDispatcher.getUpgrade(), 0, 152, 20));
 
 		//player inventory here
 		int xPos = 8;
@@ -71,27 +71,27 @@ public class DispatcherContainer extends AbstractContainerMenu {
 	}
 
 	public void trackValues() {
-		this.stockNum[0] = tile.getStockNum();
+		this.stockNum[0] = blockEntity.getStockNum();
 		this.addDataSlot(DataSlot.shared(this.stockNum, 0));
 
-		this.mode[0] = tile.getMode().getId();
+		this.mode[0] = blockEntity.getMode().getId();
 		this.addDataSlot(DataSlot.shared(this.mode, 0));
 
-		this.buttonValues[0] = tile.isTag() ? 1 : 0;
+		this.buttonValues[0] = blockEntity.isTag() ? 1 : 0;
 		this.addDataSlot(DataSlot.shared(this.buttonValues, 0));
-		this.buttonValues[1] = tile.isDurability() ? 1 : 0;
+		this.buttonValues[1] = blockEntity.isDurability() ? 1 : 0;
 		this.addDataSlot(DataSlot.shared(this.buttonValues, 1));
-		this.buttonValues[2] = tile.isNbt() ? 1 : 0;
+		this.buttonValues[2] = blockEntity.isNbt() ? 1 : 0;
 		this.addDataSlot(DataSlot.shared(this.buttonValues, 2));
-		this.buttonValues[3] = tile.isWhite() ? 1 : 0;
+		this.buttonValues[3] = blockEntity.isWhite() ? 1 : 0;
 		this.addDataSlot(DataSlot.shared(this.buttonValues, 3));
-		this.buttonValues[4] = tile.isMod() ? 1 : 0;
+		this.buttonValues[4] = blockEntity.isMod() ? 1 : 0;
 		this.addDataSlot(DataSlot.shared(this.buttonValues, 4));
 	}
 
 	@Override
 	public boolean stillValid(Player playerIn) {
-		return this.tile.isUsableByPlayer(playerIn);
+		return this.blockEntity.isUsableByPlayer(playerIn);
 	}
 
 	@Override
@@ -128,8 +128,8 @@ public class DispatcherContainer extends AbstractContainerMenu {
 		return itemstack;
 	}
 
-	public ItemDispatcherBE getTile() {
-		return tile;
+	public ItemDispatcherBE getBlockEntity() {
+		return blockEntity;
 	}
 
 	@Override
@@ -142,13 +142,13 @@ public class DispatcherContainer extends AbstractContainerMenu {
 		if(inventoryIn != null) {
 			super.slotsChanged(inventoryIn);
 		} else {
-			this.stockNum[0] = tile.getStockNum();
-			this.mode[0] = tile.getMode().getId();
-			this.buttonValues[0] = tile.isTag() ? 1 : 0;
-			this.buttonValues[1] = tile.isDurability() ? 1 : 0;
-			this.buttonValues[2] = tile.isNbt() ? 1 : 0;
-			this.buttonValues[3] = tile.isWhite() ? 1 : 0;
-			this.buttonValues[4] = tile.isMod() ? 1 : 0;
+			this.stockNum[0] = blockEntity.getStockNum();
+			this.mode[0] = blockEntity.getMode().getId();
+			this.buttonValues[0] = blockEntity.isTag() ? 1 : 0;
+			this.buttonValues[1] = blockEntity.isDurability() ? 1 : 0;
+			this.buttonValues[2] = blockEntity.isNbt() ? 1 : 0;
+			this.buttonValues[3] = blockEntity.isWhite() ? 1 : 0;
+			this.buttonValues[4] = blockEntity.isMod() ? 1 : 0;
 		}
 	}
 }

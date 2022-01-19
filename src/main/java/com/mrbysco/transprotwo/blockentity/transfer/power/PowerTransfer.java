@@ -1,6 +1,6 @@
-package com.mrbysco.transprotwo.tile.transfer.power;
+package com.mrbysco.transprotwo.blockentity.transfer.power;
 
-import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

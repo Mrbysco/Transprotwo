@@ -3,7 +3,7 @@ package com.mrbysco.transprotwo.client.screen;
 import com.mrbysco.transprotwo.client.screen.slots.GhostSlot;
 import com.mrbysco.transprotwo.client.screen.slots.UpgradeSlot;
 import com.mrbysco.transprotwo.registry.TransprotwoContainers;
-import com.mrbysco.transprotwo.tile.FluidDispatcherBE;
+import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,41 +17,41 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.Objects;
 
 public class FluidDispatcherContainer extends AbstractContainerMenu {
-	private FluidDispatcherBE tile;
+	private FluidDispatcherBE blockEntity;
 	private Player player;
 
 	public final int[] mode = new int[1];
 	public final int[] buttonValues = new int[2];
 
 	public FluidDispatcherContainer(final int windowId, final Inventory playerInventory, final FriendlyByteBuf data) {
-		this(windowId, playerInventory, getTileEntity(playerInventory, data));
+		this(windowId, playerInventory, getBlockEntity(playerInventory, data));
 	}
 
-	private static FluidDispatcherBE getTileEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
+	private static FluidDispatcherBE getBlockEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null!");
 		Objects.requireNonNull(data, "data cannot be null!");
-		final BlockEntity tileAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
+		final BlockEntity blockEntityAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
 
-		if (tileAtPos instanceof FluidDispatcherBE) {
-			return (FluidDispatcherBE) tileAtPos;
+		if (blockEntityAtPos instanceof FluidDispatcherBE) {
+			return (FluidDispatcherBE) blockEntityAtPos;
 		}
 
-		throw new IllegalStateException("Tile entity is not correct! " + tileAtPos);
+		throw new IllegalStateException("Block entity is not correct! " + blockEntityAtPos);
 	}
 
-	public FluidDispatcherContainer(int id, Inventory playerInventoryIn, FluidDispatcherBE tile) {
+	public FluidDispatcherContainer(int id, Inventory playerInventoryIn, FluidDispatcherBE fluidDispatcher) {
 		super(TransprotwoContainers.FLUID_DISPATCHER.get(), id);
-		this.tile = tile;
+		this.blockEntity = fluidDispatcher;
 		this.player = playerInventoryIn.player;
 
 		//Filter slots
 		for(int i = 0; i < 3; ++i) {
 			for(int j = 0; j < 3; ++j) {
-				this.addSlot(new GhostSlot(tile.getFilter(), j + i * 3, 8 + j * 18, 20 + i * 18));
+				this.addSlot(new GhostSlot(fluidDispatcher.getFilter(), j + i * 3, 8 + j * 18, 20 + i * 18));
 			}
 		}
 		//Upgrade slot
-		this.addSlot(new UpgradeSlot(tile.getUpgrade(), 0, 152, 20));
+		this.addSlot(new UpgradeSlot(fluidDispatcher.getUpgrade(), 0, 152, 20));
 
 		//player inventory here
 		int xPos = 8;
@@ -70,18 +70,18 @@ public class FluidDispatcherContainer extends AbstractContainerMenu {
 	}
 
 	public void trackValues() {
-		this.mode[0] = tile.getMode().getId();
+		this.mode[0] = blockEntity.getMode().getId();
 		this.addDataSlot(DataSlot.shared(this.mode, 0));
 
-		this.buttonValues[0] = tile.isWhite() ? 1 : 0;
+		this.buttonValues[0] = blockEntity.isWhite() ? 1 : 0;
 		this.addDataSlot(DataSlot.shared(this.buttonValues, 0));
-		this.buttonValues[1] = tile.isMod() ? 1 : 0;
+		this.buttonValues[1] = blockEntity.isMod() ? 1 : 0;
 		this.addDataSlot(DataSlot.shared(this.buttonValues, 1));
 	}
 
 	@Override
 	public boolean stillValid(Player playerIn) {
-		return this.tile.isUsableByPlayer(playerIn);
+		return this.blockEntity.isUsableByPlayer(playerIn);
 	}
 
 	@Override
@@ -118,8 +118,8 @@ public class FluidDispatcherContainer extends AbstractContainerMenu {
 		return itemstack;
 	}
 
-	public FluidDispatcherBE getTile() {
-		return tile;
+	public FluidDispatcherBE getBlockEntity() {
+		return blockEntity;
 	}
 
 	@Override
@@ -132,9 +132,9 @@ public class FluidDispatcherContainer extends AbstractContainerMenu {
 		if(inventoryIn != null) {
 			super.slotsChanged(inventoryIn);
 		} else {
-			this.mode[0] = tile.getMode().getId();
-			this.buttonValues[0] = tile.isWhite() ? 1 : 0;
-			this.buttonValues[1] = tile.isMod() ? 1 : 0;
+			this.mode[0] = blockEntity.getMode().getId();
+			this.buttonValues[0] = blockEntity.isWhite() ? 1 : 0;
+			this.buttonValues[1] = blockEntity.isMod() ? 1 : 0;
 		}
 	}
 }

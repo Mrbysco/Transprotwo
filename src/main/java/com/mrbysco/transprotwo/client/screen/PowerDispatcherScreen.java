@@ -6,7 +6,7 @@ import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.client.screen.widget.HexFieldWidget;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.UpdatePowerDispatcherMessage;
-import com.mrbysco.transprotwo.tile.AbstractDispatcherBE.Mode;
+import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE.Mode;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -41,14 +41,14 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, new TextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mode", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent(Mode.getByID(container.mode[0]).getText()), x, y);
 		}));
 		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, new TextComponent("R"), (button) -> { //reset
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("reset", true);
-			this.updateTile(tag);
+			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
 			renderTooltip(matrix, new TextComponent("Reset"), x, y);
 		}));
@@ -156,11 +156,11 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 				tag.putInt("color" + (i + 1), decimal);
 			}
 		}
-		this.updateTile(tag);
+		this.updateBlockEntity(tag);
 	}
 
-	private void updateTile(CompoundTag compound) {
+	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdatePowerDispatcherMessage(compound, this.getMenu().getTile().getBlockPos()));
+		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdatePowerDispatcherMessage(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

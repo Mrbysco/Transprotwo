@@ -1,6 +1,6 @@
 package com.mrbysco.transprotwo.util;
 
-import com.mrbysco.transprotwo.tile.transfer.power.PowerStack;
+import com.mrbysco.transprotwo.blockentity.transfer.power.PowerStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
@@ -10,28 +10,28 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
 public class PowerUtil {
-	public static boolean hasEnergyStorage(BlockEntity tile, Direction side) {
-		if (tile == null)
+	public static boolean hasEnergyStorage(BlockEntity blockEntity, Direction side) {
+		if (blockEntity == null)
 			return false;
-		return tile.getCapability(CapabilityEnergy.ENERGY, side).isPresent() || tile instanceof Container;
+		return blockEntity.getCapability(CapabilityEnergy.ENERGY, side).isPresent() || blockEntity instanceof Container;
 	}
 
 	public static boolean hasEnergyStorage(BlockGetter world, BlockPos pos, Direction side) {
 		return hasEnergyStorage(world.getBlockEntity(pos), side);
 	}
 
-	public static IEnergyStorage getEnergyStorage(BlockEntity tile, Direction side) {
-		if (tile == null)
+	public static IEnergyStorage getEnergyStorage(BlockEntity blockEntity, Direction side) {
+		if (blockEntity == null)
 			return null;
-		if (tile.getCapability(CapabilityEnergy.ENERGY, side).isPresent())
-			return tile.getCapability(CapabilityEnergy.ENERGY, side).orElse(null);
+		if (blockEntity.getCapability(CapabilityEnergy.ENERGY, side).isPresent())
+			return blockEntity.getCapability(CapabilityEnergy.ENERGY, side).orElse(null);
 		return null;
 	}
 
-	public static PowerStack insert(BlockEntity destTile, PowerStack powerStack, Direction side) {
-		if (destTile == null)
+	public static PowerStack insert(BlockEntity destBlockEntity, PowerStack powerStack, Direction side) {
+		if (destBlockEntity == null)
 			return powerStack;
-		IEnergyStorage destHandler = getEnergyStorage(destTile, side);
+		IEnergyStorage destHandler = getEnergyStorage(destBlockEntity, side);
 		int energyAmount = powerStack.getAmount();
 		int amountFilled = destHandler.receiveEnergy(powerStack.getAmount(), false);
 		if(amountFilled == energyAmount || amountFilled < 0) {

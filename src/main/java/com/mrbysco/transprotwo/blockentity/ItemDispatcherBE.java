@@ -1,16 +1,17 @@
-package com.mrbysco.transprotwo.tile;
+package com.mrbysco.transprotwo.blockentity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mrbysco.transprotwo.Transprotwo;
-import com.mrbysco.transprotwo.client.screen.FluidDispatcherContainer;
+import com.mrbysco.transprotwo.client.screen.DispatcherContainer;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.TransferParticleMessage;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
-import com.mrbysco.transprotwo.tile.transfer.AbstractTransfer;
-import com.mrbysco.transprotwo.tile.transfer.FluidTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.ItemTransfer;
 import com.mrbysco.transprotwo.util.DistanceHelper;
-import com.mrbysco.transprotwo.util.FluidHelper;
+import com.mrbysco.transprotwo.util.InventoryUtil;
+import com.mrbysco.transprotwo.util.StackHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -22,80 +23,71 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class FluidDispatcherBE extends AbstractDispatcherBE {
+public class ItemDispatcherBE extends AbstractDispatcherBE {
+	private boolean tag = false;
+	private boolean durability = true;
+	private boolean nbt = false;
 	private boolean white = false;
 	private boolean mod = false;
 
-	public final ItemStackHandler filterHandler = new ItemStackHandler(9) {
-		@Override
-		public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-			return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent();
-		}
-	};
+	public final ItemStackHandler filterHandler = new ItemStackHandler(9);
 	private LazyOptional<IItemHandler> filterCap = LazyOptional.of(() -> filterHandler);
 
-	public FluidDispatcherBE(BlockPos pos, BlockState state) {
-		super(TransprotwoRegistry.FLUID_DISPATCHER_BLOCK_ENTITY.get(), pos, state);
+	private int stockNum = 0;
+
+	public ItemDispatcherBE(BlockPos pos, BlockState state) {
+		super(TransprotwoRegistry.DISPATCHER_BLOCK_ENTITY.get(), pos, state);
 	}
 
 	@Override
 	public Component getDisplayName() {
-		return new TranslatableComponent(Transprotwo.MOD_ID + ".container.fluid_dispatcher");
+		return new TranslatableComponent(Transprotwo.MOD_ID + ".container.dispatcher");
 	}
 
 	@Nullable
 	@Override
 	public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player playerEntity) {
-		return new FluidDispatcherContainer(id, playerInv, this);
+		return new DispatcherContainer(id, playerInv, this);
 	}
 
-	public boolean canTransfer(FluidStack stack) {
+	public boolean canTransfer(ItemStack stack) {
 		if (stack.isEmpty())
 			return false;
 		for (int i = 0; i < filterHandler.getSlots(); i++) {
 			ItemStack s = filterHandler.getStackInSlot(i);
-			if (!s.isEmpty() && matchesFluidFilter(stack, s))
+			if (!s.isEmpty() && equal(stack, s))
 				return white;
 		}
 		return !white;
 	}
 
-	public boolean matchesFluidFilter(FluidStack fluid, ItemStack filterItem) {
-		IFluidHandlerItem fluidHandlerItem = filterItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
-		if(fluidHandlerItem != null) {
-			for(int i = 0; i < fluidHandlerItem.getTanks(); i++) {
-				FluidStack checkStack = fluidHandlerItem.getFluidInTank(i);
-
-				if (checkStack.isEmpty() || fluid.isEmpty())
-					return false;
-				if (mod && checkStack.getFluid().getRegistryName().getNamespace().equals(fluid.getFluid().getRegistryName().getNamespace()))
-					return true;
-				if(checkStack.isFluidEqual(fluid)) {
-					return true;
-				}
-			}
-		}
-		return false;
+	public boolean equal(ItemStack stack1, ItemStack stack2) {
+		if (stack1.isEmpty() || stack2.isEmpty())
+			return false;
+		if (tag && StackHelper.matchAnyTag(stack1, stack2))
+			return true;
+		if (mod && stack1.getItem().getRegistryName().getNamespace().equals(stack2.getItem().getRegistryName().getNamespace()))
+			return true;
+		if (nbt && !ItemStack.tagMatches(stack1, stack2))
+			return false;
+		if (durability && stack1.getDamageValue() == stack2.getDamageValue())
+			return true;
+		return stack1.getItem() == stack2.getItem();
 	}
 
 	@Override
@@ -103,12 +95,16 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 		ListTag transferList = compound.getList("transfers", 10);
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(FluidTransfer.loadFromNBT(transferList.getCompound(i)));
+			this.transfers.add(ItemTransfer.loadFromNBT(transferList.getCompound(i)));
 
 		this.filterHandler.deserializeNBT(compound.getCompound("filter"));
 
+		tag = compound.getBoolean("tag");
+		durability = compound.getBoolean("durability");
+		nbt = compound.getBoolean("nbt");
 		white = compound.getBoolean("white");
 		mod = compound.getBoolean("mod");
+		stockNum = compound.getInt("stock");
 		super.load(compound);
 	}
 
@@ -117,8 +113,12 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 		super.saveAdditional(compound);
 		compound.put("filter", filterHandler.serializeNBT());
 
+		compound.putBoolean("tag", tag);
+		compound.putBoolean("durability", durability);
+		compound.putBoolean("nbt", nbt);
 		compound.putBoolean("white", white);
 		compound.putBoolean("mod", mod);
+		compound.putInt("stock", stockNum);
 	}
 
 	void moveItems() {
@@ -133,8 +133,11 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	@Override
 	protected boolean startTransfer() {
 		if (level.getGameTime() % getFrequence() == 0 && !level.hasNeighborSignal(worldPosition)) {
-			IFluidHandler originHandler = getOriginHandler();
-			if (originHandler == null)
+			Direction face = level.getBlockState(worldPosition).getValue(DirectionalBlock.FACING);
+			if (!level.isAreaLoaded(worldPosition.relative(face),1))
+				return false;
+			IItemHandler inv = InventoryUtil.getItemHandler(level.getBlockEntity(worldPosition.relative(face)), face.getOpposite());
+			if (inv == null)
 				return false;
 			List<Pair<BlockPos, Direction>> lis = Lists.newArrayList();
 			for (Pair<BlockPos, Direction> pp : targets)
@@ -169,11 +172,11 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 				}
 			}
 			for (Pair<BlockPos, Direction> pair : lis)
-				for (int i = 0; i < originHandler.getTanks(); i++) {
-					if (originHandler.getFluidInTank(i).isEmpty() || !canTransfer(originHandler.getFluidInTank(i)))
+				for (int i = 0; i < inv.getSlots(); i++) {
+					if (inv.getStackInSlot(i).isEmpty() || !canTransfer(inv.getStackInSlot(i)))
 						continue;
-					int max = getStackSize() * 1000;
-					FluidStack send = getExtractStack(originHandler.getFluidInTank(i), max);
+					int max = getStackSize();
+					ItemStack send = inv.extractItem(i, max, true);
 					boolean blocked = false;
 					for (AbstractTransfer t : transfers) {
 						if (t.rec.equals(pair) && t.blocked) {
@@ -183,15 +186,32 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 					}
 					if (blocked)
 						continue;
-
-					IFluidHandler dest = FluidHelper.getFluidHandler(level.getBlockEntity(pair.getLeft()), pair.getRight());
-					int canInsert = FluidHelper.canInsert(dest, send);
-					if (canInsert <= 0)
+					IItemHandler dest = InventoryUtil.getItemHandler(level.getBlockEntity(pair.getLeft()), pair.getRight());
+					int canInsert = InventoryUtil.canInsert(dest, send);
+					int missing = Integer.MAX_VALUE;
+					if (stockNum > 0) {
+						int contains = 0;
+						for (int j = 0; j < dest.getSlots(); j++) {
+							if (!dest.getStackInSlot(j).isEmpty() && equal(dest.getStackInSlot(j), send)) {
+								contains += dest.getStackInSlot(j).getCount();
+							}
+						}
+						for (AbstractTransfer t : transfers) {
+							if(transfers instanceof ItemTransfer) {
+								ItemTransfer it = (ItemTransfer) t;
+								if (t.rec.equals(pair) && equal(it.stack, send)) {
+									contains += it.stack.getCount();
+								}
+							}
+						}
+						missing = stockNum - contains;
+					}
+					if (missing <= 0 || canInsert <= 0)
 						continue;
-
-					FluidStack x = originHandler.drain(send, FluidAction.SIMULATE);
+					canInsert = Math.min(canInsert, missing);
+					ItemStack x = inv.extractItem(i, canInsert, true);
 					if (!x.isEmpty()) {
-						FluidTransfer tr = new FluidTransfer(worldPosition, pair.getLeft(), pair.getRight(), x);
+						ItemTransfer tr = new ItemTransfer(worldPosition, pair.getLeft(), pair.getRight(), x);
 						if (!wayFree(tr.dis, tr.rec.getLeft()))
 							continue;
 						if (true) {
@@ -206,7 +226,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 							this.summonParticles(nbt);
 						}
 						transfers.add(tr);
-						originHandler.drain(send, FluidAction.EXECUTE);
+						inv.extractItem(i, canInsert, false);
 						return true;
 					}
 				}
@@ -219,43 +239,39 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getBlockPos(), 32, this.getLevel().dimension());
 	}
 
-	public static void clientTick(Level level, BlockPos pos, BlockState state, FluidDispatcherBE dispatcherTile) {
-		dispatcherTile.moveItems();
+	public static void clientTick(Level level, BlockPos pos, BlockState state, ItemDispatcherBE itemDispatcher) {
+		itemDispatcher.moveItems();
 	}
 
-	public static void serverTick(Level level, BlockPos pos, BlockState state, FluidDispatcherBE dispatcherTile) {
-		dispatcherTile.moveItems();
+	public static void serverTick(Level level, BlockPos pos, BlockState state, ItemDispatcherBE itemDispatcher) {
+		itemDispatcher.moveItems();
 		boolean needSync = false;
-		Iterator<Pair<BlockPos, Direction>> ite = dispatcherTile.targets.iterator();
+		Iterator<Pair<BlockPos, Direction>> ite = itemDispatcher.targets.iterator();
 		while (ite.hasNext()) {
 			Pair<BlockPos, Direction> pa = ite.next();
-			if (!FluidHelper.hasFluidHandler(level, pa.getLeft(), pa.getRight())) {
+			if (!InventoryUtil.hasItemHandler(level, pa.getLeft(), pa.getRight())) {
 				ite.remove();
 				needSync = true;
 			}
 		}
-
-		IFluidHandler originHandler = dispatcherTile.getOriginHandler();
-		if (originHandler == null)
-			return;
-
-		Iterator<AbstractTransfer> it = dispatcherTile.transfers.iterator();
+		Iterator<AbstractTransfer> it = itemDispatcher.transfers.iterator();
 		while (it.hasNext()) {
 			AbstractTransfer t = it.next();
-			if(t instanceof FluidTransfer tr) {
+			if(t instanceof ItemTransfer tr) {
 				BlockPos currentPos = new BlockPos(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
-				if (tr.rec == null || !FluidHelper.hasFluidHandler(level, tr.rec.getLeft(), tr.rec.getRight()) ||
-						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !dispatcherTile.throughBlocks())) {
+				if (tr.rec == null || !InventoryUtil.hasItemHandler(level, tr.rec.getLeft(), tr.rec.getRight()) ||
+						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !itemDispatcher.throughBlocks())) {
+					Block.popResource(level, currentPos, tr.stack);
 					it.remove();
 					needSync = true;
 					continue;
 				}
 				boolean received = tr.rec.getLeft().equals(currentPos);
 				if (received && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
-					FluidStack rest = FluidHelper.insert(level.getBlockEntity(tr.rec.getLeft()), tr.fluidStack, tr.rec.getRight());
+					ItemStack rest = InventoryUtil.insert(level.getBlockEntity(tr.rec.getLeft()), tr.stack, tr.rec.getRight());
 					if (!rest.isEmpty()) {
-						tr.fluidStack = rest;
-						for (AbstractTransfer at : dispatcherTile.transfers) {
+						tr.stack = rest;
+						for (AbstractTransfer at : itemDispatcher.transfers) {
 							if (at.rec.equals(tr.rec)) {
 								if (!at.blocked)
 									needSync = true;
@@ -263,38 +279,51 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 							}
 						}
 					} else {
-						for (AbstractTransfer at : dispatcherTile.transfers) {
+						for (AbstractTransfer at : itemDispatcher.transfers) {
 							if (at.rec.equals(tr.rec))
 								at.blocked = false;
 						}
 						it.remove();
 						needSync = true;
 					}
-					BlockEntity tile = level.getBlockEntity(tr.rec.getLeft());
-					if(tile != null) {
-						tile.setChanged();
+					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getLeft());
+					if(blockEntity != null) {
+						blockEntity.setChanged();
 					}
 				}
 			}
 		}
-		boolean started = dispatcherTile.startTransfer();
+		boolean started = itemDispatcher.startTransfer();
 		if (needSync || started)
-			dispatcherTile.refreshClient();
-	}
-
-	public IFluidHandler getOriginHandler() {
-		Direction face = level.getBlockState(worldPosition).getValue(DirectionalBlock.FACING);
-		if (!level.isAreaLoaded(worldPosition.relative(face), 1) && level.getBlockEntity(worldPosition.relative(face)) == null)
-			return null;
-		return FluidHelper.getFluidHandler(level.getBlockEntity(worldPosition.relative(face)), face.getOpposite());
-	}
-
-	public FluidStack getExtractStack(FluidStack currentFluid, int max) {
-		return new FluidStack(currentFluid.getFluid(), max);
+			itemDispatcher.refreshClient();
 	}
 
 	public ItemStackHandler getFilter() {
 		return filterHandler;
+	}
+
+	public boolean isTag() {
+		return tag;
+	}
+
+	public void toggleTag() {
+		this.tag = !tag;
+	}
+
+	public boolean isDurability() {
+		return durability;
+	}
+
+	public void toggleDurability() {
+		this.durability = !durability;
+	}
+
+	public boolean isNbt() {
+		return nbt;
+	}
+
+	public void toggleNbt() {
+		this.nbt = !nbt;
 	}
 
 	public boolean isWhite() {
@@ -313,12 +342,33 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 		this.mod = !mod;
 	}
 
+	public int getStockNum() {
+		return stockNum;
+	}
+
+	public void incrementStockNum() {
+		if(stockNum < 64) {
+			this.stockNum++;
+		}
+	}
+
+	public void decreaseStockNum() {
+		if(stockNum > 0) {
+			this.stockNum--;
+		}
+	}
+
 	@Override
 	public void resetOptions() {
 		super.resetOptions();
+		tag = false;
+		durability = true;
+		nbt = false;
 		white = false;
 		mod = false;
+		stockNum = 0;
 	}
+
 
 	@Override
 	public void invalidateCaps() {
