@@ -8,9 +8,11 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
+//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+plugins {
+    id 'maven-publish'
+}
 apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'maven-publish'
 
 version = "${version}"
 group = "com.mrbysco.transprotwo"
@@ -103,7 +105,7 @@ dependencies {
 
     implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 
-    runtimeOnly fg.deobf("curse.maven:cyclic-239286:3594244")
+    runtimeOnly fg.deobf("curse.maven:cyclic-239286:3693306")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -147,4 +149,8 @@ publishing {
             }
         }
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }

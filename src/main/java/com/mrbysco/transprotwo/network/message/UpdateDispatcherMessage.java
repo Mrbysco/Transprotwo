@@ -36,24 +36,24 @@ public class UpdateDispatcherMessage {
 				ServerPlayer player = ctx.getSender();
 				Level world = player.level;
 				BlockEntity blockEntity = world.getBlockEntity(blockEntityPos);
-				if(blockEntity instanceof ItemDispatcherBE itemDispatcher) {
+				if (blockEntity instanceof ItemDispatcherBE itemDispatcher) {
 					if (compound.contains("mode"))
 						itemDispatcher.cycleMode();
-					if(compound.contains("tag"))
+					if (compound.contains("tag"))
 						itemDispatcher.toggleTag();
-					if(compound.contains("durability"))
+					if (compound.contains("durability"))
 						itemDispatcher.toggleDurability();
-					if(compound.contains("nbt"))
+					if (compound.contains("nbt"))
 						itemDispatcher.toggleNbt();
-					if(compound.contains("white"))
+					if (compound.contains("white"))
 						itemDispatcher.toggleWhite();
-					if(compound.contains("reset"))
+					if (compound.contains("reset"))
 						itemDispatcher.resetOptions();
-					if(compound.contains("mod"))
+					if (compound.contains("mod"))
 						itemDispatcher.toggleMod();
-					if(compound.contains("stockUp"))
+					if (compound.contains("stockUp"))
 						itemDispatcher.incrementStockNum();
-					if(compound.contains("stockDown"))
+					if (compound.contains("stockDown"))
 						itemDispatcher.decreaseStockNum();
 
 					itemDispatcher.refreshClient();

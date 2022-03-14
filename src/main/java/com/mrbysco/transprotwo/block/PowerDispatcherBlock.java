@@ -40,7 +40,7 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 			if (!powerDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
 				popResource(worldIn, pos, powerDispatcher.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer abstractTransfer : powerDispatcher.getTransfers()) {
-				if(abstractTransfer instanceof PowerTransfer transfer) {
+				if (abstractTransfer instanceof PowerTransfer transfer) {
 					originHandler.receiveEnergy(transfer.powerStack.getAmount(), false);
 				}
 			}
@@ -58,7 +58,7 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 	@Override
 	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
 		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-		if(blockEntity instanceof PowerDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
+		if (blockEntity instanceof PowerDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
 			NetworkHooks.openGui((ServerPlayer) player, (PowerDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, worldIn, pos, player, handIn, hit);
@@ -66,13 +66,13 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 
 	@Override
 	public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-		if(placer instanceof Player player) {
+		if (placer instanceof Player player) {
 			//Shy wanted to always have it default to the trans colors when she placed it <3
 			String shyUUID = "7135da42-d327-47bb-bb04-5ba4e212fb32";
 			boolean flag = player.getGameProfile().isComplete() && player.getGameProfile().getId().equals(UUID.fromString(shyUUID));
-			if(flag) {
+			if (flag) {
 				BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-				if(blockEntity instanceof PowerDispatcherBE powerDispatcher) {
+				if (blockEntity instanceof PowerDispatcherBE powerDispatcher) {
 					powerDispatcher.setLine1(0x55CDFC);
 					powerDispatcher.setLine2(0xF7A8B8);
 					powerDispatcher.setLine3(0xFFFFFF);

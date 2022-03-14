@@ -27,7 +27,7 @@ public class FluidDispatcherBER extends AbstractDispatcherBER<FluidDispatcherBE>
 		final Minecraft mc = Minecraft.getInstance();
 		final Vec3 projectedView = mc.gameRenderer.getMainCamera().getPosition();
 		for (AbstractTransfer abstractTransfer : dispatcher.getTransfers()) {
-			if(abstractTransfer instanceof FluidTransfer transfer) {
+			if (abstractTransfer instanceof FluidTransfer transfer) {
 
 				poseStack.pushPose();
 				poseStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);

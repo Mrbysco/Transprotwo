@@ -82,15 +82,15 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 
 	public boolean matchesFluidFilter(FluidStack fluid, ItemStack filterItem) {
 		IFluidHandlerItem fluidHandlerItem = filterItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
-		if(fluidHandlerItem != null) {
-			for(int i = 0; i < fluidHandlerItem.getTanks(); i++) {
+		if (fluidHandlerItem != null) {
+			for (int i = 0; i < fluidHandlerItem.getTanks(); i++) {
 				FluidStack checkStack = fluidHandlerItem.getFluidInTank(i);
 
 				if (checkStack.isEmpty() || fluid.isEmpty())
 					return false;
 				if (mod && checkStack.getFluid().getRegistryName().getNamespace().equals(fluid.getFluid().getRegistryName().getNamespace()))
 					return true;
-				if(checkStack.isFluidEqual(fluid)) {
+				if (checkStack.isFluidEqual(fluid)) {
 					return true;
 				}
 			}
@@ -242,7 +242,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 		Iterator<AbstractTransfer> it = fluidDispatcher.transfers.iterator();
 		while (it.hasNext()) {
 			AbstractTransfer t = it.next();
-			if(t instanceof FluidTransfer tr) {
+			if (t instanceof FluidTransfer tr) {
 				BlockPos currentPos = new BlockPos(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
 				if (tr.rec == null || !FluidHelper.hasFluidHandler(level, tr.rec.getLeft(), tr.rec.getRight()) ||
 						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !fluidDispatcher.throughBlocks())) {
@@ -271,7 +271,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 						needSync = true;
 					}
 					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getLeft());
-					if(blockEntity != null) {
+					if (blockEntity != null) {
 						blockEntity.setChanged();
 					}
 				}

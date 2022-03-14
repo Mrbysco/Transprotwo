@@ -64,11 +64,11 @@ public abstract class AbstractDispatcherBlock extends DirectionalBlock implement
 	@Nullable
 	public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
 		BlockEntity blockentity = level.getBlockEntity(pos);
-		return blockentity instanceof MenuProvider ? (MenuProvider)blockentity : null;
+		return blockentity instanceof MenuProvider ? (MenuProvider) blockentity : null;
 	}
 
 	@Nullable
 	protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> p_152133_, BlockEntityType<E> p_152134_, BlockEntityTicker<? super E> p_152135_) {
-		return p_152134_ == p_152133_ ? (BlockEntityTicker<A>)p_152135_ : null;
+		return p_152134_ == p_152133_ ? (BlockEntityTicker<A>) p_152135_ : null;
 	}
 }

@@ -34,7 +34,7 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 			if (!itemDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
 				popResource(level, pos, itemDispatcher.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer transfer : itemDispatcher.getTransfers()) {
-				if(transfer instanceof ItemTransfer itemTransfer) {
+				if (transfer instanceof ItemTransfer itemTransfer) {
 					Containers.dropItemStack(level, pos.getX() + transfer.current.x, pos.getY() + transfer.current.y, pos.getZ() + transfer.current.z, itemTransfer.stack);
 				}
 			}
@@ -45,7 +45,7 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 	@Override
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
 		BlockEntity blockEntity = level.getBlockEntity(pos);
-		if(blockEntity instanceof AbstractDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
+		if (blockEntity instanceof AbstractDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
 			NetworkHooks.openGui((ServerPlayer) player, (AbstractDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, level, pos, player, handIn, hit);

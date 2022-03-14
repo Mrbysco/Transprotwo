@@ -134,7 +134,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 	protected boolean startTransfer() {
 		if (level.getGameTime() % getFrequence() == 0 && !level.hasNeighborSignal(worldPosition)) {
 			Direction face = level.getBlockState(worldPosition).getValue(DirectionalBlock.FACING);
-			if (!level.isAreaLoaded(worldPosition.relative(face),1))
+			if (!level.isAreaLoaded(worldPosition.relative(face), 1))
 				return false;
 			IItemHandler inv = InventoryUtil.getItemHandler(level.getBlockEntity(worldPosition.relative(face)), face.getOpposite());
 			if (inv == null)
@@ -197,7 +197,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 							}
 						}
 						for (AbstractTransfer t : transfers) {
-							if(transfers instanceof ItemTransfer) {
+							if (transfers instanceof ItemTransfer) {
 								ItemTransfer it = (ItemTransfer) t;
 								if (t.rec.equals(pair) && equal(it.stack, send)) {
 									contains += it.stack.getCount();
@@ -257,7 +257,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 		Iterator<AbstractTransfer> it = itemDispatcher.transfers.iterator();
 		while (it.hasNext()) {
 			AbstractTransfer t = it.next();
-			if(t instanceof ItemTransfer tr) {
+			if (t instanceof ItemTransfer tr) {
 				BlockPos currentPos = new BlockPos(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
 				if (tr.rec == null || !InventoryUtil.hasItemHandler(level, tr.rec.getLeft(), tr.rec.getRight()) ||
 						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !itemDispatcher.throughBlocks())) {
@@ -287,7 +287,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 						needSync = true;
 					}
 					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getLeft());
-					if(blockEntity != null) {
+					if (blockEntity != null) {
 						blockEntity.setChanged();
 					}
 				}
@@ -347,13 +347,13 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	public void incrementStockNum() {
-		if(stockNum < 64) {
+		if (stockNum < 64) {
 			this.stockNum++;
 		}
 	}
 
 	public void decreaseStockNum() {
-		if(stockNum > 0) {
+		if (stockNum > 0) {
 			this.stockNum--;
 		}
 	}

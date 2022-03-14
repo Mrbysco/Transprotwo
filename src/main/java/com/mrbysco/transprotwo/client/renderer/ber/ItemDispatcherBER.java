@@ -32,7 +32,7 @@ public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 		final Minecraft mc = Minecraft.getInstance();
 		final BlockPos pos = dispatcher.getBlockPos();
 		for (AbstractTransfer abstractTransfer : dispatcher.getTransfers()) {
-			if(abstractTransfer instanceof ItemTransfer transfer) {
+			if (abstractTransfer instanceof ItemTransfer transfer) {
 				poseStack.pushPose();
 				Vec3 cur = transfer.prev == null ? transfer.current : new Vec3(
 						transfer.prev.x + (transfer.current.x - transfer.prev.x) * partialTicks,

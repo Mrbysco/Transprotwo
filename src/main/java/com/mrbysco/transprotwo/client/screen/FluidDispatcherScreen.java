@@ -100,7 +100,7 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 
 	@Override
 	protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
-		this.font.draw(matrixStack, this.title, (float)this.titleLabelX, (float)this.titleLabelY, 4210752);
+		this.font.draw(matrixStack, this.title, (float) this.titleLabelX, (float) this.titleLabelY, 4210752);
 		this.font.draw(matrixStack, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 4210752);
 
 		FluidDispatcherContainer container = this.getMenu();

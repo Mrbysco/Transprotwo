@@ -36,14 +36,14 @@ public class UpdateFluidDispatcherMessage {
 				ServerPlayer player = ctx.getSender();
 				Level world = player.level;
 				BlockEntity blockEntity = world.getBlockEntity(blockEntityPos);
-				if(blockEntity instanceof FluidDispatcherBE fluidDispatcher) {
+				if (blockEntity instanceof FluidDispatcherBE fluidDispatcher) {
 					if (compound.contains("mode"))
 						fluidDispatcher.cycleMode();
-					if(compound.contains("white"))
+					if (compound.contains("white"))
 						fluidDispatcher.toggleWhite();
-					if(compound.contains("reset"))
+					if (compound.contains("reset"))
 						fluidDispatcher.resetOptions();
-					if(compound.contains("mod"))
+					if (compound.contains("mod"))
 						fluidDispatcher.toggleMod();
 
 					fluidDispatcher.refreshClient();

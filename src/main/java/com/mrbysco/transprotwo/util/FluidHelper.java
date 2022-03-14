@@ -37,7 +37,7 @@ public class FluidHelper {
 		int fluidAmount = fluidStack.getAmount();
 		Fluid fluid = fluidStack.getFluid();
 		int amountFilled = destHandler.fill(fluidStack, FluidAction.EXECUTE);
-		if(amountFilled == fluidAmount) {
+		if (amountFilled == fluidAmount) {
 			return FluidStack.EMPTY;
 		} else {
 			return new FluidStack(fluid, fluidAmount - amountFilled);

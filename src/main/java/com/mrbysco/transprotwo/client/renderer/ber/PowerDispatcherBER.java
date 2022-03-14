@@ -42,7 +42,7 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 		Color[] colors = dispatcher.getColors();
 
 		for (AbstractTransfer abstractTransfer : dispatcher.getTransfers()) {
-			if(abstractTransfer instanceof PowerTransfer transfer) {
+			if (abstractTransfer instanceof PowerTransfer transfer) {
 
 				poseStack.pushPose();
 				poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
@@ -82,8 +82,8 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 			Direction dir = Direction.getNearest(x - x2, y - y2, z - z2);
 			boolean flag = y != y2 && (dir == Direction.UP || dir == Direction.DOWN);
 
-			for(int i = 0; i < 5; i++) {
-				if(flag) {
+			for (int i = 0; i < 5; i++) {
+				if (flag) {
 					vertexBuilder.vertex(pose, x - initialOffset + (i * offset), y, z).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
 					vertexBuilder.vertex(pose, x2 - initialOffset + (i * offset), y2, z2).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
 				} else {

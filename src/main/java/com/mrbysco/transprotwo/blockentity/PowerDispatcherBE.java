@@ -204,7 +204,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 		Iterator<AbstractTransfer> it = powerDispatcher.transfers.iterator();
 		while (it.hasNext()) {
 			AbstractTransfer t = it.next();
-			if(t instanceof PowerTransfer tr) {
+			if (t instanceof PowerTransfer tr) {
 				BlockPos currentPos = new BlockPos(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
 				if (tr.rec == null || !PowerUtil.hasEnergyStorage(level, tr.rec.getLeft(), tr.rec.getRight()) ||
 						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !powerDispatcher.throughBlocks())) {
@@ -233,7 +233,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 						needSync = true;
 					}
 					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getLeft());
-					if(blockEntity != null) {
+					if (blockEntity != null) {
 						blockEntity.setChanged();
 					}
 				}
@@ -252,7 +252,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	public Color[] getColors() {
-		if(colors == null) {
+		if (colors == null) {
 			initializeColors();
 		}
 

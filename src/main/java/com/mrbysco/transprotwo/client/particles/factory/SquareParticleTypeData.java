@@ -47,7 +47,8 @@ public class SquareParticleTypeData implements ParticleOptions {
 	}
 
 	@Override
-	public void writeToNetwork(FriendlyByteBuf buffer) {}
+	public void writeToNetwork(FriendlyByteBuf buffer) {
+	}
 
 	@Override
 	public String writeToString() {

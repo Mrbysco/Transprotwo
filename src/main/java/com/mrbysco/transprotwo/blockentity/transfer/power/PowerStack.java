@@ -37,9 +37,8 @@ public class PowerStack {
 		isEmpty = amount <= 0;
 	}
 
-	public int getAmount()
-	{
-		return isEmpty ? 0 : amount ;
+	public int getAmount() {
+		return isEmpty ? 0 : amount;
 	}
 
 	public String toString() {

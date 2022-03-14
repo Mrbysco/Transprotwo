@@ -99,9 +99,9 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		this.blit(matrixStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
-		for(int i = 0; i < this.colorFields.length; i++) {
+		for (int i = 0; i < this.colorFields.length; i++) {
 			HexFieldWidget field = this.colorFields[i];
-			this.font.draw(matrixStack, "Color" + (i+1) + ":", field.x - (field.getWidth() / 2) - 9, field.y + 2, 4210752);
+			this.font.draw(matrixStack, "Color" + (i + 1) + ":", field.x - (field.getWidth() / 2) - 9, field.y + 2, 4210752);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == 256) {
 			this.fieldHasUpdated();
-			this.minecraft.setScreen((Screen)null);
+			this.minecraft.setScreen((Screen) null);
 			return true;
 		} else {
 			boolean pressed = super.keyPressed(keyCode, scanCode, modifiers);
@@ -121,7 +121,7 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 	@Override
 	public boolean charTyped(char codePoint, int modifiers) {
 		boolean typed = super.charTyped(codePoint, modifiers);
-		if(typed) {
+		if (typed) {
 			this.fieldHasUpdated();
 		}
 		return typed;
@@ -143,15 +143,15 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 
 	@Override
 	protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
-		this.font.draw(matrixStack, this.title, (float)this.titleLabelX, (float)this.titleLabelY, 4210752);
+		this.font.draw(matrixStack, this.title, (float) this.titleLabelX, (float) this.titleLabelY, 4210752);
 		this.font.draw(matrixStack, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 4210752);
 	}
 
 	private void fieldHasUpdated() {
 		CompoundTag tag = new CompoundTag();
-		for(int i = 0; i < this.colorFields.length; i++) {
+		for (int i = 0; i < this.colorFields.length; i++) {
 			String value = this.colorFields[i].getValue();
-			if(!value.isEmpty()) {
+			if (!value.isEmpty()) {
 				int decimal = Integer.parseInt(value, 16);
 				tag.putInt("color" + (i + 1), decimal);
 			}

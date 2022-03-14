@@ -101,14 +101,14 @@ public class ParticleColor {
 			}
 		}
 
-		public static @Nonnull ParticleColor.IntWrapper deserialize(String string) {
+		public static @Nonnull
+		ParticleColor.IntWrapper deserialize(String string) {
 			ParticleColor.IntWrapper color = new ParticleColor.IntWrapper(255, 25, 180);
 			try {
 				String[] arr = string.split(",");
 				color = new ParticleColor.IntWrapper(Integer.parseInt(arr[0].trim()), Integer.parseInt(arr[1].trim()), Integer.parseInt(arr[2].trim()));
 				return color;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return color;

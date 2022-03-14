@@ -16,7 +16,7 @@ public class ClientHelper {
 		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
 		net.minecraft.world.level.Level world = mc.level;
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if(blockEntity instanceof PowerDispatcherBE powerDispatcher) {
+		if (blockEntity instanceof PowerDispatcherBE powerDispatcher) {
 			powerDispatcher.initializeColors();
 		}
 	}

@@ -56,6 +56,7 @@ public class TransprotConfig {
 
 	public static final ForgeConfigSpec clientSpec;
 	public static final Client CLIENT;
+
 	static {
 		final Pair<Client, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Client::new);
 		clientSpec = specPair.getRight();
@@ -78,6 +79,6 @@ public class TransprotConfig {
 
 	@SubscribeEvent
 	public static void onFileChange(final ModConfigEvent.Reloading configEvent) {
-		Transprotwo.LOGGER.debug("Transprot's config just got changed on the file system!");
+		Transprotwo.LOGGER.warn("Transprot's config just got changed on the file system!");
 	}
 }

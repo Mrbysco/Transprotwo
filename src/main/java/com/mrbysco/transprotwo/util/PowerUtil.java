@@ -34,7 +34,7 @@ public class PowerUtil {
 		IEnergyStorage destHandler = getEnergyStorage(destBlockEntity, side);
 		int energyAmount = powerStack.getAmount();
 		int amountFilled = destHandler.receiveEnergy(powerStack.getAmount(), false);
-		if(amountFilled == energyAmount || amountFilled < 0) {
+		if (amountFilled == energyAmount || amountFilled < 0) {
 			return PowerStack.EMPTY;
 		} else {
 			return new PowerStack(energyAmount - amountFilled);

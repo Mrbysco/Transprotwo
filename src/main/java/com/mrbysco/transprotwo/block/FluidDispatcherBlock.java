@@ -38,7 +38,7 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 			if (!fluidDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
 				popResource(worldIn, pos, fluidDispatcher.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer abstractTransfer : fluidDispatcher.getTransfers()) {
-				if(abstractTransfer instanceof FluidTransfer transfer) {
+				if (abstractTransfer instanceof FluidTransfer transfer) {
 					originHandler.fill(transfer.fluidStack, FluidAction.EXECUTE);
 				}
 			}
@@ -56,7 +56,7 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 	@Override
 	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
 		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-		if(blockEntity instanceof FluidDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
+		if (blockEntity instanceof FluidDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
 			NetworkHooks.openGui((ServerPlayer) player, (FluidDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, worldIn, pos, player, handIn, hit);

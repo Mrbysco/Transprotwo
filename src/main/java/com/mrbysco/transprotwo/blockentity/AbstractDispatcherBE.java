@@ -56,6 +56,7 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 
 		private final int id;
 		private final String text;
+
 		Mode(int id, String text) {
 			this.id = id;
 			this.text = text;
@@ -234,7 +235,7 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 		if (this.level.getBlockEntity(this.worldPosition) != this) {
 			return false;
 		} else {
-			return !(player.distanceToSqr((double)this.worldPosition.getX() + 0.5D, (double)this.worldPosition.getY() + 0.5D, (double)this.worldPosition.getZ() + 0.5D) > 64.0D);
+			return !(player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) > 64.0D);
 		}
 	}
 

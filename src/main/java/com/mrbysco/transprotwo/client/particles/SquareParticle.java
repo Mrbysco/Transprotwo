@@ -16,13 +16,13 @@ public class SquareParticle extends TextureSheetParticle {
 		float colorG = g;
 		float colorB = b;
 		if (colorR > 1.0) {
-			colorR = (float)(colorR / 255.0);
+			colorR = (float) (colorR / 255.0);
 		}
 		if (colorG > 1.0) {
-			colorG = (float)(colorG / 255.0);
+			colorG = (float) (colorG / 255.0);
 		}
 		if (colorB > 1.0) {
-			colorB = (float)(colorB / 255.0);
+			colorB = (float) (colorB / 255.0);
 		}
 
 		this.setColor(colorR, colorG, colorB);

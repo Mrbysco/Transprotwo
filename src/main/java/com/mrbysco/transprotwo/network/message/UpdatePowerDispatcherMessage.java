@@ -37,20 +37,20 @@ public class UpdatePowerDispatcherMessage {
 				ServerPlayer player = ctx.getSender();
 				Level world = player.level;
 				BlockEntity blockEntity = world.getBlockEntity(blockEntityPos);
-				if(blockEntity instanceof PowerDispatcherBE powerDispatcher) {
+				if (blockEntity instanceof PowerDispatcherBE powerDispatcher) {
 					if (compound.contains("mode"))
 						powerDispatcher.cycleMode();
-					if(compound.contains("reset"))
+					if (compound.contains("reset"))
 						powerDispatcher.resetOptions();
-					if(compound.contains("color1"))
+					if (compound.contains("color1"))
 						powerDispatcher.setLine1(compound.getInt("color1"));
-					if(compound.contains("color2"))
+					if (compound.contains("color2"))
 						powerDispatcher.setLine2(compound.getInt("color2"));
-					if(compound.contains("color3"))
+					if (compound.contains("color3"))
 						powerDispatcher.setLine3(compound.getInt("color3"));
-					if(compound.contains("color4"))
+					if (compound.contains("color4"))
 						powerDispatcher.setLine4(compound.getInt("color4"));
-					if(compound.contains("color5"))
+					if (compound.contains("color5"))
 						powerDispatcher.setLine5(compound.getInt("color5"));
 					powerDispatcher.refreshClient();
 					PacketHandler.sendToNearbyPlayers(new ChangeColorMessage(blockEntityPos), blockEntityPos, 32, world.dimension());

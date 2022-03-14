@@ -22,7 +22,8 @@ import java.awt.Color;
 
 public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements BlockEntityRenderer<T> {
 
-	public AbstractDispatcherBER(BlockEntityRendererProvider.Context context) {}
+	public AbstractDispatcherBER(BlockEntityRendererProvider.Context context) {
+	}
 
 	@Override
 	public void render(T dispatcher, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
@@ -66,7 +67,7 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 
 	@Override
 	public boolean shouldRender(T dispatcher, Vec3 pos) {
-		return Vec3.atCenterOf(dispatcher.getBlockPos()).multiply(1.0D, 0.0D, 1.0D).closerThan(pos.multiply(1.0D, 0.0D, 1.0D), (double)this.getViewDistance());
+		return Vec3.atCenterOf(dispatcher.getBlockPos()).multiply(1.0D, 0.0D, 1.0D).closerThan(pos.multiply(1.0D, 0.0D, 1.0D), (double) this.getViewDistance());
 	}
 
 	@Override

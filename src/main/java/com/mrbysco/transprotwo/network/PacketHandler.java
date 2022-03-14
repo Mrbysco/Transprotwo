@@ -25,7 +25,7 @@ public class PacketHandler {
 
 	private static int id = 0;
 
-	public static void init(){
+	public static void init() {
 		CHANNEL.registerMessage(id++, UpdateDispatcherMessage.class, UpdateDispatcherMessage::encode, UpdateDispatcherMessage::decode, UpdateDispatcherMessage::handle);
 		CHANNEL.registerMessage(id++, UpdateFluidDispatcherMessage.class, UpdateFluidDispatcherMessage::encode, UpdateFluidDispatcherMessage::decode, UpdateFluidDispatcherMessage::handle);
 		CHANNEL.registerMessage(id++, UpdatePowerDispatcherMessage.class, UpdatePowerDispatcherMessage::encode, UpdatePowerDispatcherMessage::decode, UpdatePowerDispatcherMessage::handle);

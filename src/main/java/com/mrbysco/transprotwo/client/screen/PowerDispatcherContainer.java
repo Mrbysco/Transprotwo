@@ -129,7 +129,7 @@ public class PowerDispatcherContainer extends AbstractContainerMenu {
 
 	@Override
 	public void slotsChanged(Container inventoryIn) {
-		if(inventoryIn != null) {
+		if (inventoryIn != null) {
 			super.slotsChanged(inventoryIn);
 		} else {
 			this.mode[0] = blockEntity.getMode().getId();

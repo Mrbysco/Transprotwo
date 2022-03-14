@@ -46,8 +46,8 @@ public class DispatcherContainer extends AbstractContainerMenu {
 		this.player = playerInventoryIn.player;
 
 		//Filter slots
-		for(int i = 0; i < 3; ++i) {
-			for(int j = 0; j < 3; ++j) {
+		for (int i = 0; i < 3; ++i) {
+			for (int j = 0; j < 3; ++j) {
 				this.addSlot(new GhostSlot(itemDispatcher.getFilter(), j + i * 3, 8 + j * 18, 20 + i * 18));
 			}
 		}
@@ -139,7 +139,7 @@ public class DispatcherContainer extends AbstractContainerMenu {
 
 	@Override
 	public void slotsChanged(Container inventoryIn) {
-		if(inventoryIn != null) {
+		if (inventoryIn != null) {
 			super.slotsChanged(inventoryIn);
 		} else {
 			this.stockNum[0] = blockEntity.getStockNum();

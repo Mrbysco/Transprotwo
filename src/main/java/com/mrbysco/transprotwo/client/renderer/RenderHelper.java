@@ -14,7 +14,7 @@ import java.awt.Color;
 public class RenderHelper {
 
 	public static void renderFluid(PoseStack poseStack, MultiBufferSource bufferSource, FluidStack fluid) {
-		if(fluid != null && !fluid.isEmpty()) {
+		if (fluid != null && !fluid.isEmpty()) {
 			poseStack.pushPose();
 			float scale = 0.25f;
 			poseStack.scale(scale, scale, scale);

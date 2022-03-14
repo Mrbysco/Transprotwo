@@ -51,8 +51,8 @@ public class LinkerItem extends Item {
 				BlockPos tPos = BlockPos.of(stackTag.getLong("pos"));
 				ResourceLocation location = ResourceLocation.tryParse(stackTag.getString("dimension"));
 				BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-				if(blockEntity != null) {
-					if(blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
+				if (blockEntity != null) {
+					if (blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
 						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof ItemDispatcherBE itemDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
@@ -68,7 +68,7 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(new TextComponent("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if(blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
+					} else if (blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
 						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof FluidDispatcherBE fluidDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
@@ -84,7 +84,7 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(new TextComponent("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if(blockEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+					} else if (blockEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
 						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof PowerDispatcherBE powerDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
