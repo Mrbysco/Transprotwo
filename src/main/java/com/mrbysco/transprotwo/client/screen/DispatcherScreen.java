@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -38,61 +37,61 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 		super.init();
 
 		DispatcherContainer container = this.getMenu();
-		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, new TextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
+		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, Component.literal(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mode", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(Mode.getByID(container.mode[0]).getText()), x, y);
+			renderTooltip(matrix, Component.literal(Mode.getByID(container.mode[0]).getText()), x, y);
 		}));
-		this.addRenderableWidget(this.tag = new Button(85 + leftPos, 16 + topPos, 20, 20, TextComponent.EMPTY, (button) -> { //tag
+		this.addRenderableWidget(this.tag = new Button(85 + leftPos, 16 + topPos, 20, 20, Component.empty(), (button) -> { //tag
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("tag", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(container.buttonValues[0] == 1 ? "Check Tag" : "Ignore Tag"), x, y);
+			renderTooltip(matrix, Component.literal(container.buttonValues[0] == 1 ? "Check Tag" : "Ignore Tag"), x, y);
 		}));
-		this.addRenderableWidget(this.durability = new Button(63 + leftPos, 16 + topPos, 20, 20, new TextComponent("ME"), (button) -> { //durability
+		this.addRenderableWidget(this.durability = new Button(63 + leftPos, 16 + topPos, 20, 20, Component.literal("ME"), (button) -> { //durability
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("durability", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(container.buttonValues[1] == 1 ? "Check Durability" : "Ignore Durability"), x, y);
+			renderTooltip(matrix, Component.literal(container.buttonValues[1] == 1 ? "Check Durability" : "Ignore Durability"), x, y);
 		}));
-		this.addRenderableWidget(this.nbt = new Button(107 + leftPos, 16 + topPos, 20, 20, new TextComponent("N"), (button) -> { //nbt
+		this.addRenderableWidget(this.nbt = new Button(107 + leftPos, 16 + topPos, 20, 20, Component.literal("N"), (button) -> { //nbt
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("nbt", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(container.buttonValues[2] == 1 ? "Check NBT" : "Ignore NBT"), x, y);
+			renderTooltip(matrix, Component.literal(container.buttonValues[2] == 1 ? "Check NBT" : "Ignore NBT"), x, y);
 		}));
-		this.addRenderableWidget(this.white = new Button(107 + leftPos, 38 + topPos, 20, 20, TextComponent.EMPTY, (button) -> { //whitelist
+		this.addRenderableWidget(this.white = new Button(107 + leftPos, 38 + topPos, 20, 20, Component.empty(), (button) -> { //whitelist
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("white", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(container.buttonValues[3] == 1 ? "Whitelist" : "Blacklist"), x, y);
+			renderTooltip(matrix, Component.literal(container.buttonValues[3] == 1 ? "Whitelist" : "Blacklist"), x, y);
 		}));
-		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, new TextComponent("R"), (button) -> { //reset
+		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, Component.literal("R"), (button) -> { //reset
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("reset", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent("Reset"), x, y);
+			renderTooltip(matrix, Component.literal("Reset"), x, y);
 		}));
-		this.addRenderableWidget(this.mod = new Button(63 + leftPos, 38 + topPos, 20, 20, new TextComponent("MO"), (button) -> { //mod
+		this.addRenderableWidget(this.mod = new Button(63 + leftPos, 38 + topPos, 20, 20, Component.literal("MO"), (button) -> { //mod
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mod", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(container.buttonValues[4] == 1 ? "Check Mod ID" : "Ignore Mod ID"), x, y);
+			renderTooltip(matrix, Component.literal(container.buttonValues[4] == 1 ? "Check Mod ID" : "Ignore Mod ID"), x, y);
 		}));
-		this.addRenderableWidget(this.minus = new Button(63 + leftPos, 63 + topPos, 14, 20, new TextComponent("-"), (button) -> { //decrease
+		this.addRenderableWidget(this.minus = new Button(63 + leftPos, 63 + topPos, 14, 20, Component.literal("-"), (button) -> { //decrease
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("stockDown", true);
 			this.updateBlockEntity(tag);
 		}));
-		this.addRenderableWidget(this.plus = new Button(113 + leftPos, 63 + topPos, 14, 20, new TextComponent("+"), (button) -> { //add
+		this.addRenderableWidget(this.plus = new Button(113 + leftPos, 63 + topPos, 14, 20, Component.literal("+"), (button) -> { //add
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("stockUp", true);
 			this.updateBlockEntity(tag);
@@ -105,7 +104,7 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 		super.containerTick();
 
 		if (dirty) {
-			mode.setMessage(new TextComponent(Mode.getByID(this.getMenu().mode[0]).toString()));
+			mode.setMessage(Component.literal(Mode.getByID(this.getMenu().mode[0]).toString()));
 			dirty = false;
 		}
 	}
@@ -158,7 +157,7 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 			itemRenderer.renderAndDecorateItem(new ItemStack(Blocks.BARRIER), 2 + mod.x - leftPos, 2 + mod.y - topPos);
 
 		if (isHovering(86, 65, 13, 13, mouseX, mouseY))
-			renderTooltip(matrixStack, new TextComponent("If greater than 0 destination inventory\n will keep that amount of items."), mouseX - leftPos, mouseY - topPos);
+			renderTooltip(matrixStack, Component.literal("If greater than 0 destination inventory\n will keep that amount of items."), mouseX - leftPos, mouseY - topPos);
 	}
 
 

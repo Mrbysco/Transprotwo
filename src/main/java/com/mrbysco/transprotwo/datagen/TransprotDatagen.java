@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.HashCache;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -19,9 +19,9 @@ import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.nio.file.Path;
@@ -43,7 +43,7 @@ public class TransprotDatagen {
 		ExistingFileHelper helper = event.getExistingFileHelper();
 
 		if (event.includeServer()) {
-			generator.addProvider(new TransprotLoot(generator));
+			generator.addProvider(event.includeServer(), new TransprotLoot(generator));
 //			generator.addProvider(new TransprotRecipes(generator));
 		}
 	}
@@ -92,7 +92,7 @@ public class TransprotDatagen {
 		}
 
 		@Override
-		protected void saveAdvancement(HashCache cache, JsonObject advancementJson, Path path) {
+		protected void saveAdvancement(CachedOutput cache, JsonObject advancementJson, Path path) {
 			// Nope
 		}
 	}

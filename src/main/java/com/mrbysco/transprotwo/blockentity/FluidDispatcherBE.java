@@ -16,7 +16,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -34,6 +33,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -60,7 +60,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 
 	@Override
 	public Component getDisplayName() {
-		return new TranslatableComponent(Transprotwo.MOD_ID + ".container.fluid_dispatcher");
+		return Component.translatable(Transprotwo.MOD_ID + ".container.fluid_dispatcher");
 	}
 
 	@Nullable
@@ -88,7 +88,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 
 				if (checkStack.isEmpty() || fluid.isEmpty())
 					return false;
-				if (mod && checkStack.getFluid().getRegistryName().getNamespace().equals(fluid.getFluid().getRegistryName().getNamespace()))
+				if (mod && ForgeRegistries.FLUIDS.getKey(checkStack.getFluid()).getNamespace().equals(ForgeRegistries.FLUIDS.getKey(fluid.getFluid()).getNamespace()))
 					return true;
 				if (checkStack.isFluidEqual(fluid)) {
 					return true;

@@ -7,6 +7,7 @@ import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.awt.Color;
@@ -27,7 +28,7 @@ public class RenderHelper {
 			VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
 			Matrix4f pose = poseStack.last().pose();
 
-			Color color = new Color(fluid.getFluid().getAttributes().getColor(fluid));
+			Color color = new Color(IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor(fluid));
 
 			drawQuad(pose, vertexConsumer, color);
 

@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -37,33 +36,33 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 		super.init();
 
 		FluidDispatcherContainer container = this.getMenu();
-		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, new TextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
+		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, Component.literal(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mode", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(Mode.getByID(container.mode[0]).getText()), x, y);
+			renderTooltip(matrix, Component.literal(Mode.getByID(container.mode[0]).getText()), x, y);
 		}));
-		this.addRenderableWidget(this.white = new Button(63 + leftPos, 16 + topPos, 20, 20, TextComponent.EMPTY, (button) -> { //whitelist
+		this.addRenderableWidget(this.white = new Button(63 + leftPos, 16 + topPos, 20, 20, Component.empty(), (button) -> { //whitelist
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("white", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(container.buttonValues[0] == 1 ? "Whitelist" : "Blacklist"), x, y);
+			renderTooltip(matrix, Component.literal(container.buttonValues[0] == 1 ? "Whitelist" : "Blacklist"), x, y);
 		}));
-		this.addRenderableWidget(this.mod = new Button(107 + leftPos, 16 + topPos, 20, 20, new TextComponent("MO"), (button) -> { //mod
+		this.addRenderableWidget(this.mod = new Button(107 + leftPos, 16 + topPos, 20, 20, Component.literal("MO"), (button) -> { //mod
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mod", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(container.buttonValues[1] == 1 ? "Check Mod ID" : "Ignore Mod ID"), x, y);
+			renderTooltip(matrix, Component.literal(container.buttonValues[1] == 1 ? "Check Mod ID" : "Ignore Mod ID"), x, y);
 		}));
-		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, new TextComponent("R"), (button) -> { //reset
+		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, Component.literal("R"), (button) -> { //reset
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("reset", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent("Reset"), x, y);
+			renderTooltip(matrix, Component.literal("Reset"), x, y);
 		}));
 		dirty = true;
 	}
@@ -73,7 +72,7 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 		super.containerTick();
 
 		if (dirty) {
-			mode.setMessage(new TextComponent(Mode.getByID(this.getMenu().mode[0]).toString()));
+			mode.setMessage(Component.literal(Mode.getByID(this.getMenu().mode[0]).toString()));
 			dirty = false;
 		}
 	}

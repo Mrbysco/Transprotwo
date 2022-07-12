@@ -17,7 +17,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -49,7 +48,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 
 	@Override
 	public Component getDisplayName() {
-		return new TranslatableComponent(Transprotwo.MOD_ID + ".container.power_dispatcher");
+		return Component.translatable(Transprotwo.MOD_ID + ".container.power_dispatcher");
 	}
 
 	@Nullable

@@ -59,7 +59,7 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
 		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
 		if (blockEntity instanceof PowerDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
-			NetworkHooks.openGui((ServerPlayer) player, (PowerDispatcherBE) blockEntity, pos);
+			NetworkHooks.openScreen((ServerPlayer) player, (PowerDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, worldIn, pos, player, handIn, hit);
 	}

@@ -41,7 +41,7 @@ public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 				poseStack.translate(cur.x, cur.y, cur.z);
 
 				int newCombinedIn = LevelRenderer.getLightColor(mc.level, new BlockPos(cur.add(pos.getX(), pos.getY(), pos.getZ())));
-				if (mc.options.graphicsMode.getId() > 0 && !mc.isPaused()) {
+				if (mc.options.graphicsMode().get().getId() > 0 && !mc.isPaused()) {
 					float rotation = (float) (720.0 * ((System.currentTimeMillis() + transfer.turn) & 0x3FFFL) / 0x3FFFL);
 					poseStack.mulPose(Vector3f.YP.rotationDegrees(rotation));
 				}

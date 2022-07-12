@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.network.PacketDistributor;
@@ -38,19 +37,19 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 		super.init();
 
 		PowerDispatcherContainer container = this.getMenu();
-		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, new TextComponent(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
+		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, Component.literal(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mode", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent(Mode.getByID(container.mode[0]).getText()), x, y);
+			renderTooltip(matrix, Component.literal(Mode.getByID(container.mode[0]).getText()), x, y);
 		}));
-		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, new TextComponent("R"), (button) -> { //reset
+		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, Component.literal("R"), (button) -> { //reset
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("reset", true);
 			this.updateBlockEntity(tag);
 		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, new TextComponent("Reset"), x, y);
+			renderTooltip(matrix, Component.literal("Reset"), x, y);
 		}));
 
 		for (int i = 0; i < this.colorFields.length; i++) {
@@ -60,7 +59,7 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 			int height = 12;
 			String value = Integer.toHexString(container.lines[i]);
 
-			this.colorFields[i] = new HexFieldWidget(this.font, x, y, width, height, new TextComponent(String.format("line %s", i + 1)));
+			this.colorFields[i] = new HexFieldWidget(this.font, x, y, width, height, Component.literal(String.format("line %s", i + 1)));
 			this.colorFields[i].setValue(value);
 			this.colorFields[i].setMaxLength(6);
 			this.addWidget(this.colorFields[i]);
@@ -74,7 +73,7 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 		super.containerTick();
 
 		if (dirty) {
-			mode.setMessage(new TextComponent(Mode.getByID(this.getMenu().mode[0]).toString()));
+			mode.setMessage(Component.literal(Mode.getByID(this.getMenu().mode[0]).toString()));
 			dirty = false;
 		}
 

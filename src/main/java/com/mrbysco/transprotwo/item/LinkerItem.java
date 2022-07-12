@@ -9,7 +9,7 @@ import com.mrbysco.transprotwo.util.DistanceHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -44,7 +45,7 @@ public class LinkerItem extends Item {
 				stackTag.putLong("pos", pos.asLong());
 				stackTag.putString("dimension", worldIn.dimension().location().toString());
 				stack.setTag(stackTag);
-				player.displayClientMessage(new TextComponent("Bound to Dispatcher."), true);
+				player.displayClientMessage(Component.literal("Bound to Dispatcher."), true);
 				return InteractionResult.SUCCESS;
 			} else if (stack.hasTag() && stack.getTag().contains("pos")) {
 				CompoundTag stackTag = stack.getTag();
@@ -59,13 +60,13 @@ public class LinkerItem extends Item {
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = itemDispatcher.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(new TextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
+									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(worldIn.getBlockState(pos).getBlock()) + "."), true);
 									itemDispatcher.refreshClient();
 								} else {
-									player.displayClientMessage(new TextComponent("Inventory is already connected."), true);
+									player.displayClientMessage(Component.literal("Inventory is already connected."), true);
 								}
 							} else
-								player.displayClientMessage(new TextComponent("Too far away."), true);
+								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
 					} else if (blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
@@ -75,13 +76,13 @@ public class LinkerItem extends Item {
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = fluidDispatcher.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(new TextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
+									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(worldIn.getBlockState(pos).getBlock()) + "."), true);
 									fluidDispatcher.refreshClient();
 								} else {
-									player.displayClientMessage(new TextComponent("Tank is already connected."), true);
+									player.displayClientMessage(Component.literal("Tank is already connected."), true);
 								}
 							} else
-								player.displayClientMessage(new TextComponent("Too far away."), true);
+								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
 					} else if (blockEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
@@ -91,13 +92,13 @@ public class LinkerItem extends Item {
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = powerDispatcher.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(new TextComponent("Added " + worldIn.getBlockState(pos).getBlock().getRegistryName() + "."), true);
+									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(worldIn.getBlockState(pos).getBlock()) + "."), true);
 									powerDispatcher.refreshClient();
 								} else {
-									player.displayClientMessage(new TextComponent("Tank is already connected."), true);
+									player.displayClientMessage(Component.literal("Tank is already connected."), true);
 								}
 							} else
-								player.displayClientMessage(new TextComponent("Too far away."), true);
+								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
 					}

@@ -32,8 +32,8 @@ public class Transprotwo {
 
 		TransprotwoRegistry.ITEMS.register(eventBus);
 		TransprotwoRegistry.BLOCKS.register(eventBus);
-		TransprotwoRegistry.BLOCK_ENTITIES.register(eventBus);
-		TransprotwoContainers.CONTAINERS.register(eventBus);
+		TransprotwoRegistry.BLOCK_ENTITY_TYPES.register(eventBus);
+		TransprotwoContainers.MENU_TYPES.register(eventBus);
 
 		TransprotwoParticles.PARTICLE_TYPES.register(eventBus);
 

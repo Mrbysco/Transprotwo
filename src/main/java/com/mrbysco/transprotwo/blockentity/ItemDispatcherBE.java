@@ -17,7 +17,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -31,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -56,7 +56,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 
 	@Override
 	public Component getDisplayName() {
-		return new TranslatableComponent(Transprotwo.MOD_ID + ".container.dispatcher");
+		return Component.translatable(Transprotwo.MOD_ID + ".container.dispatcher");
 	}
 
 	@Nullable
@@ -81,7 +81,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 			return false;
 		if (tag && StackHelper.matchAnyTag(stack1, stack2))
 			return true;
-		if (mod && stack1.getItem().getRegistryName().getNamespace().equals(stack2.getItem().getRegistryName().getNamespace()))
+		if (mod && ForgeRegistries.ITEMS.getKey(stack1.getItem()).getNamespace().equals(ForgeRegistries.ITEMS.getKey(stack2.getItem()).getNamespace()))
 			return true;
 		if (nbt && !ItemStack.tagMatches(stack1, stack2))
 			return false;

@@ -151,19 +151,19 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 	long getFrequence() {
 		if (upgradeHandler.getStackInSlot(0).isEmpty() || !(upgradeHandler.getStackInSlot(0).getItem() instanceof UpgradeItem))
 			return Boost.defaultFrequence;
-		return (((UpgradeItem) upgradeHandler.getStackInSlot(0).getItem()).getBoost()).frequence;
+		return (((UpgradeItem) upgradeHandler.getStackInSlot(0).getItem()).getBoost()).frequence();
 	}
 
 	double getSpeed() {
 		if (upgradeHandler.getStackInSlot(0).isEmpty() || !(upgradeHandler.getStackInSlot(0).getItem() instanceof UpgradeItem))
 			return Boost.defaultSpeed;
-		return (((UpgradeItem) upgradeHandler.getStackInSlot(0).getItem()).getBoost()).speed;
+		return (((UpgradeItem) upgradeHandler.getStackInSlot(0).getItem()).getBoost()).speed();
 	}
 
 	int getStackSize() {
 		if (upgradeHandler.getStackInSlot(0).isEmpty() || !(upgradeHandler.getStackInSlot(0).getItem() instanceof UpgradeItem))
 			return Boost.defaultStackSize;
-		return (((UpgradeItem) upgradeHandler.getStackInSlot(0).getItem()).getBoost()).stackSize;
+		return (((UpgradeItem) upgradeHandler.getStackInSlot(0).getItem()).getBoost()).stackSize();
 	}
 
 	protected boolean startTransfer() {
@@ -225,7 +225,7 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 	}
 
 	@Override
-	public CompoundTag getTileData() {
+	public CompoundTag getPersistentData() {
 		CompoundTag nbt = new CompoundTag();
 		this.saveAdditional(nbt);
 		return nbt;

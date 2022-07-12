@@ -24,7 +24,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class TransprotwoRegistry {
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Transprotwo.MOD_ID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Transprotwo.MOD_ID);
-	public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Transprotwo.MOD_ID);
+	public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Transprotwo.MOD_ID);
 
 	//Blocks
 	public static final RegistryObject<Block> DISPATCHER = BLOCKS.register("dispatcher", () -> new DispatcherBlock(
@@ -54,10 +54,10 @@ public class TransprotwoRegistry {
 					new Boost((long) (Boost.defaultFrequence / 8.0), Boost.defaultSpeed * 5.0, 64)));
 
 	//Tiles
-	public static final net.minecraftforge.registries.RegistryObject<BlockEntityType<ItemDispatcherBE>> DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITIES.register("dispatcher", () -> BlockEntityType.Builder.of(
+	public static final net.minecraftforge.registries.RegistryObject<BlockEntityType<ItemDispatcherBE>> DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("dispatcher", () -> BlockEntityType.Builder.of(
 			ItemDispatcherBE::new, DISPATCHER.get()).build(null));
-	public static final RegistryObject<BlockEntityType<FluidDispatcherBE>> FLUID_DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITIES.register("fluid_dispatcher", () -> BlockEntityType.Builder.of(
+	public static final RegistryObject<BlockEntityType<FluidDispatcherBE>> FLUID_DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("fluid_dispatcher", () -> BlockEntityType.Builder.of(
 			FluidDispatcherBE::new, FLUID_DISPATCHER.get()).build(null));
-	public static final RegistryObject<BlockEntityType<PowerDispatcherBE>> POWER_DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITIES.register("power_dispatcher", () -> BlockEntityType.Builder.of(
+	public static final RegistryObject<BlockEntityType<PowerDispatcherBE>> POWER_DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("power_dispatcher", () -> BlockEntityType.Builder.of(
 			PowerDispatcherBE::new, POWER_DISPATCHER.get()).build(null));
 }

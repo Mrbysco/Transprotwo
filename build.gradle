@@ -1,18 +1,8 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
-}
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 plugins {
     id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '5.+'
 }
-apply plugin: 'net.minecraftforge.gradle'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/ForgeUpdatesRemapper/main/remapper.gradle'
 
 version = "${version}"
 group = "com.mrbysco.transprotwo"
@@ -103,9 +93,9 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    implementation fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+    implementation fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 
-    runtimeOnly fg.deobf("curse.maven:cyclic-239286:3851582")
+//    runtimeOnly fg.deobf("curse.maven:cyclic-239286:3851582")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

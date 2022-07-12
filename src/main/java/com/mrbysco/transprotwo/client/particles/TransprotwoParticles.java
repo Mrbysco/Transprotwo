@@ -3,9 +3,8 @@ package com.mrbysco.transprotwo.client.particles;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.client.particles.factory.SquareParticleType;
 import com.mrbysco.transprotwo.client.particles.factory.SquareParticleTypeData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
@@ -19,7 +18,7 @@ public class TransprotwoParticles {
 	public static final RegistryObject<ParticleType<SquareParticleTypeData>> SQUARE_TYPE = PARTICLE_TYPES.register("square", SquareParticleType::new);
 
 	@SubscribeEvent
-	public static void registerFactories(ParticleFactoryRegisterEvent event) {
-		Minecraft.getInstance().particleEngine.register(SQUARE_TYPE.get(), SquareParticleData::new);
+	public static void registerFactories(RegisterParticleProvidersEvent event) {
+		event.register(SQUARE_TYPE.get(), SquareParticleData::new);
 	}
 }
