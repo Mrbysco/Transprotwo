@@ -1,10 +1,10 @@
 package com.mrbysco.transprotwo.item;
 
-import com.mrbysco.transprotwo.config.TransprotConfig;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
+import com.mrbysco.transprotwo.config.TransprotConfig;
 import com.mrbysco.transprotwo.util.DistanceHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

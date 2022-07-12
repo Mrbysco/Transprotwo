@@ -21,8 +21,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -31,7 +31,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static com.mrbysco.transprotwo.registry.TransprotwoRegistry.*;
+import static com.mrbysco.transprotwo.registry.TransprotwoRegistry.DISPATCHER;
+import static com.mrbysco.transprotwo.registry.TransprotwoRegistry.FLUID_DISPATCHER;
+import static com.mrbysco.transprotwo.registry.TransprotwoRegistry.POWER_DISPATCHER;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class TransprotDatagen {

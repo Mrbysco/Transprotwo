@@ -1,8 +1,8 @@
 package com.mrbysco.transprotwo.client;
 
+import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import com.mrbysco.transprotwo.client.particles.SquareParticleData;
 import com.mrbysco.transprotwo.config.TransprotConfig;
-import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;

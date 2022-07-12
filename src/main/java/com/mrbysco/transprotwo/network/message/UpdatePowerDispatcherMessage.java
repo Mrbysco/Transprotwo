@@ -1,7 +1,7 @@
 package com.mrbysco.transprotwo.network.message;
 
-import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
+import com.mrbysco.transprotwo.network.PacketHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;

@@ -1,10 +1,10 @@
 package com.mrbysco.transprotwo.block;
 
-import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.ItemTransfer;
+import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;

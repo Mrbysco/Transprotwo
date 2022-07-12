@@ -1,9 +1,9 @@
 package com.mrbysco.transprotwo.block;
 
-import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.FluidTransfer;
+import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import com.mrbysco.transprotwo.util.FluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

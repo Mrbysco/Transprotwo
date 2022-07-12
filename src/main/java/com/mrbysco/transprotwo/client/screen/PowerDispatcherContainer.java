@@ -1,8 +1,8 @@
 package com.mrbysco.transprotwo.client.screen;
 
+import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import com.mrbysco.transprotwo.client.screen.slots.UpgradeSlot;
 import com.mrbysco.transprotwo.registry.TransprotwoContainers;
-import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
