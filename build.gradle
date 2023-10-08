@@ -113,7 +113,7 @@ dependencies {
 
     implementation fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 
-//    runtimeOnly fg.deobf("curse.maven:cyclic-239286:3851582")
+    runtimeOnly fg.deobf("curse.maven:cyclic-239286:4722579")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
