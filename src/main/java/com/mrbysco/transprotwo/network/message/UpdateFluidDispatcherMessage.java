@@ -34,8 +34,8 @@ public class UpdateFluidDispatcherMessage {
 		ctx.enqueueWork(() -> {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
 				ServerPlayer player = ctx.getSender();
-				Level world = player.level;
-				BlockEntity blockEntity = world.getBlockEntity(blockEntityPos);
+				Level level = player.level();
+				BlockEntity blockEntity = level.getBlockEntity(blockEntityPos);
 				if (blockEntity instanceof FluidDispatcherBE fluidDispatcher) {
 					if (compound.contains("mode"))
 						fluidDispatcher.cycleMode();

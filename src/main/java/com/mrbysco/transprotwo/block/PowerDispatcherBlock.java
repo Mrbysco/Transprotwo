@@ -33,45 +33,45 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-		if (!worldIn.isClientSide && blockEntity instanceof PowerDispatcherBE powerDispatcher) {
-			IEnergyStorage originHandler = getOriginHandler(state, worldIn, pos);
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if (!level.isClientSide && blockEntity instanceof PowerDispatcherBE powerDispatcher) {
+			IEnergyStorage originHandler = getOriginHandler(state, level, pos);
 			if (!powerDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
-				popResource(worldIn, pos, powerDispatcher.getUpgrade().getStackInSlot(0));
+				popResource(level, pos, powerDispatcher.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer abstractTransfer : powerDispatcher.getTransfers()) {
 				if (abstractTransfer instanceof PowerTransfer transfer) {
 					originHandler.receiveEnergy(transfer.powerStack.getAmount(), false);
 				}
 			}
 		}
-		super.onRemove(state, worldIn, pos, newState, isMoving);
+		super.onRemove(state, level, pos, newState, isMoving);
 	}
 
-	public IEnergyStorage getOriginHandler(BlockState state, Level world, BlockPos pos) {
+	public IEnergyStorage getOriginHandler(BlockState state, Level level, BlockPos pos) {
 		Direction face = state.getValue(DirectionalBlock.FACING);
-		if (!world.isAreaLoaded(pos.relative(face), 1) && world.getBlockEntity(pos.relative(face)) == null)
+		if (!level.isAreaLoaded(pos.relative(face), 1) && level.getBlockEntity(pos.relative(face)) == null)
 			return null;
-		return PowerUtil.getEnergyStorage(world.getBlockEntity(pos.relative(face)), face.getOpposite());
+		return PowerUtil.getEnergyStorage(level.getBlockEntity(pos.relative(face)), face.getOpposite());
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-		if (blockEntity instanceof PowerDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if (blockEntity instanceof PowerDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
 			NetworkHooks.openScreen((ServerPlayer) player, (PowerDispatcherBE) blockEntity, pos);
 		}
-		return super.use(state, worldIn, pos, player, handIn, hit);
+		return super.use(state, level, pos, player, handIn, hit);
 	}
 
 	@Override
-	public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		if (placer instanceof Player player) {
 			//Shy wanted to always have it default to the trans colors when she placed it <3
 			String shyUUID = "7135da42-d327-47bb-bb04-5ba4e212fb32";
 			boolean flag = player.getGameProfile().isComplete() && player.getGameProfile().getId().equals(UUID.fromString(shyUUID));
 			if (flag) {
-				BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+				BlockEntity blockEntity = level.getBlockEntity(pos);
 				if (blockEntity instanceof PowerDispatcherBE powerDispatcher) {
 					powerDispatcher.setLine1(0x55CDFC);
 					powerDispatcher.setLine2(0xF7A8B8);

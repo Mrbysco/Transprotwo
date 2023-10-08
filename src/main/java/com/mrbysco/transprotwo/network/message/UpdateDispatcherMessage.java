@@ -34,8 +34,8 @@ public class UpdateDispatcherMessage {
 		ctx.enqueueWork(() -> {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
 				ServerPlayer player = ctx.getSender();
-				Level world = player.level;
-				BlockEntity blockEntity = world.getBlockEntity(blockEntityPos);
+				Level level = player.level();
+				BlockEntity blockEntity = level.getBlockEntity(blockEntityPos);
 				if (blockEntity instanceof ItemDispatcherBE itemDispatcher) {
 					if (compound.contains("mode"))
 						itemDispatcher.cycleMode();

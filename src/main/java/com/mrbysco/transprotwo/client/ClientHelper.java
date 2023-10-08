@@ -14,8 +14,8 @@ import java.util.Random;
 public class ClientHelper {
 	public static void resetColors(BlockPos pos) {
 		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-		net.minecraft.world.level.Level world = mc.level;
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+		net.minecraft.world.level.Level level = mc.level;
+		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof PowerDispatcherBE powerDispatcher) {
 			powerDispatcher.initializeColors();
 		}
@@ -23,12 +23,12 @@ public class ClientHelper {
 
 	public static void summonParticles(CompoundTag compound) {
 		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-		net.minecraft.world.level.Level world = mc.level;
+		net.minecraft.world.level.Level level = mc.level;
 
-		summonParticles(world, compound);
+		summonParticles(level, compound);
 	}
 
-	public static void summonParticles(Level world, CompoundTag nbt) {
+	public static void summonParticles(Level level, CompoundTag nbt) {
 		if (!TransprotConfig.CLIENT.showParticles.get())
 			return;
 		BlockPos pos = BlockPos.of(nbt.getLong("pos"));
@@ -38,7 +38,7 @@ public class ClientHelper {
 			double xx = (new Random().nextDouble() - .5) / 2.3;
 			double yy = (new Random().nextDouble() - .5) / 2.3;
 			double zz = (new Random().nextDouble() - .5) / 2.3;
-			world.addParticle(SquareParticleData.createData(255, 136, 255),
+			level.addParticle(SquareParticleData.createData(255, 136, 255),
 					pos.getX() + .5 + xx, pos.getY() + .5 + yy, pos.getZ() + .5 + zz, dx, dy, dz);
 		}
 	}

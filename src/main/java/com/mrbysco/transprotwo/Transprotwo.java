@@ -33,6 +33,7 @@ public class Transprotwo {
 		TransprotwoRegistry.ITEMS.register(eventBus);
 		TransprotwoRegistry.BLOCKS.register(eventBus);
 		TransprotwoRegistry.BLOCK_ENTITY_TYPES.register(eventBus);
+		TransprotwoRegistry.CREATIVE_MODE_TABS.register(eventBus);
 		TransprotwoContainers.MENU_TYPES.register(eventBus);
 
 		TransprotwoParticles.PARTICLE_TYPES.register(eventBus);

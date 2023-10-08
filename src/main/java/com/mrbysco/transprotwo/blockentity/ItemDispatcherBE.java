@@ -83,7 +83,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 			return true;
 		if (mod && ForgeRegistries.ITEMS.getKey(stack1.getItem()).getNamespace().equals(ForgeRegistries.ITEMS.getKey(stack2.getItem()).getNamespace()))
 			return true;
-		if (nbt && !ItemStack.tagMatches(stack1, stack2))
+		if (nbt && !ItemStack.isSameItemSameTags(stack1, stack2))
 			return false;
 		if (durability && stack1.getDamageValue() == stack2.getDamageValue())
 			return true;
@@ -258,7 +258,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 		while (it.hasNext()) {
 			AbstractTransfer t = it.next();
 			if (t instanceof ItemTransfer tr) {
-				BlockPos currentPos = new BlockPos(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
+				BlockPos currentPos = BlockPos.containing(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
 				if (tr.rec == null || !InventoryUtil.hasItemHandler(level, tr.rec.getLeft(), tr.rec.getRight()) ||
 						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !itemDispatcher.throughBlocks())) {
 					Block.popResource(level, currentPos, tr.stack);

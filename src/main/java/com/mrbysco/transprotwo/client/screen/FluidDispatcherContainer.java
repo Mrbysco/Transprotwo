@@ -30,7 +30,7 @@ public class FluidDispatcherContainer extends AbstractContainerMenu {
 	private static FluidDispatcherBE getBlockEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null!");
 		Objects.requireNonNull(data, "data cannot be null!");
-		final BlockEntity blockEntityAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
+		final BlockEntity blockEntityAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
 
 		if (blockEntityAtPos instanceof FluidDispatcherBE) {
 			return (FluidDispatcherBE) blockEntityAtPos;

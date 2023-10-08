@@ -2,15 +2,15 @@ package com.mrbysco.transprotwo.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
+import org.joml.Matrix4f;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class RenderHelper {
 
@@ -21,8 +21,8 @@ public class RenderHelper {
 			poseStack.scale(scale, scale, scale);
 
 			poseStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
-			poseStack.mulPose(Vector3f.YP.rotationDegrees(90F));
-			poseStack.mulPose(Vector3f.ZP.rotationDegrees(270F));
+			poseStack.mulPose(Axis.YP.rotationDegrees(90F));
+			poseStack.mulPose(Axis.ZP.rotationDegrees(270F));
 
 			RenderType type = TransprotwoRenderTypes.getLiquid();
 			VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
@@ -46,8 +46,8 @@ public class RenderHelper {
 		poseStack.scale(scale, scale, scale);
 
 		poseStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
-		poseStack.mulPose(Vector3f.YP.rotationDegrees(90F));
-		poseStack.mulPose(Vector3f.ZP.rotationDegrees(270F));
+		poseStack.mulPose(Axis.YP.rotationDegrees(90F));
+		poseStack.mulPose(Axis.ZP.rotationDegrees(270F));
 
 		RenderType type = TransprotwoRenderTypes.getPower();
 		VertexConsumer vertexConsumer = bufferSource.getBuffer(type);

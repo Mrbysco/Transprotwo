@@ -1,13 +1,14 @@
 package com.mrbysco.transprotwo.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE.Mode;
 import com.mrbysco.transprotwo.client.screen.widget.HexFieldWidget;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.UpdatePowerDispatcherMessage;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -19,6 +20,11 @@ import net.minecraftforge.network.PacketDistributor;
 
 public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatcherContainer> {
 	private final ResourceLocation TEXTURE = new ResourceLocation(Transprotwo.MOD_ID, "textures/gui/container/power_dispatcher.png");
+
+	private final static Tooltip nearestFirstTooltip = Tooltip.create(Component.literal("Nearest First"));
+	private final static Tooltip roundRobinTooltip = Tooltip.create(Component.literal("Round Robin"));
+	private final static Tooltip randomTooltip = Tooltip.create(Component.literal("Random"));
+	private final static Tooltip resetTooltip = Tooltip.create(Component.literal("Reset"));
 
 	private Button mode, reset;
 
@@ -37,20 +43,19 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 		super.init();
 
 		PowerDispatcherContainer container = this.getMenu();
-		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, Component.literal(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
+		this.addRenderableWidget(this.mode = Button.builder(Component.literal(Mode.getByID(container.mode[0]).toString()), (button) -> {
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mode", true);
 			this.updateBlockEntity(tag);
-		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, Component.literal(Mode.getByID(container.mode[0]).getText()), x, y);
-		}));
-		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, Component.literal("R"), (button) -> { //reset
+		}).bounds(149 + leftPos, 41 + topPos, 20, 20).build());
+
+
+		this.addRenderableWidget(this.reset = Button.builder(Component.literal("R"), (button) -> {
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("reset", true);
 			this.updateBlockEntity(tag);
-		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, Component.literal("Reset"), x, y);
-		}));
+		}).bounds(149 + leftPos, 64 + topPos, 20, 20).build());
+		this.reset.setTooltip(resetTooltip);
 
 		for (int i = 0; i < this.colorFields.length; i++) {
 			int x = 47 + leftPos;
@@ -71,10 +76,18 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 	@Override
 	public void containerTick() {
 		super.containerTick();
+		PowerDispatcherContainer container = this.getMenu();
 
+		Mode containerMode = Mode.getByID(container.mode[0]);
 		if (dirty) {
-			mode.setMessage(Component.literal(Mode.getByID(this.getMenu().mode[0]).toString()));
+			mode.setMessage(Component.literal(containerMode.toString()));
 			dirty = false;
+		}
+
+		switch (containerMode) {
+			default -> this.mode.setTooltip(nearestFirstTooltip);
+			case RR -> this.mode.setTooltip(roundRobinTooltip);
+			case RA -> this.mode.setTooltip(randomTooltip);
 		}
 
 		for (HexFieldWidget textField : this.colorFields)
@@ -82,25 +95,25 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(matrixStack);
-		super.render(matrixStack, mouseX, mouseY, partialTicks);
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		this.renderBackground(guiGraphics);
+		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		for (HexFieldWidget textField : this.colorFields)
-			textField.render(matrixStack, mouseX, mouseY, partialTicks);
+			textField.render(guiGraphics, mouseX, mouseY, partialTicks);
 
-		this.renderTooltip(matrixStack, mouseX, mouseY);
+		this.renderTooltip(guiGraphics, mouseX, mouseY);
 	}
 
 	@Override
-	protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
+	protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int x, int y) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, TEXTURE);
-		this.blit(matrixStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+		guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
 		for (int i = 0; i < this.colorFields.length; i++) {
 			HexFieldWidget field = this.colorFields[i];
-			this.font.draw(matrixStack, "Color" + (i + 1) + ":", field.x - (field.getWidth() / 2) - 9, field.y + 2, 4210752);
+			guiGraphics.drawString(this.font, "Color" + (i + 1) + ":", field.getX() - (field.getWidth() / 2) - 9, field.getY() + 2, 4210752, false);
 		}
 	}
 
@@ -141,9 +154,9 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 	}
 
 	@Override
-	protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
-		this.font.draw(matrixStack, this.title, (float) this.titleLabelX, (float) this.titleLabelY, 4210752);
-		this.font.draw(matrixStack, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 4210752);
+	protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+		guiGraphics.drawString(this.font, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 4210752, false);
 	}
 
 	private void fieldHasUpdated() {

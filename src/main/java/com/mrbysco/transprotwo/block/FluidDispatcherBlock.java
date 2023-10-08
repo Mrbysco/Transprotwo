@@ -31,35 +31,35 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-		if (!worldIn.isClientSide && blockEntity instanceof FluidDispatcherBE fluidDispatcher) {
-			IFluidHandler originHandler = getOriginHandler(state, worldIn, pos);
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if (!level.isClientSide && blockEntity instanceof FluidDispatcherBE fluidDispatcher) {
+			IFluidHandler originHandler = getOriginHandler(state, level, pos);
 			if (!fluidDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
-				popResource(worldIn, pos, fluidDispatcher.getUpgrade().getStackInSlot(0));
+				popResource(level, pos, fluidDispatcher.getUpgrade().getStackInSlot(0));
 			for (AbstractTransfer abstractTransfer : fluidDispatcher.getTransfers()) {
 				if (abstractTransfer instanceof FluidTransfer transfer) {
 					originHandler.fill(transfer.fluidStack, FluidAction.EXECUTE);
 				}
 			}
 		}
-		super.onRemove(state, worldIn, pos, newState, isMoving);
+		super.onRemove(state, level, pos, newState, isMoving);
 	}
 
-	public IFluidHandler getOriginHandler(BlockState state, Level world, BlockPos pos) {
+	public IFluidHandler getOriginHandler(BlockState state, Level level, BlockPos pos) {
 		Direction face = state.getValue(DirectionalBlock.FACING);
-		if (!world.isAreaLoaded(pos.relative(face), 1) && world.getBlockEntity(pos.relative(face)) == null)
+		if (!level.isAreaLoaded(pos.relative(face), 1) && level.getBlockEntity(pos.relative(face)) == null)
 			return null;
-		return FluidHelper.getFluidHandler(world.getBlockEntity(pos.relative(face)), face.getOpposite());
+		return FluidHelper.getFluidHandler(level.getBlockEntity(pos.relative(face)), face.getOpposite());
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-		BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-		if (blockEntity instanceof FluidDispatcherBE && !worldIn.isClientSide && !player.isShiftKeyDown()) {
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if (blockEntity instanceof FluidDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
 			NetworkHooks.openScreen((ServerPlayer) player, (FluidDispatcherBE) blockEntity, pos);
 		}
-		return super.use(state, worldIn, pos, player, handIn, hit);
+		return super.use(state, level, pos, player, handIn, hit);
 	}
 
 	@Nullable

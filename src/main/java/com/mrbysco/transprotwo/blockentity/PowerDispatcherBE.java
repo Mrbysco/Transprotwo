@@ -29,7 +29,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -204,7 +204,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 		while (it.hasNext()) {
 			AbstractTransfer t = it.next();
 			if (t instanceof PowerTransfer tr) {
-				BlockPos currentPos = new BlockPos(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
+				BlockPos currentPos = BlockPos.containing(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
 				if (tr.rec == null || !PowerUtil.hasEnergyStorage(level, tr.rec.getLeft(), tr.rec.getRight()) ||
 						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !powerDispatcher.throughBlocks())) {
 					it.remove();

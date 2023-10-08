@@ -1,0 +1,4 @@
+// 1.20.1	2023-10-08T02:26:19.764576	Loot Tables
+b9b0194226689f4ccc702dc2fe16070f9611e24e data/transprotwo/loot_tables/blocks/dispatcher.json
+fc6274ef06ff47effa15e7d5fea0ed61498ec27a data/transprotwo/loot_tables/blocks/fluid_dispatcher.json
+5a2828a70595218ff764a529e97c9602e0d31d00 data/transprotwo/loot_tables/blocks/power_dispatcher.json

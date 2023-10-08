@@ -25,7 +25,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Set;
 
 public abstract class AbstractDispatcherBE extends BlockEntity implements MenuProvider {
@@ -133,7 +133,7 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 		d = d.normalize().scale(0.25);
 		Set<BlockPos> set = Sets.newHashSet();
 		while (p1.distanceTo(p2) > 0.5) {
-			set.add(new BlockPos(p1));
+			set.add(BlockPos.containing(p1));
 			p1 = p1.add(d);
 		}
 		set.remove(start);

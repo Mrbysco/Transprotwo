@@ -18,9 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,18 +30,18 @@ public class LinkerItem extends Item {
 
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
-		Level worldIn = context.getLevel();
-		if (worldIn.isClientSide)
+		Level level = context.getLevel();
+		if (level.isClientSide)
 			return InteractionResult.PASS;
 
 		BlockPos pos = context.getClickedPos();
 		Player player = context.getPlayer();
 		ItemStack stack = context.getItemInHand();
 		if (player.isShiftKeyDown()) {
-			if (worldIn.getBlockEntity(pos) instanceof AbstractDispatcherBE) {
+			if (level.getBlockEntity(pos) instanceof AbstractDispatcherBE) {
 				CompoundTag stackTag = stack.hasTag() ? stack.getTag() : new CompoundTag();
 				stackTag.putLong("pos", pos.asLong());
-				stackTag.putString("dimension", worldIn.dimension().location().toString());
+				stackTag.putString("dimension", level.dimension().location().toString());
 				stack.setTag(stackTag);
 				player.displayClientMessage(Component.literal("Bound to Dispatcher."), true);
 				return InteractionResult.SUCCESS;
@@ -51,16 +49,16 @@ public class LinkerItem extends Item {
 				CompoundTag stackTag = stack.getTag();
 				BlockPos tPos = BlockPos.of(stackTag.getLong("pos"));
 				ResourceLocation location = ResourceLocation.tryParse(stackTag.getString("dimension"));
-				BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+				BlockEntity blockEntity = level.getBlockEntity(pos);
 				if (blockEntity != null) {
-					if (blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
-						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof ItemDispatcherBE itemDispatcher) {
+					if (blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
+						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof ItemDispatcherBE itemDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = itemDispatcher.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(worldIn.getBlockState(pos).getBlock()) + "."), true);
+									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(level.getBlockState(pos).getBlock()) + "."), true);
 									itemDispatcher.refreshClient();
 								} else {
 									player.displayClientMessage(Component.literal("Inventory is already connected."), true);
@@ -69,14 +67,14 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if (blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
-						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof FluidDispatcherBE fluidDispatcher) {
+					} else if (blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent()) {
+						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof FluidDispatcherBE fluidDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = fluidDispatcher.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(worldIn.getBlockState(pos).getBlock()) + "."), true);
+									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(level.getBlockState(pos).getBlock()) + "."), true);
 									fluidDispatcher.refreshClient();
 								} else {
 									player.displayClientMessage(Component.literal("Tank is already connected."), true);
@@ -85,14 +83,14 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if (blockEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-						if (worldIn.dimension().location().equals(location) && worldIn.getBlockEntity(tPos) instanceof PowerDispatcherBE powerDispatcher) {
+					} else if (blockEntity.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof PowerDispatcherBE powerDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = powerDispatcher.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(worldIn.getBlockState(pos).getBlock()) + "."), true);
+									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(level.getBlockState(pos).getBlock()) + "."), true);
 									powerDispatcher.refreshClient();
 								} else {
 									player.displayClientMessage(Component.literal("Tank is already connected."), true);

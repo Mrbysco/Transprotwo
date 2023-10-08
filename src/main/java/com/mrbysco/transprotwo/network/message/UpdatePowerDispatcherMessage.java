@@ -35,8 +35,8 @@ public class UpdatePowerDispatcherMessage {
 		ctx.enqueueWork(() -> {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
 				ServerPlayer player = ctx.getSender();
-				Level world = player.level;
-				BlockEntity blockEntity = world.getBlockEntity(blockEntityPos);
+				Level level = player.level();
+				BlockEntity blockEntity = level.getBlockEntity(blockEntityPos);
 				if (blockEntity instanceof PowerDispatcherBE powerDispatcher) {
 					if (compound.contains("mode"))
 						powerDispatcher.cycleMode();
@@ -53,7 +53,7 @@ public class UpdatePowerDispatcherMessage {
 					if (compound.contains("color5"))
 						powerDispatcher.setLine5(compound.getInt("color5"));
 					powerDispatcher.refreshClient();
-					PacketHandler.sendToNearbyPlayers(new ChangeColorMessage(blockEntityPos), blockEntityPos, 32, world.dimension());
+					PacketHandler.sendToNearbyPlayers(new ChangeColorMessage(blockEntityPos), blockEntityPos, 32, level.dimension());
 				}
 
 				ctx.getSender().containerMenu.slotsChanged(null);

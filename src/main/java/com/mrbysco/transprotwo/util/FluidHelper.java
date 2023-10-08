@@ -6,8 +6,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
@@ -15,7 +15,7 @@ public class FluidHelper {
 	public static boolean hasFluidHandler(BlockEntity blockEntity, Direction side) {
 		if (blockEntity == null)
 			return false;
-		return blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).isPresent() || blockEntity instanceof Container;
+		return blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, side).isPresent() || blockEntity instanceof Container;
 	}
 
 	public static boolean hasFluidHandler(BlockGetter world, BlockPos pos, Direction side) {
@@ -25,8 +25,8 @@ public class FluidHelper {
 	public static IFluidHandler getFluidHandler(BlockEntity blockEntity, Direction side) {
 		if (blockEntity == null)
 			return null;
-		if (blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).isPresent())
-			return blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).orElse(null);
+		if (blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, side).isPresent())
+			return blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, side).orElse(null);
 		return null;
 	}
 

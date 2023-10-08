@@ -1,12 +1,13 @@
 package com.mrbysco.transprotwo.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE.Mode;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.UpdateFluidDispatcherMessage;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +21,21 @@ import net.minecraftforge.network.PacketDistributor;
 
 public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatcherContainer> {
 	private final ResourceLocation TEXTURE = new ResourceLocation(Transprotwo.MOD_ID, "textures/gui/container/dispatcher.png");
+
+	private final static Tooltip nearestFirstTooltip = Tooltip.create(Component.literal("Nearest First"));
+	private final static Tooltip roundRobinTooltip = Tooltip.create(Component.literal("Round Robin"));
+	private final static Tooltip randomTooltip = Tooltip.create(Component.literal("Random"));
+	private final static Tooltip checkTagTooltip = Tooltip.create(Component.literal("Check Tag"));
+	private final static Tooltip ignoreTagTooltip = Tooltip.create(Component.literal("Ignore Tag"));
+	private final static Tooltip checkDurabilityTooltip = Tooltip.create(Component.literal("Check Durability"));
+	private final static Tooltip ignoreDurabilityTooltip = Tooltip.create(Component.literal("Ignore Durability"));
+	private final static Tooltip checkNBTTooltip = Tooltip.create(Component.literal("Check NBT"));
+	private final static Tooltip ignoreNBTTooltip = Tooltip.create(Component.literal("Ignore NBT"));
+	private final static Tooltip whitelistTooltip = Tooltip.create(Component.literal("Whitelist"));
+	private final static Tooltip blacklistTooltip = Tooltip.create(Component.literal("Blacklist"));
+	private final static Tooltip resetTooltip = Tooltip.create(Component.literal("Reset"));
+	private final static Tooltip checkModTooltip = Tooltip.create(Component.literal("Check Mod ID"));
+	private final static Tooltip ignoreModTooltip = Tooltip.create(Component.literal("Ignore Mod ID"));
 
 	private Button mode, white, reset, mod;
 
@@ -36,60 +52,67 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 		super.init();
 
 		FluidDispatcherContainer container = this.getMenu();
-		this.addRenderableWidget(this.mode = new Button(149 + leftPos, 41 + topPos, 20, 20, Component.literal(Mode.getByID(container.mode[0]).toString()), (button) -> { //mode
+		this.addRenderableWidget(this.mode = Button.builder(Component.literal(Mode.getByID(container.mode[0]).toString()), (button) -> {
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mode", true);
 			this.updateBlockEntity(tag);
-		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, Component.literal(Mode.getByID(container.mode[0]).getText()), x, y);
-		}));
-		this.addRenderableWidget(this.white = new Button(63 + leftPos, 16 + topPos, 20, 20, Component.empty(), (button) -> { //whitelist
+		}).bounds(149 + leftPos, 41 + topPos, 20, 20).build());
+
+		this.addRenderableWidget(this.white = Button.builder(Component.empty(), (button) -> {
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("white", true);
 			this.updateBlockEntity(tag);
-		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, Component.literal(container.buttonValues[0] == 1 ? "Whitelist" : "Blacklist"), x, y);
-		}));
-		this.addRenderableWidget(this.mod = new Button(107 + leftPos, 16 + topPos, 20, 20, Component.literal("MO"), (button) -> { //mod
+		}).bounds(63 + leftPos, 16 + topPos, 20, 20).build());
+
+		this.addRenderableWidget(this.mod = Button.builder(Component.empty(), (button) -> {
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mod", true);
 			this.updateBlockEntity(tag);
-		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, Component.literal(container.buttonValues[1] == 1 ? "Check Mod ID" : "Ignore Mod ID"), x, y);
-		}));
-		this.addRenderableWidget(this.reset = new Button(149 + leftPos, 64 + topPos, 20, 20, Component.literal("R"), (button) -> { //reset
+		}).bounds(107 + leftPos, 16 + topPos, 20, 20).build());
+
+		this.addRenderableWidget(this.reset = Button.builder(Component.literal("R"), (button) -> {
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("reset", true);
 			this.updateBlockEntity(tag);
-		}, (button, matrix, x, y) -> {
-			renderTooltip(matrix, Component.literal("Reset"), x, y);
-		}));
+		}).bounds(149 + leftPos, 64 + topPos, 20, 20).build());
+		this.reset.setTooltip(resetTooltip);
 		dirty = true;
 	}
 
 	@Override
 	public void containerTick() {
 		super.containerTick();
+		FluidDispatcherContainer container = this.getMenu();
 
+		Mode containerMode = Mode.getByID(container.mode[0]);
 		if (dirty) {
-			mode.setMessage(Component.literal(Mode.getByID(this.getMenu().mode[0]).toString()));
+			mode.setMessage(Component.literal(containerMode.toString()));
 			dirty = false;
 		}
+
+		switch (containerMode) {
+			default -> this.mode.setTooltip(nearestFirstTooltip);
+			case RR -> this.mode.setTooltip(roundRobinTooltip);
+			case RA -> this.mode.setTooltip(randomTooltip);
+		}
+
+		this.white.setTooltip(container.buttonValues[0] == 1 ? whitelistTooltip : blacklistTooltip);
+		this.mod.setTooltip(container.buttonValues[1] == 1 ? checkModTooltip : ignoreModTooltip);
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(matrixStack);
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		this.renderBackground(guiGraphics);
 
-		super.render(matrixStack, mouseX, mouseY, partialTicks);
-		this.renderTooltip(matrixStack, mouseX, mouseY);
+		super.render(guiGraphics, mouseX, mouseY, partialTicks);
+		this.renderTooltip(guiGraphics, mouseX, mouseY);
 	}
 
 	@Override
-	protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
+	protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int x, int y) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, TEXTURE);
-		this.blit(matrixStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+		guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 	}
 
 	@Override
@@ -98,17 +121,16 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 	}
 
 	@Override
-	protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
-		this.font.draw(matrixStack, this.title, (float) this.titleLabelX, (float) this.titleLabelY, 4210752);
-		this.font.draw(matrixStack, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 4210752);
+	protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+		guiGraphics.drawString(this.font, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 4210752, false);
 
 		FluidDispatcherContainer container = this.getMenu();
-		itemRenderer.renderAndDecorateItem(new ItemStack(Items.PAPER), 2 + white.x - leftPos, 2 + white.y - topPos);
+		guiGraphics.renderItem(new ItemStack(Items.PAPER), 2 + white.getX() - leftPos, 2 + white.getY() - topPos);
 		if (!(container.buttonValues[0] == 1))
-			itemRenderer.renderAndDecorateItem(new ItemStack(Blocks.BARRIER), 2 + white.x - leftPos, 2 + white.y - topPos);
-//
+			guiGraphics.renderItem(new ItemStack(Blocks.BARRIER), 2 + white.getX() - leftPos, 2 + white.getY() - topPos);
 		if (!(container.buttonValues[1] == 1))
-			itemRenderer.renderAndDecorateItem(new ItemStack(Blocks.BARRIER), 2 + mod.x - leftPos, 2 + mod.y - topPos);
+			guiGraphics.renderItem(new ItemStack(Blocks.BARRIER), 2 + mod.getX() - leftPos, 2 + mod.getY() - topPos);
 	}
 
 

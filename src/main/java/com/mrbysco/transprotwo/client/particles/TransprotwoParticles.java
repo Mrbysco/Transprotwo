@@ -19,6 +19,6 @@ public class TransprotwoParticles {
 
 	@SubscribeEvent
 	public static void registerFactories(RegisterParticleProvidersEvent event) {
-		event.register(SQUARE_TYPE.get(), SquareParticleData::new);
+		event.registerSpriteSet(SQUARE_TYPE.get(), SquareParticleData::new);
 	}
 }

@@ -25,7 +25,7 @@ public class HexFieldWidget extends EditBox {
 	}
 
 	@Override
-	protected void setFocused(boolean focused) {
+	public void setFocused(boolean focused) {
 		super.setFocused(focused);
 		if (!focused) {
 			this.setHighlightPos(this.getValue().length());

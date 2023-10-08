@@ -25,9 +25,9 @@ import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
@@ -49,7 +49,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	public final ItemStackHandler filterHandler = new ItemStackHandler(9) {
 		@Override
 		public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-			return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent();
+			return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent();
 		}
 	};
 	private LazyOptional<IItemHandler> filterCap = LazyOptional.of(() -> filterHandler);
@@ -81,7 +81,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	public boolean matchesFluidFilter(FluidStack fluid, ItemStack filterItem) {
-		IFluidHandlerItem fluidHandlerItem = filterItem.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElse(null);
+		IFluidHandlerItem fluidHandlerItem = filterItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
 		if (fluidHandlerItem != null) {
 			for (int i = 0; i < fluidHandlerItem.getTanks(); i++) {
 				FluidStack checkStack = fluidHandlerItem.getFluidInTank(i);
@@ -243,7 +243,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 		while (it.hasNext()) {
 			AbstractTransfer t = it.next();
 			if (t instanceof FluidTransfer tr) {
-				BlockPos currentPos = new BlockPos(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
+				BlockPos currentPos = BlockPos.containing(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
 				if (tr.rec == null || !FluidHelper.hasFluidHandler(level, tr.rec.getLeft(), tr.rec.getRight()) ||
 						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !fluidDispatcher.throughBlocks())) {
 					it.remove();
