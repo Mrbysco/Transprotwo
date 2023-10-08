@@ -1,14 +1,6 @@
 {
-  "result": {
-    "item": "transprotwo:power_dispatcher",
-    "count": 2
-  },
-  "pattern": [
-    "EIE",
-    "IRI",
-    "I I"
-  ],
   "type": "minecraft:crafting_shaped",
+  "category": "redstone",
   "key": {
     "E": {
       "tag": "forge:ender_pearls"
@@ -19,5 +11,15 @@
     "R": {
       "tag": "forge:dusts/redstone"
     }
-  }
+  },
+  "pattern": [
+    "EIE",
+    "IRI",
+    "I I"
+  ],
+  "result": {
+    "count": 2,
+    "item": "transprotwo:power_dispatcher"
+  },
+  "show_notification": true
 }

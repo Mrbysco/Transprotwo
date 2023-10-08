@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "C": {
+      "tag": "forge:chests/wooden"
+    },
+    "E": {
+      "tag": "forge:ender_pearls"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "pattern": [
+    "EIE",
+    "ICI",
+    "I I"
+  ],
+  "result": {
+    "count": 2,
+    "item": "transprotwo:dispatcher"
+  },
+  "show_notification": true
+}

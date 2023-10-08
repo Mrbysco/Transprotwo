@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "B": {
+      "item": "minecraft:bucket"
+    },
+    "E": {
+      "tag": "forge:ender_pearls"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "pattern": [
+    "EIE",
+    "IBI",
+    "I I"
+  ],
+  "result": {
+    "count": 2,
+    "item": "transprotwo:fluid_dispatcher"
+  },
+  "show_notification": true
+}

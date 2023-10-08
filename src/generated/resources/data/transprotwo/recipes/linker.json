@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
+  },
+  "pattern": [
+    "I  ",
+    " P ",
+    "  I"
+  ],
+  "result": {
+    "item": "transprotwo:linker"
+  },
+  "show_notification": true
+}

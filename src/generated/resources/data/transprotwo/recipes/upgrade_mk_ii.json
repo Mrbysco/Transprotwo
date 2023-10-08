@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "tag": "forge:ingots/gold"
+    },
+    "U": {
+      "item": "transprotwo:upgrade_mk_i"
+    }
+  },
+  "pattern": [
+    "UGU"
+  ],
+  "result": {
+    "item": "transprotwo:upgrade_mk_ii"
+  },
+  "show_notification": true
+}

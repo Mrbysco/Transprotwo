@@ -1,7 +1,6 @@
 {
-  "result": {
-    "item": "transprotwo:upgrade_mk_i"
-  },
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
     {
       "tag": "forge:dusts/redstone"
@@ -16,5 +15,7 @@
       "tag": "forge:ingots/iron"
     }
   ],
-  "type": "minecraft:crafting_shapeless"
+  "result": {
+    "item": "transprotwo:upgrade_mk_i"
+  }
 }

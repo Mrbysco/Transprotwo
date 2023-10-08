@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "tag": "forge:gems/emerald"
+    },
+    "U": {
+      "item": "transprotwo:upgrade_mk_iii"
+    }
+  },
+  "pattern": [
+    "UEU"
+  ],
+  "result": {
+    "item": "transprotwo:upgrade_mk_iv"
+  },
+  "show_notification": true
+}
