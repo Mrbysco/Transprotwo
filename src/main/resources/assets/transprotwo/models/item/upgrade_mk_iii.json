@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "transprotwo:items/upgrade_2"
+        "layer0": "transprotwo:item/upgrade_2"
     }
 }
