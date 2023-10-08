@@ -69,8 +69,6 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 			this.colorFields[i].setMaxLength(6);
 			this.addWidget(this.colorFields[i]);
 		}
-
-		dirty = true;
 	}
 
 	@Override
@@ -79,11 +77,8 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 		PowerDispatcherContainer container = this.getMenu();
 
 		Mode containerMode = Mode.getByID(container.mode[0]);
-		if (dirty) {
+		if (!mode.getMessage().getString().equals(containerMode.toString()))
 			mode.setMessage(Component.literal(containerMode.toString()));
-			dirty = false;
-		}
-
 		switch (containerMode) {
 			default -> this.mode.setTooltip(nearestFirstTooltip);
 			case RR -> this.mode.setTooltip(roundRobinTooltip);

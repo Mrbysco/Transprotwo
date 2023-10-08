@@ -23,6 +23,7 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 	private final ResourceLocation TEXTURE = new ResourceLocation(Transprotwo.MOD_ID, "textures/gui/container/dispatcher.png");
 
 	private final static Tooltip nearestFirstTooltip = Tooltip.create(Component.literal("Nearest First"));
+	private final static Tooltip farthestFirstTooltip = Tooltip.create(Component.literal("Farthest First"));
 	private final static Tooltip roundRobinTooltip = Tooltip.create(Component.literal("Round Robin"));
 	private final static Tooltip randomTooltip = Tooltip.create(Component.literal("Random"));
 	private final static Tooltip checkTagTooltip = Tooltip.create(Component.literal("Check Tag"));
@@ -90,25 +91,23 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 		}).bounds(149 + leftPos, 64 + topPos, 20, 20).build());
 		this.reset.setTooltip(resetTooltip);
 
-		this.addRenderableWidget(this.mod = Button.builder(Component.empty(), (button) -> {
+		this.addRenderableWidget(this.mod = Button.builder(Component.literal("M"), (button) -> {
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("mod", true);
 			this.updateBlockEntity(tag);
 		}).bounds(63 + leftPos, 38 + topPos, 20, 20).build());
 
-		this.addRenderableWidget(this.mod = Button.builder(Component.literal("-"), (button) -> {
+		this.addRenderableWidget(this.minus = Button.builder(Component.literal("-"), (button) -> {
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("stockDown", true);
 			this.updateBlockEntity(tag);
 		}).bounds(63 + leftPos, 63 + topPos, 14, 20).build());
 
-		this.addRenderableWidget(this.mod = Button.builder(Component.literal("+"), (button) -> {
+		this.addRenderableWidget(this.plus = Button.builder(Component.literal("+"), (button) -> {
 			CompoundTag tag = new CompoundTag();
 			tag.putBoolean("stockUp", true);
 			this.updateBlockEntity(tag);
 		}).bounds(113 + leftPos, 63 + topPos, 14, 20).build());
-
-		dirty = true;
 	}
 
 	@Override
@@ -116,14 +115,13 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 		super.containerTick();
 		DispatcherContainer container = this.getMenu();
 
-		Mode containerMode = Mode.getByID(container.mode[0]);
-		if (dirty) {
-			mode.setMessage(Component.literal(containerMode.toString()));
-			dirty = false;
-		}
 
+		Mode containerMode = Mode.getByID(container.mode[0]);
+		if (!mode.getMessage().getString().equals(containerMode.toString()))
+			mode.setMessage(Component.literal(containerMode.toString()));
 		switch (containerMode) {
 			default -> this.mode.setTooltip(nearestFirstTooltip);
+			case FF -> this.mode.setTooltip(farthestFirstTooltip);
 			case RR -> this.mode.setTooltip(roundRobinTooltip);
 			case RA -> this.mode.setTooltip(randomTooltip);
 		}

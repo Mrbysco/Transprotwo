@@ -76,7 +76,6 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 			this.updateBlockEntity(tag);
 		}).bounds(149 + leftPos, 64 + topPos, 20, 20).build());
 		this.reset.setTooltip(resetTooltip);
-		dirty = true;
 	}
 
 	@Override
@@ -85,11 +84,8 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 		FluidDispatcherContainer container = this.getMenu();
 
 		Mode containerMode = Mode.getByID(container.mode[0]);
-		if (dirty) {
+		if (!mode.getMessage().getString().equals(containerMode.toString()))
 			mode.setMessage(Component.literal(containerMode.toString()));
-			dirty = false;
-		}
-
 		switch (containerMode) {
 			default -> this.mode.setTooltip(nearestFirstTooltip);
 			case RR -> this.mode.setTooltip(roundRobinTooltip);
