@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractDispatcherBlock extends DirectionalBlock implements EntityBlock {
 	protected static final VoxelShape NORTH_SHAPE = Block.box(1, 1, 0, 15, 15, 8);
