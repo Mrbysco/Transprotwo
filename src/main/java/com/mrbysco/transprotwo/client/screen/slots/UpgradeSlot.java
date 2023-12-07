@@ -4,8 +4,7 @@ import com.mrbysco.transprotwo.item.UpgradeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class UpgradeSlot extends SlotItemHandler {
 	public UpgradeSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
@@ -13,7 +12,7 @@ public class UpgradeSlot extends SlotItemHandler {
 	}
 
 	@Override
-	public boolean mayPlace(@Nonnull ItemStack stack) {
+	public boolean mayPlace(@NotNull ItemStack stack) {
 		return stack.getItem() instanceof UpgradeItem;
 	}
 }

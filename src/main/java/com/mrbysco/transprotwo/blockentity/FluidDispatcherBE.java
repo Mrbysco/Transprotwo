@@ -36,7 +36,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.Iterator;
@@ -48,7 +48,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 
 	public final ItemStackHandler filterHandler = new ItemStackHandler(9) {
 		@Override
-		public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+		public boolean isItemValid(int slot, @NotNull ItemStack stack) {
 			return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent();
 		}
 	};
