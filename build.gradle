@@ -165,3 +165,4 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 apply from: 'gradle/curseforge.gradle'
+apply from: 'gradle/modrinth.gradle'
