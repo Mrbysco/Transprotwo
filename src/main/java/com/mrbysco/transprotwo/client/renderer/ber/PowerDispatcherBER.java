@@ -9,6 +9,7 @@ import com.mrbysco.transprotwo.blockentity.transfer.power.PowerTransfer;
 import com.mrbysco.transprotwo.client.renderer.RenderHelper;
 import com.mrbysco.transprotwo.client.renderer.TransprotwoRenderTypes;
 import com.mrbysco.transprotwo.config.TransprotConfig;
+import com.mrbysco.transprotwo.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -18,8 +19,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix4f;
-
-import java.awt.*;
 
 public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE> {
 	public PowerDispatcherBER(Context context) {

@@ -10,6 +10,7 @@ import com.mrbysco.transprotwo.client.screen.PowerDispatcherContainer;
 import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.TransferParticleMessage;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
+import com.mrbysco.transprotwo.util.Color;
 import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.PowerUtil;
 import net.minecraft.core.BlockPos;
@@ -29,7 +30,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;

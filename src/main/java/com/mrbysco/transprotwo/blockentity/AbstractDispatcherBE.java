@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.item.UpgradeItem;
 import com.mrbysco.transprotwo.util.Boost;
+import com.mrbysco.transprotwo.util.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -23,9 +24,8 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-import java.awt.*;
 import java.util.Set;
 
 public abstract class AbstractDispatcherBE extends BlockEntity implements MenuProvider {
@@ -36,12 +36,12 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 
 	protected final ItemStackHandler upgradeHandler = new ItemStackHandler(1) {
 		@Override
-		public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+		public boolean isItemValid(int slot, @NotNull ItemStack stack) {
 			return stack.getItem() instanceof UpgradeItem;
 		}
 
 		@Override
-		protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
+		protected int getStackLimit(int slot, @NotNull ItemStack stack) {
 			return 1;
 		}
 	};

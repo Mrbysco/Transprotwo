@@ -3,14 +3,13 @@ package com.mrbysco.transprotwo.client.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import com.mrbysco.transprotwo.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import org.joml.Matrix4f;
-
-import java.awt.*;
 
 public class RenderHelper {
 
@@ -28,7 +27,7 @@ public class RenderHelper {
 			VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
 			Matrix4f pose = poseStack.last().pose();
 
-			Color color = new Color(IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor(fluid));
+			Color color = Color.fromInt(IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor(fluid));
 
 			drawQuad(pose, vertexConsumer, color);
 

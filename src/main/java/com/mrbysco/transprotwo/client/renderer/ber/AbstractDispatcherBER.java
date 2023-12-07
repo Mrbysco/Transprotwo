@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
 import com.mrbysco.transprotwo.client.renderer.TransprotwoRenderTypes;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
+import com.mrbysco.transprotwo.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,8 +18,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix4f;
-
-import java.awt.*;
 
 public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements BlockEntityRenderer<T> {
 
