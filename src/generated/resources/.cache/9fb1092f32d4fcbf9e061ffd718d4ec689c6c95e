@@ -1,12 +1,12 @@
-// 1.20.1	2023-10-08T16:22:33.9654438	Recipes
-a83b3298ce3a5eedf21d38491dbbda89637ae419 data/transprotwo/advancements/recipes/misc/upgrade_mk_i.json
-237e9dcc59e8afce863b6c706b7e60b3a8b73815 data/transprotwo/advancements/recipes/misc/upgrade_mk_ii.json
-735d8a1c8b1eb8e6f11bdf298bcbdb0d3da04346 data/transprotwo/advancements/recipes/misc/upgrade_mk_iii.json
-789d216c758331d9238acfe0c71ab1ded90d89ee data/transprotwo/advancements/recipes/misc/upgrade_mk_iv.json
-de099956af46a032ce958c3c7f7629f383e0a50f data/transprotwo/advancements/recipes/redstone/dispatcher.json
-819fe6314b92dd0427f4ae80797b1c7b973b8439 data/transprotwo/advancements/recipes/redstone/fluid_dispatcher.json
-9301244b1d87a70b433df6b0120ee0d06c2034f6 data/transprotwo/advancements/recipes/redstone/power_dispatcher.json
-91b1e808745f757e15d2f4615a9a10081264c994 data/transprotwo/advancements/recipes/tools/linker.json
+// 1.20.2	2023-12-07T21:30:08.8714755	Recipes
+b98b325ed3fce08ad40c4aa08730512c91529df9 data/transprotwo/advancements/recipes/misc/upgrade_mk_i.json
+adc21063cba8e05a96f73d07ad568f0190e21214 data/transprotwo/advancements/recipes/misc/upgrade_mk_ii.json
+ef94328a7dcdc4ff5c0cbadf2187be187d8089b5 data/transprotwo/advancements/recipes/misc/upgrade_mk_iii.json
+fe824886377659f56b8d4a103a4ff42f4b747ad8 data/transprotwo/advancements/recipes/misc/upgrade_mk_iv.json
+a2457b9bf2cf7d29a1fb806da4d68868ae4d8c3e data/transprotwo/advancements/recipes/redstone/dispatcher.json
+5de8ad596ceed9c39cca99d15b14a14a7c6ada54 data/transprotwo/advancements/recipes/redstone/fluid_dispatcher.json
+d84671ff7c4bb5f6b09f44271beda69d5dc32fc3 data/transprotwo/advancements/recipes/redstone/power_dispatcher.json
+82e94ab7bf6652d21ecbdb2754c5beeed57bac67 data/transprotwo/advancements/recipes/tools/linker.json
 d091fb018475f8b818a1bb364a6d1f64b5e21199 data/transprotwo/recipes/dispatcher.json
 edabdc7c356f0738f2e2901913c3eb3840b3add2 data/transprotwo/recipes/fluid_dispatcher.json
 5e62610d9af426ac1355294ed6b14f08bd226b50 data/transprotwo/recipes/linker.json

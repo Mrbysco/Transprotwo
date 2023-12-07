@@ -32,9 +32,9 @@
   },
   "requirements": [
     [
+      "has_the_recipe",
       "has_upgrade",
-      "has_emerald",
-      "has_the_recipe"
+      "has_emerald"
     ]
   ],
   "rewards": {

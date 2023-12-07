@@ -42,10 +42,10 @@
   },
   "requirements": [
     [
+      "has_the_recipe",
       "has_ender_pearl",
       "has_iron_ingot",
-      "has_bucket",
-      "has_the_recipe"
+      "has_bucket"
     ]
   ],
   "rewards": {

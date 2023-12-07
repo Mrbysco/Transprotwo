@@ -17,11 +17,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -253,11 +252,5 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 	public void invalidateCaps() {
 		super.invalidateCaps();
 		upgradeCap.invalidate();
-	}
-
-	@Override
-	public AABB getRenderBoundingBox() {
-		// our render bounding box should always be the full block in case we're covered
-		return new AABB(this.worldPosition).inflate(16);
 	}
 }

@@ -40,10 +40,10 @@
   },
   "requirements": [
     [
+      "has_the_recipe",
       "has_ender_pearl",
       "has_iron_ingot",
-      "has_wooden_chest",
-      "has_the_recipe"
+      "has_wooden_chest"
     ]
   ],
   "rewards": {

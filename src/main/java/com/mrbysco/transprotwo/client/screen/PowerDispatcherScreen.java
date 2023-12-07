@@ -16,7 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatcherContainer> {
 	private final ResourceLocation TEXTURE = new ResourceLocation(Transprotwo.MOD_ID, "textures/gui/container/power_dispatcher.png");
@@ -85,13 +85,13 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 			case RA -> this.mode.setTooltip(randomTooltip);
 		}
 
-		for (HexFieldWidget textField : this.colorFields)
-			textField.tick();
+//		for (HexFieldWidget textField : this.colorFields)
+//			textField.tick();
 	}
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(guiGraphics);
+		this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		for (HexFieldWidget textField : this.colorFields)

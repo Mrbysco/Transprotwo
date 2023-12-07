@@ -1,26 +1,26 @@
 package com.mrbysco.transprotwo.datagen.server;
 
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 public class TransprotRecipeProvider extends RecipeProvider {
 
-	public TransprotRecipeProvider(PackOutput packOutput) {
-		super(packOutput);
+	public TransprotRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+		super(packOutput, lookupProvider);
 	}
 
 	@Override
-	protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+	protected void buildRecipes(RecipeOutput recipeOutput) {
 		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, TransprotwoRegistry.DISPATCHER.get(), 2)
 				.pattern("EIE")
 				.pattern("ICI")
@@ -31,7 +31,7 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.unlockedBy("has_ender_pearl", has(Tags.Items.ENDER_PEARLS))
 				.unlockedBy("has_iron_ingot", has(Tags.Items.INGOTS_IRON))
 				.unlockedBy("has_wooden_chest", has(Tags.Items.CHESTS_WOODEN))
-				.save(consumer);
+				.save(recipeOutput);
 
 		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, TransprotwoRegistry.FLUID_DISPATCHER.get(), 2)
 				.pattern("EIE")
@@ -43,7 +43,7 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.unlockedBy("has_ender_pearl", has(Tags.Items.ENDER_PEARLS))
 				.unlockedBy("has_iron_ingot", has(Tags.Items.INGOTS_IRON))
 				.unlockedBy("has_bucket", has(Items.BUCKET))
-				.save(consumer);
+				.save(recipeOutput);
 
 		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, TransprotwoRegistry.POWER_DISPATCHER.get(), 2)
 				.pattern("EIE")
@@ -55,7 +55,7 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.unlockedBy("has_ender_pearl", has(Tags.Items.ENDER_PEARLS))
 				.unlockedBy("has_iron_ingot", has(Tags.Items.INGOTS_IRON))
 				.unlockedBy("has_redstone_dust", has(Tags.Items.DUSTS_REDSTONE))
-				.save(consumer);
+				.save(recipeOutput);
 
 		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TransprotwoRegistry.LINKER.get())
 				.pattern("I  ")
@@ -65,7 +65,7 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.define('P', Items.PAPER)
 				.unlockedBy("has_iron_ingot", has(Tags.Items.INGOTS_IRON))
 				.unlockedBy("has_paper", has(Items.PAPER))
-				.save(consumer);
+				.save(recipeOutput);
 
 		ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_I.get())
 				.requires(Tags.Items.DUSTS_REDSTONE)
@@ -76,7 +76,7 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.unlockedBy("has_gold_ingot", has(Tags.Items.INGOTS_GOLD))
 				.unlockedBy("has_iron_ingot", has(Tags.Items.INGOTS_IRON))
 				.unlockedBy("has_paper", has(Items.PAPER))
-				.save(consumer);
+				.save(recipeOutput);
 
 		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_II.get())
 				.pattern("UGU")
@@ -84,20 +84,20 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.define('G', Tags.Items.INGOTS_GOLD)
 				.unlockedBy("has_upgrade", has(TransprotwoRegistry.UPGRADE_MK_I.get()))
 				.unlockedBy("has_gold_ingot", has(Tags.Items.INGOTS_GOLD))
-				.save(consumer);
+				.save(recipeOutput);
 		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_III.get())
 				.pattern("UDU")
 				.define('U', TransprotwoRegistry.UPGRADE_MK_II.get())
 				.define('D', Tags.Items.GEMS_DIAMOND)
 				.unlockedBy("has_upgrade", has(TransprotwoRegistry.UPGRADE_MK_II.get()))
 				.unlockedBy("has_diamond", has(Tags.Items.GEMS_DIAMOND))
-				.save(consumer);
+				.save(recipeOutput);
 		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_IV.get())
 				.pattern("UEU")
 				.define('U', TransprotwoRegistry.UPGRADE_MK_III.get())
 				.define('E', Tags.Items.GEMS_EMERALD)
 				.unlockedBy("has_upgrade", has(TransprotwoRegistry.UPGRADE_MK_III.get()))
 				.unlockedBy("has_emerald", has(Tags.Items.GEMS_EMERALD))
-				.save(consumer);
+				.save(recipeOutput);
 	}
 }

@@ -8,6 +8,7 @@ import com.mrbysco.transprotwo.config.TransprotConfig;
 import com.mrbysco.transprotwo.util.DistanceHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -18,8 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -51,14 +51,14 @@ public class LinkerItem extends Item {
 				ResourceLocation location = ResourceLocation.tryParse(stackTag.getString("dimension"));
 				BlockEntity blockEntity = level.getBlockEntity(pos);
 				if (blockEntity != null) {
-					if (blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
+					if (blockEntity.getCapability(Capabilities.ITEM_HANDLER).isPresent()) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof ItemDispatcherBE itemDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = itemDispatcher.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(level.getBlockState(pos).getBlock()) + "."), true);
+									player.displayClientMessage(Component.literal("Added " + BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()) + "."), true);
 									itemDispatcher.refreshClient();
 								} else {
 									player.displayClientMessage(Component.literal("Inventory is already connected."), true);
@@ -67,14 +67,14 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if (blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent()) {
+					} else if (blockEntity.getCapability(Capabilities.FLUID_HANDLER).isPresent()) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof FluidDispatcherBE fluidDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = fluidDispatcher.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(level.getBlockState(pos).getBlock()) + "."), true);
+									player.displayClientMessage(Component.literal("Added " + BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()) + "."), true);
 									fluidDispatcher.refreshClient();
 								} else {
 									player.displayClientMessage(Component.literal("Tank is already connected."), true);
@@ -83,14 +83,14 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if (blockEntity.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+					} else if (blockEntity.getCapability(Capabilities.ENERGY).isPresent()) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof PowerDispatcherBE powerDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = powerDispatcher.getTargets().add(pair);
 								if (done) {
-									player.displayClientMessage(Component.literal("Added " + ForgeRegistries.BLOCKS.getKey(level.getBlockState(pos).getBlock()) + "."), true);
+									player.displayClientMessage(Component.literal("Added " + BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()) + "."), true);
 									powerDispatcher.refreshClient();
 								} else {
 									player.displayClientMessage(Component.literal("Tank is already connected."), true);

@@ -3,7 +3,7 @@ package com.mrbysco.transprotwo.blockentity.transfer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FluidTransfer extends AbstractTransfer {
 	public FluidStack fluidStack;

@@ -1,1 +1,1 @@
-* Initial beta
+* Initial update to 1.20.2

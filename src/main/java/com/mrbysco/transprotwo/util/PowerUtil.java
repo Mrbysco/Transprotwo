@@ -6,14 +6,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public class PowerUtil {
 	public static boolean hasEnergyStorage(BlockEntity blockEntity, Direction side) {
 		if (blockEntity == null)
 			return false;
-		return blockEntity.getCapability(ForgeCapabilities.ENERGY, side).isPresent() || blockEntity instanceof Container;
+		return blockEntity.getCapability(Capabilities.ENERGY, side).isPresent() || blockEntity instanceof Container;
 	}
 
 	public static boolean hasEnergyStorage(BlockGetter world, BlockPos pos, Direction side) {
@@ -23,8 +23,8 @@ public class PowerUtil {
 	public static IEnergyStorage getEnergyStorage(BlockEntity blockEntity, Direction side) {
 		if (blockEntity == null)
 			return null;
-		if (blockEntity.getCapability(ForgeCapabilities.ENERGY, side).isPresent())
-			return blockEntity.getCapability(ForgeCapabilities.ENERGY, side).orElse(null);
+		if (blockEntity.getCapability(Capabilities.ENERGY, side).isPresent())
+			return blockEntity.getCapability(Capabilities.ENERGY, side).orElse(null);
 		return null;
 	}
 

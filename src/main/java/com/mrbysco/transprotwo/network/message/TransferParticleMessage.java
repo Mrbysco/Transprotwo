@@ -2,9 +2,7 @@ package com.mrbysco.transprotwo.network.message;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent.Context;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.NetworkEvent.Context;
 
 public class TransferParticleMessage {
 	private final CompoundTag compound;
@@ -21,8 +19,7 @@ public class TransferParticleMessage {
 		return new TransferParticleMessage(packetBuffer.readNbt());
 	}
 
-	public void handle(Supplier<Context> context) {
-		Context ctx = context.get();
+	public void handle(Context ctx) {
 		ctx.enqueueWork(() -> {
 			if (ctx.getDirection().getReceptionSide().isClient()) {
 				com.mrbysco.transprotwo.client.ClientHelper.summonParticles(compound);

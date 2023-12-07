@@ -13,6 +13,7 @@ import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.FluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -25,19 +26,17 @@ import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +48,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	public final ItemStackHandler filterHandler = new ItemStackHandler(9) {
 		@Override
 		public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-			return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent();
+			return stack.getCapability(Capabilities.FLUID_HANDLER_ITEM).isPresent();
 		}
 	};
 	private LazyOptional<IItemHandler> filterCap = LazyOptional.of(() -> filterHandler);
@@ -81,14 +80,14 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	public boolean matchesFluidFilter(FluidStack fluid, ItemStack filterItem) {
-		IFluidHandlerItem fluidHandlerItem = filterItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
+		IFluidHandlerItem fluidHandlerItem = filterItem.getCapability(Capabilities.FLUID_HANDLER_ITEM).orElse(null);
 		if (fluidHandlerItem != null) {
 			for (int i = 0; i < fluidHandlerItem.getTanks(); i++) {
 				FluidStack checkStack = fluidHandlerItem.getFluidInTank(i);
 
 				if (checkStack.isEmpty() || fluid.isEmpty())
 					return false;
-				if (mod && ForgeRegistries.FLUIDS.getKey(checkStack.getFluid()).getNamespace().equals(ForgeRegistries.FLUIDS.getKey(fluid.getFluid()).getNamespace()))
+				if (mod && BuiltInRegistries.FLUID.getKey(checkStack.getFluid()).getNamespace().equals(BuiltInRegistries.FLUID.getKey(fluid.getFluid()).getNamespace()))
 					return true;
 				if (checkStack.isFluidEqual(fluid)) {
 					return true;
@@ -189,7 +188,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 					if (canInsert <= 0)
 						continue;
 
-					FluidStack x = originHandler.drain(send, FluidAction.SIMULATE);
+					FluidStack x = originHandler.drain(send, IFluidHandler.FluidAction.SIMULATE);
 					if (!x.isEmpty()) {
 						FluidTransfer tr = new FluidTransfer(worldPosition, pair.getLeft(), pair.getRight(), x);
 						if (!wayFree(tr.dis, tr.rec.getLeft()))
@@ -206,7 +205,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 							this.summonParticles(nbt);
 						}
 						transfers.add(tr);
-						originHandler.drain(send, FluidAction.EXECUTE);
+						originHandler.drain(send, IFluidHandler.FluidAction.EXECUTE);
 						return true;
 					}
 				}

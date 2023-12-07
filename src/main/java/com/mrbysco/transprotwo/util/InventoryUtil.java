@@ -7,17 +7,17 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
 public class InventoryUtil {
 	public static boolean hasItemHandler(BlockEntity blockEntity, Direction side) {
 		if (blockEntity == null)
 			return false;
-		return blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side).isPresent() || blockEntity instanceof Container;
+		return blockEntity.getCapability(Capabilities.ITEM_HANDLER, side).isPresent() || blockEntity instanceof Container;
 	}
 
 	public static boolean hasItemHandler(BlockGetter world, BlockPos pos, Direction side) {
@@ -27,8 +27,8 @@ public class InventoryUtil {
 	public static IItemHandler getItemHandler(BlockEntity blockEntity, Direction side) {
 		if (blockEntity == null)
 			return null;
-		if (blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side).isPresent())
-			return blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side).orElse(null);
+		if (blockEntity.getCapability(Capabilities.ITEM_HANDLER, side).isPresent())
+			return blockEntity.getCapability(Capabilities.ITEM_HANDLER, side).orElse(null);
 		if (blockEntity instanceof WorldlyContainer)
 			return new SidedInvWrapper((WorldlyContainer) blockEntity, side);
 		if (blockEntity instanceof Container)

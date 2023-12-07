@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix4f;
@@ -77,5 +78,10 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 	@Override
 	public int getViewDistance() {
 		return 256;
+	}
+
+	@Override
+	public AABB getRenderBoundingBox(T blockEntity) {
+		return new AABB(blockEntity.getBlockPos()).inflate(16.0D);
 	}
 }

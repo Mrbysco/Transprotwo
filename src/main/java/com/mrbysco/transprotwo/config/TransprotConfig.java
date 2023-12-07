@@ -1,11 +1,11 @@
 package com.mrbysco.transprotwo.config;
 
 import com.mrbysco.transprotwo.Transprotwo;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
+import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class TransprotConfig {
@@ -15,7 +15,7 @@ public class TransprotConfig {
 		public final BooleanValue showFluids;
 		public final BooleanValue showPower;
 
-		Client(ForgeConfigSpec.Builder builder) {
+		Client(ModConfigSpec.Builder builder) {
 			builder.comment("Client settings")
 					.push("client");
 
@@ -42,7 +42,7 @@ public class TransprotConfig {
 	public static class Common {
 		public final IntValue range;
 
-		Common(ForgeConfigSpec.Builder builder) {
+		Common(ModConfigSpec.Builder builder) {
 			builder.comment("General settings")
 					.push("General");
 
@@ -54,20 +54,20 @@ public class TransprotConfig {
 		}
 	}
 
-	public static final ForgeConfigSpec clientSpec;
+	public static final ModConfigSpec clientSpec;
 	public static final Client CLIENT;
 
 	static {
-		final Pair<Client, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Client::new);
+		final Pair<Client, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Client::new);
 		clientSpec = specPair.getRight();
 		CLIENT = specPair.getLeft();
 	}
 
-	public static final ForgeConfigSpec serverSpec;
+	public static final ModConfigSpec serverSpec;
 	public static final Common COMMON;
 
 	static {
-		final Pair<Common, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Common::new);
+		final Pair<Common, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Common::new);
 		serverSpec = specPair.getRight();
 		COMMON = specPair.getLeft();
 	}

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 /**
- * Modified version of ParticleColor: https://github.com/baileyholl/Ars-Nouveau/blob/1.16.2/src/main/java/com/hollingsworth/arsnouveau/client/particle/ParticleColor.java
+ * Modified version of ParticleColor: <a href="https://github.com/baileyholl/Ars-Nouveau/blob/1.16.2/src/main/java/com/hollingsworth/arsnouveau/client/particle/ParticleColor.java">...</a>
  */
 public class Color {
 	private final float r;
@@ -71,7 +71,7 @@ public class Color {
 					break;
 			}
 		}
-		return 0xff000000 | (r << 16) | (g << 8) | (b << 0);
+		return 0xff000000 | (r << 16) | (g << 8) | (b);
 	}
 
 	public Color(float r, float g, float b) {

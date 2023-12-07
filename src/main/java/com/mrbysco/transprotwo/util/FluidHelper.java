@@ -6,16 +6,15 @@ import net.minecraft.world.Container;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class FluidHelper {
 	public static boolean hasFluidHandler(BlockEntity blockEntity, Direction side) {
 		if (blockEntity == null)
 			return false;
-		return blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, side).isPresent() || blockEntity instanceof Container;
+		return blockEntity.getCapability(Capabilities.FLUID_HANDLER, side).isPresent() || blockEntity instanceof Container;
 	}
 
 	public static boolean hasFluidHandler(BlockGetter world, BlockPos pos, Direction side) {
@@ -25,8 +24,8 @@ public class FluidHelper {
 	public static IFluidHandler getFluidHandler(BlockEntity blockEntity, Direction side) {
 		if (blockEntity == null)
 			return null;
-		if (blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, side).isPresent())
-			return blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, side).orElse(null);
+		if (blockEntity.getCapability(Capabilities.FLUID_HANDLER, side).isPresent())
+			return blockEntity.getCapability(Capabilities.FLUID_HANDLER, side).orElse(null);
 		return null;
 	}
 
@@ -36,7 +35,7 @@ public class FluidHelper {
 		IFluidHandler destHandler = getFluidHandler(destBlockEntity, side);
 		int fluidAmount = fluidStack.getAmount();
 		Fluid fluid = fluidStack.getFluid();
-		int amountFilled = destHandler.fill(fluidStack, FluidAction.EXECUTE);
+		int amountFilled = destHandler.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
 		if (amountFilled == fluidAmount) {
 			return FluidStack.EMPTY;
 		} else {
@@ -47,6 +46,6 @@ public class FluidHelper {
 	public static int canInsert(IFluidHandler destHandler, FluidStack stack) {
 		if (destHandler == null || stack.isEmpty())
 			return 0;
-		return destHandler.fill(stack, FluidAction.SIMULATE);
+		return destHandler.fill(stack, IFluidHandler.FluidAction.SIMULATE);
 	}
 }

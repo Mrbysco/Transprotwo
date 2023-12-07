@@ -14,6 +14,7 @@ import com.mrbysco.transprotwo.util.InventoryUtil;
 import com.mrbysco.transprotwo.util.StackHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -27,10 +28,9 @@ import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.jetbrains.annotations.Nullable;
@@ -81,7 +81,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 			return false;
 		if (tag && StackHelper.matchAnyTag(stack1, stack2))
 			return true;
-		if (mod && ForgeRegistries.ITEMS.getKey(stack1.getItem()).getNamespace().equals(ForgeRegistries.ITEMS.getKey(stack2.getItem()).getNamespace()))
+		if (mod && BuiltInRegistries.ITEM.getKey(stack1.getItem()).getNamespace().equals(BuiltInRegistries.ITEM.getKey(stack2.getItem()).getNamespace()))
 			return true;
 		if (nbt && !ItemStack.isSameItemSameTags(stack1, stack2))
 			return false;

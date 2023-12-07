@@ -3,7 +3,7 @@ package com.mrbysco.transprotwo.datagen.client;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 
 public class TransprotLanguageProvider extends LanguageProvider {
 

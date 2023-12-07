@@ -17,60 +17,60 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class TransprotwoRegistry {
-	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Transprotwo.MOD_ID);
-	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Transprotwo.MOD_ID);
-	public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Transprotwo.MOD_ID);
+	public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Transprotwo.MOD_ID);
+	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Transprotwo.MOD_ID);
+	public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Transprotwo.MOD_ID);
 	public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Transprotwo.MOD_ID);
 
 	//Blocks
-	public static final RegistryObject<Block> DISPATCHER = BLOCKS.register("dispatcher", () -> new DispatcherBlock(
+	public static final DeferredBlock<DispatcherBlock> DISPATCHER = BLOCKS.register("dispatcher", () -> new DispatcherBlock(
 			BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F).sound(SoundType.METAL)));
-	public static final net.minecraftforge.registries.RegistryObject<Block> FLUID_DISPATCHER = BLOCKS.register("fluid_dispatcher", () -> new FluidDispatcherBlock(
+	public static final DeferredBlock<FluidDispatcherBlock> FLUID_DISPATCHER = BLOCKS.register("fluid_dispatcher", () -> new FluidDispatcherBlock(
 			BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F).sound(SoundType.METAL)));
-	public static final RegistryObject<Block> POWER_DISPATCHER = BLOCKS.register("power_dispatcher", () -> new PowerDispatcherBlock(
+	public static final DeferredBlock<PowerDispatcherBlock> POWER_DISPATCHER = BLOCKS.register("power_dispatcher", () -> new PowerDispatcherBlock(
 			BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F).sound(SoundType.METAL)));
 
 	//Items
-	public static final net.minecraftforge.registries.RegistryObject<Item> DISPATCHER_ITEM = ITEMS.register("dispatcher", () -> new BlockItem(DISPATCHER.get(), new Item.Properties()));
-	public static final net.minecraftforge.registries.RegistryObject<Item> FLUID_DISPATCHER_ITEM = ITEMS.register("fluid_dispatcher", () -> new BlockItem(FLUID_DISPATCHER.get(), new Item.Properties()));
-	public static final RegistryObject<Item> POWER_DISPATCHER_ITEM = ITEMS.register("power_dispatcher", () -> new BlockItem(POWER_DISPATCHER.get(), new Item.Properties()));
+	public static final DeferredItem<BlockItem> DISPATCHER_ITEM = ITEMS.registerSimpleBlockItem(DISPATCHER);
+	public static final DeferredItem<BlockItem> FLUID_DISPATCHER_ITEM = ITEMS.registerSimpleBlockItem(FLUID_DISPATCHER);
+	public static final DeferredItem<BlockItem> POWER_DISPATCHER_ITEM = ITEMS.registerSimpleBlockItem(POWER_DISPATCHER);
 
-	public static final net.minecraftforge.registries.RegistryObject<Item> LINKER = ITEMS.register("linker", () -> new LinkerItem(new Item.Properties()));
-	public static final net.minecraftforge.registries.RegistryObject<Item> UPGRADE_MK_I = ITEMS.register("upgrade_mk_i", () ->
+	public static final DeferredItem<LinkerItem> LINKER = ITEMS.register("linker", () -> new LinkerItem(new Item.Properties()));
+	public static final DeferredItem<UpgradeItem> UPGRADE_MK_I = ITEMS.register("upgrade_mk_i", () ->
 			new UpgradeItem(new Item.Properties().stacksTo(1), 0,
 					new Boost((long) (Boost.defaultFrequence / 1.5), Boost.defaultSpeed * 1.5, 1)));
-	public static final net.minecraftforge.registries.RegistryObject<Item> UPGRADE_MK_II = ITEMS.register("upgrade_mk_ii", () ->
+	public static final DeferredItem<UpgradeItem> UPGRADE_MK_II = ITEMS.register("upgrade_mk_ii", () ->
 			new UpgradeItem(new Item.Properties().stacksTo(1), 1,
 					new Boost((long) (Boost.defaultFrequence / 2.5), Boost.defaultSpeed * 2.0, 4)));
-	public static final net.minecraftforge.registries.RegistryObject<Item> UPGRADE_MK_III = ITEMS.register("upgrade_mk_iii", () ->
+	public static final DeferredItem<UpgradeItem> UPGRADE_MK_III = ITEMS.register("upgrade_mk_iii", () ->
 			new UpgradeItem(new Item.Properties().stacksTo(1), 2,
 					new Boost((long) (Boost.defaultFrequence / 5.0), Boost.defaultSpeed * 4.0, 16)));
-	public static final RegistryObject<Item> UPGRADE_MK_IV = ITEMS.register("upgrade_mk_iv", () ->
+	public static final DeferredItem<UpgradeItem> UPGRADE_MK_IV = ITEMS.register("upgrade_mk_iv", () ->
 			new UpgradeItem(new Item.Properties().stacksTo(1), 3,
 					new Boost((long) (Boost.defaultFrequence / 8.0), Boost.defaultSpeed * 5.0, 64)));
 
 	//Tiles
-	public static final net.minecraftforge.registries.RegistryObject<BlockEntityType<ItemDispatcherBE>> DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("dispatcher", () -> BlockEntityType.Builder.of(
+	public static final Supplier<BlockEntityType<ItemDispatcherBE>> DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("dispatcher", () -> BlockEntityType.Builder.of(
 			ItemDispatcherBE::new, DISPATCHER.get()).build(null));
-	public static final RegistryObject<BlockEntityType<FluidDispatcherBE>> FLUID_DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("fluid_dispatcher", () -> BlockEntityType.Builder.of(
+	public static final Supplier<BlockEntityType<FluidDispatcherBE>> FLUID_DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("fluid_dispatcher", () -> BlockEntityType.Builder.of(
 			FluidDispatcherBE::new, FLUID_DISPATCHER.get()).build(null));
-	public static final RegistryObject<BlockEntityType<PowerDispatcherBE>> POWER_DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("power_dispatcher", () -> BlockEntityType.Builder.of(
+	public static final Supplier<BlockEntityType<PowerDispatcherBE>> POWER_DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("power_dispatcher", () -> BlockEntityType.Builder.of(
 			PowerDispatcherBE::new, POWER_DISPATCHER.get()).build(null));
 
 
-	public static final RegistryObject<CreativeModeTab> TRANSPROTWO_TAB = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
+	public static final Supplier<CreativeModeTab> TRANSPROTWO_TAB = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
 			.icon(() -> new ItemStack(TransprotwoRegistry.DISPATCHER.get()))
 			.withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
 			.title(Component.translatable("itemGroup.transprotwo"))

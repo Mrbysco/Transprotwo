@@ -40,10 +40,10 @@
   },
   "requirements": [
     [
+      "has_the_recipe",
       "has_ender_pearl",
       "has_iron_ingot",
-      "has_redstone_dust",
-      "has_the_recipe"
+      "has_redstone_dust"
     ]
   ],
   "rewards": {

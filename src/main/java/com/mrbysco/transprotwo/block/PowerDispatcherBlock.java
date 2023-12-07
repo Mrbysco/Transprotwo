@@ -20,8 +20,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.network.NetworkHooks;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
@@ -69,7 +69,7 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 		if (placer instanceof Player player) {
 			//Shy wanted to always have it default to the trans colors when she placed it <3
 			String shyUUID = "7135da42-d327-47bb-bb04-5ba4e212fb32";
-			boolean flag = player.getGameProfile().isComplete() && player.getGameProfile().getId().equals(UUID.fromString(shyUUID));
+			boolean flag = player.getGameProfile().getId().equals(UUID.fromString(shyUUID));
 			if (flag) {
 				BlockEntity blockEntity = level.getBlockEntity(pos);
 				if (blockEntity instanceof PowerDispatcherBE powerDispatcher) {

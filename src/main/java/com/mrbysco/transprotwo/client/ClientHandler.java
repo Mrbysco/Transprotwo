@@ -9,8 +9,8 @@ import com.mrbysco.transprotwo.client.screen.PowerDispatcherScreen;
 import com.mrbysco.transprotwo.registry.TransprotwoContainers;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class ClientHandler {
 	public static void onClientSetup(final FMLClientSetupEvent event) {

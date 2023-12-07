@@ -32,9 +32,9 @@
   },
   "requirements": [
     [
+      "has_the_recipe",
       "has_iron_ingot",
-      "has_paper",
-      "has_the_recipe"
+      "has_paper"
     ]
   ],
   "rewards": {

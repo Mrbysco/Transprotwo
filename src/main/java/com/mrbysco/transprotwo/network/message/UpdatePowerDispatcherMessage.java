@@ -8,9 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent.Context;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.NetworkEvent.Context;
 
 public class UpdatePowerDispatcherMessage {
 	private final CompoundTag compound;
@@ -30,8 +28,7 @@ public class UpdatePowerDispatcherMessage {
 		return new UpdatePowerDispatcherMessage(packetBuffer.readNbt(), packetBuffer.readBlockPos());
 	}
 
-	public void handle(Supplier<Context> context) {
-		Context ctx = context.get();
+	public void handle(Context ctx) {
 		ctx.enqueueWork(() -> {
 			if (ctx.getDirection().getReceptionSide().isServer() && ctx.getSender() != null) {
 				ServerPlayer player = ctx.getSender();

@@ -52,11 +52,11 @@
   },
   "requirements": [
     [
+      "has_the_recipe",
       "has_redstone_dust",
       "has_gold_ingot",
       "has_iron_ingot",
-      "has_paper",
-      "has_the_recipe"
+      "has_paper"
     ]
   ],
   "rewards": {
