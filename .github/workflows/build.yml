@@ -26,11 +26,11 @@ jobs:
         env:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
         run: ./gradlew curseforge --stacktrace
-#      - name: Publish To Modrinth
-#        if: contains(github.event.head_commit.message, '[publish]') || contains(github.event.head_commit.message, '[modrinth]')
-#        env:
-#          MODRINTH_KEY: ${{ secrets.MODRINTH_KEY }}
-#        run: ./gradlew modrinth --stacktrace
+      - name: Publish To Modrinth
+        if: contains(github.event.head_commit.message, '[publish]') || contains(github.event.head_commit.message, '[modrinth]')
+        env:
+          MODRINTH_KEY: ${{ secrets.MODRINTH_KEY }}
+        run: ./gradlew modrinth --stacktrace
       - name: Publish to maven
         if: contains(github.event.head_commit.message, '[push]') || contains(github.event.head_commit.message, '[build]')
         env:
