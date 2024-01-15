@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -51,7 +51,7 @@ public class LinkerItem extends Item {
 				ResourceLocation location = ResourceLocation.tryParse(stackTag.getString("dimension"));
 				BlockEntity blockEntity = level.getBlockEntity(pos);
 				if (blockEntity != null) {
-					if (blockEntity.getCapability(Capabilities.ITEM_HANDLER).isPresent()) {
+					if (level.getCapability(Capabilities.ItemHandler.BLOCK, pos, context.getClickedFace()) != null) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof ItemDispatcherBE itemDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
@@ -67,7 +67,7 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if (blockEntity.getCapability(Capabilities.FLUID_HANDLER).isPresent()) {
+					} else if (level.getCapability(Capabilities.FluidHandler.BLOCK, pos, context.getClickedFace()) != null) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof FluidDispatcherBE fluidDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
@@ -83,7 +83,7 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if (blockEntity.getCapability(Capabilities.ENERGY).isPresent()) {
+					} else if (level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, context.getClickedFace()) != null) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof PowerDispatcherBE powerDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);

@@ -50,6 +50,5 @@
     "recipes": [
       "transprotwo:power_dispatcher"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

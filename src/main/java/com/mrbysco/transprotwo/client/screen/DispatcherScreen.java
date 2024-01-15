@@ -3,8 +3,7 @@ package com.mrbysco.transprotwo.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE.Mode;
-import com.mrbysco.transprotwo.network.PacketHandler;
-import com.mrbysco.transprotwo.network.message.UpdateDispatcherMessage;
+import com.mrbysco.transprotwo.network.message.UpdateDispatcherPayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -188,6 +187,6 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 
 	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdateDispatcherMessage(compound, this.getMenu().getBlockEntity().getBlockPos()));
+		PacketDistributor.SERVER.noArg().send(new UpdateDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

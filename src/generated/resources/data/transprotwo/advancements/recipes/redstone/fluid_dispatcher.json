@@ -52,6 +52,5 @@
     "recipes": [
       "transprotwo:fluid_dispatcher"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

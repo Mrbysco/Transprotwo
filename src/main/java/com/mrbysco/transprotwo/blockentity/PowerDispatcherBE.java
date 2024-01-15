@@ -8,7 +8,7 @@ import com.mrbysco.transprotwo.blockentity.transfer.power.PowerStack;
 import com.mrbysco.transprotwo.blockentity.transfer.power.PowerTransfer;
 import com.mrbysco.transprotwo.client.screen.PowerDispatcherContainer;
 import com.mrbysco.transprotwo.network.PacketHandler;
-import com.mrbysco.transprotwo.network.message.TransferParticleMessage;
+import com.mrbysco.transprotwo.network.message.TransferParticlePayload;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import com.mrbysco.transprotwo.util.Color;
 import com.mrbysco.transprotwo.util.DistanceHelper;
@@ -28,8 +28,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -145,7 +145,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 				if (blocked)
 					continue;
 
-				IEnergyStorage dest = PowerUtil.getEnergyStorage(level.getBlockEntity(pair.getLeft()), pair.getRight());
+				IEnergyStorage dest = PowerUtil.getEnergyStorage(level, pair.getLeft(), pair.getRight());
 				int canInsert = !dest.canReceive() ? 0 : PowerUtil.canInsert(dest, send);
 				if (canInsert <= 0)
 					continue;
@@ -177,7 +177,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 
 	@Override
 	public void summonParticles(CompoundTag nbt) {
-		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getBlockPos(), 32, this.getLevel().dimension());
+		PacketHandler.sendToNearbyPlayers(new TransferParticlePayload(nbt), getBlockPos(), 32, this.getLevel().dimension());
 	}
 
 	public static void clientTick(Level level, BlockPos pos, BlockState state, PowerDispatcherBE powerDispatcher) {
@@ -213,7 +213,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 				}
 				boolean received = tr.rec.getLeft().equals(currentPos);
 				if (received && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
-					PowerStack rest = PowerUtil.insert(level.getBlockEntity(tr.rec.getLeft()), tr.powerStack, tr.rec.getRight());
+					PowerStack rest = PowerUtil.insert(level, tr.rec.getLeft(), tr.powerStack, tr.rec.getRight());
 					if (!rest.isEmpty()) {
 						tr.powerStack = rest;
 						for (AbstractTransfer at : powerDispatcher.transfers) {
@@ -247,7 +247,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 		Direction face = level.getBlockState(worldPosition).getValue(DirectionalBlock.FACING);
 		if (!level.isAreaLoaded(worldPosition.relative(face), 1) && level.getBlockEntity(worldPosition.relative(face)) == null)
 			return null;
-		return PowerUtil.getEnergyStorage(level.getBlockEntity(worldPosition.relative(face)), face.getOpposite());
+		return PowerUtil.getEnergyStorage(level, worldPosition.relative(face), face.getOpposite());
 	}
 
 	public Color[] getColors() {

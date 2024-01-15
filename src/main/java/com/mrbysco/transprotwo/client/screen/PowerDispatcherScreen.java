@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE.Mode;
 import com.mrbysco.transprotwo.client.screen.widget.HexFieldWidget;
-import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.network.message.UpdatePowerDispatcherMessage;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -168,6 +167,6 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 
 	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdatePowerDispatcherMessage(compound, this.getMenu().getBlockEntity().getBlockPos()));
+		PacketDistributor.SERVER.noArg().send(new UpdatePowerDispatcherMessage(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

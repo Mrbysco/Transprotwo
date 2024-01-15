@@ -1,27 +1,32 @@
 package com.mrbysco.transprotwo.block;
 
+import com.mojang.serialization.MapCodec;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.ItemTransfer;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.network.NetworkHooks;
-
 import org.jetbrains.annotations.Nullable;
 
 public class DispatcherBlock extends AbstractDispatcherBlock {
+	public static final MapCodec<DispatcherBlock> CODEC = simpleCodec(DispatcherBlock::new);
+
+	@Override
+	protected MapCodec<? extends DirectionalBlock> codec() {
+		return CODEC;
+	}
 
 	public DispatcherBlock(Properties properties) {
 		super(properties);
@@ -46,7 +51,7 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof AbstractDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
-			NetworkHooks.openScreen((ServerPlayer) player, (AbstractDispatcherBE) blockEntity, pos);
+			player.openMenu((AbstractDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, level, pos, player, handIn, hit);
 	}

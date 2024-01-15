@@ -7,7 +7,7 @@ import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.FluidTransfer;
 import com.mrbysco.transprotwo.client.screen.FluidDispatcherContainer;
 import com.mrbysco.transprotwo.network.PacketHandler;
-import com.mrbysco.transprotwo.network.message.TransferParticleMessage;
+import com.mrbysco.transprotwo.network.message.TransferParticlePayload;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.FluidHelper;
@@ -26,12 +26,10 @@ import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -48,10 +46,9 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	public final ItemStackHandler filterHandler = new ItemStackHandler(9) {
 		@Override
 		public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-			return stack.getCapability(Capabilities.FLUID_HANDLER_ITEM).isPresent();
+			return stack.getCapability(Capabilities.FluidHandler.ITEM) != null;
 		}
 	};
-	private LazyOptional<IItemHandler> filterCap = LazyOptional.of(() -> filterHandler);
 
 	public FluidDispatcherBE(BlockPos pos, BlockState state) {
 		super(TransprotwoRegistry.FLUID_DISPATCHER_BLOCK_ENTITY.get(), pos, state);
@@ -80,7 +77,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	public boolean matchesFluidFilter(FluidStack fluid, ItemStack filterItem) {
-		IFluidHandlerItem fluidHandlerItem = filterItem.getCapability(Capabilities.FLUID_HANDLER_ITEM).orElse(null);
+		IFluidHandlerItem fluidHandlerItem = filterItem.getCapability(Capabilities.FluidHandler.ITEM);
 		if (fluidHandlerItem != null) {
 			for (int i = 0; i < fluidHandlerItem.getTanks(); i++) {
 				FluidStack checkStack = fluidHandlerItem.getFluidInTank(i);
@@ -183,7 +180,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 					if (blocked)
 						continue;
 
-					IFluidHandler dest = FluidHelper.getFluidHandler(level.getBlockEntity(pair.getLeft()), pair.getRight());
+					IFluidHandler dest = FluidHelper.getFluidHandler(level, pair.getLeft(), pair.getRight());
 					int canInsert = FluidHelper.canInsert(dest, send);
 					if (canInsert <= 0)
 						continue;
@@ -215,7 +212,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 
 	@Override
 	public void summonParticles(CompoundTag nbt) {
-		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getBlockPos(), 32, this.getLevel().dimension());
+		PacketHandler.sendToNearbyPlayers(new TransferParticlePayload(nbt), getBlockPos(), 32, this.getLevel().dimension());
 	}
 
 	public static void clientTick(Level level, BlockPos pos, BlockState state, FluidDispatcherBE fluidDispatcher) {
@@ -251,7 +248,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 				}
 				boolean received = tr.rec.getLeft().equals(currentPos);
 				if (received && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
-					FluidStack rest = FluidHelper.insert(level.getBlockEntity(tr.rec.getLeft()), tr.fluidStack, tr.rec.getRight());
+					FluidStack rest = FluidHelper.insert(level, tr.rec.getLeft(), tr.fluidStack, tr.rec.getRight());
 					if (!rest.isEmpty()) {
 						tr.fluidStack = rest;
 						for (AbstractTransfer at : fluidDispatcher.transfers) {
@@ -285,7 +282,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 		Direction face = level.getBlockState(worldPosition).getValue(DirectionalBlock.FACING);
 		if (!level.isAreaLoaded(worldPosition.relative(face), 1) && level.getBlockEntity(worldPosition.relative(face)) == null)
 			return null;
-		return FluidHelper.getFluidHandler(level.getBlockEntity(worldPosition.relative(face)), face.getOpposite());
+		return FluidHelper.getFluidHandler(level, worldPosition.relative(face), face.getOpposite());
 	}
 
 	public FluidStack getExtractStack(FluidStack currentFluid, int max) {
@@ -317,11 +314,5 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 		super.resetOptions();
 		white = false;
 		mod = false;
-	}
-
-	@Override
-	public void invalidateCaps() {
-		super.invalidateCaps();
-		filterCap.invalidate();
 	}
 }

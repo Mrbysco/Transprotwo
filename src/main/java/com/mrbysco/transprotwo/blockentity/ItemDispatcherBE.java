@@ -7,7 +7,7 @@ import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.ItemTransfer;
 import com.mrbysco.transprotwo.client.screen.DispatcherContainer;
 import com.mrbysco.transprotwo.network.PacketHandler;
-import com.mrbysco.transprotwo.network.message.TransferParticleMessage;
+import com.mrbysco.transprotwo.network.message.TransferParticlePayload;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.InventoryUtil;
@@ -28,12 +28,11 @@ import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +45,6 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 	private boolean mod = false;
 
 	public final ItemStackHandler filterHandler = new ItemStackHandler(9);
-	private LazyOptional<IItemHandler> filterCap = LazyOptional.of(() -> filterHandler);
 
 	private int stockNum = 0;
 
@@ -136,7 +134,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 			Direction face = level.getBlockState(worldPosition).getValue(DirectionalBlock.FACING);
 			if (!level.isAreaLoaded(worldPosition.relative(face), 1))
 				return false;
-			IItemHandler inv = InventoryUtil.getItemHandler(level.getBlockEntity(worldPosition.relative(face)), face.getOpposite());
+			IItemHandler inv = InventoryUtil.getItemHandler(level, worldPosition.relative(face), face.getOpposite());
 			if (inv == null)
 				return false;
 			List<Pair<BlockPos, Direction>> lis = Lists.newArrayList();
@@ -186,7 +184,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 					}
 					if (blocked)
 						continue;
-					IItemHandler dest = InventoryUtil.getItemHandler(level.getBlockEntity(pair.getLeft()), pair.getRight());
+					IItemHandler dest = InventoryUtil.getItemHandler(level, pair.getLeft(), pair.getRight());
 					int canInsert = InventoryUtil.canInsert(dest, send);
 					int missing = Integer.MAX_VALUE;
 					if (stockNum > 0) {
@@ -236,7 +234,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 
 	@Override
 	public void summonParticles(CompoundTag nbt) {
-		PacketHandler.sendToNearbyPlayers(new TransferParticleMessage(nbt), getBlockPos(), 32, this.getLevel().dimension());
+		PacketHandler.sendToNearbyPlayers(new TransferParticlePayload(nbt), getBlockPos(), 32, this.getLevel().dimension());
 	}
 
 	public static void clientTick(Level level, BlockPos pos, BlockState state, ItemDispatcherBE itemDispatcher) {
@@ -268,7 +266,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 				}
 				boolean received = tr.rec.getLeft().equals(currentPos);
 				if (received && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
-					ItemStack rest = InventoryUtil.insert(level.getBlockEntity(tr.rec.getLeft()), tr.stack, tr.rec.getRight());
+					ItemStack rest = InventoryUtil.insert(level, tr.rec.getLeft(), tr.stack, tr.rec.getRight());
 					if (!rest.isEmpty()) {
 						tr.stack = rest;
 						for (AbstractTransfer at : itemDispatcher.transfers) {
@@ -367,12 +365,5 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 		white = false;
 		mod = false;
 		stockNum = 0;
-	}
-
-
-	@Override
-	public void invalidateCaps() {
-		super.invalidateCaps();
-		filterCap.invalidate();
 	}
 }

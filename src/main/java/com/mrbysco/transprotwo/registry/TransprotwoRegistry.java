@@ -69,7 +69,6 @@ public class TransprotwoRegistry {
 	public static final Supplier<BlockEntityType<PowerDispatcherBE>> POWER_DISPATCHER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("power_dispatcher", () -> BlockEntityType.Builder.of(
 			PowerDispatcherBE::new, POWER_DISPATCHER.get()).build(null));
 
-
 	public static final Supplier<CreativeModeTab> TRANSPROTWO_TAB = CREATIVE_MODE_TABS.register("tab", () -> CreativeModeTab.builder()
 			.icon(() -> new ItemStack(TransprotwoRegistry.DISPATCHER.get()))
 			.withTabsBefore(CreativeModeTabs.SPAWN_EGGS)

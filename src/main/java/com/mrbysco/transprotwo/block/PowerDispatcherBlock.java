@@ -1,5 +1,6 @@
 package com.mrbysco.transprotwo.block;
 
+import com.mojang.serialization.MapCodec;
 import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.power.PowerTransfer;
@@ -7,7 +8,6 @@ import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import com.mrbysco.transprotwo.util.PowerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,12 +21,17 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.network.NetworkHooks;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
 public class PowerDispatcherBlock extends AbstractDispatcherBlock {
+	public static final MapCodec<PowerDispatcherBlock> CODEC = simpleCodec(PowerDispatcherBlock::new);
+
+	@Override
+	protected MapCodec<? extends DirectionalBlock> codec() {
+		return CODEC;
+	}
 
 	public PowerDispatcherBlock(Properties properties) {
 		super(properties);
@@ -52,14 +57,14 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 		Direction face = state.getValue(DirectionalBlock.FACING);
 		if (!level.isAreaLoaded(pos.relative(face), 1) && level.getBlockEntity(pos.relative(face)) == null)
 			return null;
-		return PowerUtil.getEnergyStorage(level.getBlockEntity(pos.relative(face)), face.getOpposite());
+		return PowerUtil.getEnergyStorage(level, pos.relative(face), face.getOpposite());
 	}
 
 	@Override
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof PowerDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
-			NetworkHooks.openScreen((ServerPlayer) player, (PowerDispatcherBE) blockEntity, pos);
+			player.openMenu((PowerDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, level, pos, player, handIn, hit);
 	}

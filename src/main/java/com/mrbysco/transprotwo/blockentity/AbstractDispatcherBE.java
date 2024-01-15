@@ -18,8 +18,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -44,7 +42,6 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 			return 1;
 		}
 	};
-	protected LazyOptional<IItemHandler> upgradeCap = LazyOptional.of(() -> upgradeHandler);
 
 	public AbstractDispatcherBE(BlockEntityType<? extends AbstractDispatcherBE> blockEntityType, BlockPos pos, BlockState state) {
 		super(blockEntityType, pos, state);
@@ -246,11 +243,5 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 
 	public void resetOptions() {
 		mode = Mode.NF;
-	}
-
-	@Override
-	public void invalidateCaps() {
-		super.invalidateCaps();
-		upgradeCap.invalidate();
 	}
 }

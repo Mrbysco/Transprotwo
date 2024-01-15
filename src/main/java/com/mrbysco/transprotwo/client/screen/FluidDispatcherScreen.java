@@ -3,8 +3,7 @@ package com.mrbysco.transprotwo.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE.Mode;
-import com.mrbysco.transprotwo.network.PacketHandler;
-import com.mrbysco.transprotwo.network.message.UpdateFluidDispatcherMessage;
+import com.mrbysco.transprotwo.network.message.UpdateFluidDispatcherPayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -132,6 +131,6 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 
 	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketHandler.CHANNEL.send(PacketDistributor.SERVER.noArg(), new UpdateFluidDispatcherMessage(compound, this.getMenu().getBlockEntity().getBlockPos()));
+		PacketDistributor.SERVER.noArg().send(new UpdateFluidDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

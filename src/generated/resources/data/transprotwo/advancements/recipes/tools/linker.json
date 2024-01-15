@@ -41,6 +41,5 @@
     "recipes": [
       "transprotwo:linker"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

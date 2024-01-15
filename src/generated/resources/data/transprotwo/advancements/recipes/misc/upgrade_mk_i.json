@@ -63,6 +63,5 @@
     "recipes": [
       "transprotwo:upgrade_mk_i"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -11,8 +11,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import org.slf4j.Logger;
 
@@ -21,13 +19,12 @@ public class Transprotwo {
 	public static final String MOD_ID = "transprotwo";
 	public static final Logger LOGGER = LogUtils.getLogger();
 
-	public Transprotwo() {
-		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+	public Transprotwo(IEventBus eventBus) {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, TransprotConfig.clientSpec);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, TransprotConfig.serverSpec);
 		eventBus.register(TransprotConfig.class);
 
-		eventBus.addListener(this::setup);
+		eventBus.addListener(PacketHandler::setupPackets);
 
 		TransprotwoRegistry.ITEMS.register(eventBus);
 		TransprotwoRegistry.BLOCKS.register(eventBus);
@@ -42,8 +39,5 @@ public class Transprotwo {
 			eventBus.addListener(ClientHandler::registerEntityRenders);
 		}
 	}
-
-	private void setup(final FMLCommonSetupEvent event) {
-		PacketHandler.init();
-	}
+	
 }

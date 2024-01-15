@@ -1,5 +1,6 @@
 package com.mrbysco.transprotwo.block;
 
+import com.mojang.serialization.MapCodec;
 import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.FluidTransfer;
@@ -7,7 +8,6 @@ import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import com.mrbysco.transprotwo.util.FluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -20,11 +20,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.network.NetworkHooks;
-
 import org.jetbrains.annotations.Nullable;
 
 public class FluidDispatcherBlock extends AbstractDispatcherBlock {
+	public static final MapCodec<FluidDispatcherBlock> CODEC = simpleCodec(FluidDispatcherBlock::new);
+
+	@Override
+	protected MapCodec<? extends DirectionalBlock> codec() {
+		return CODEC;
+	}
 
 	public FluidDispatcherBlock(Properties properties) {
 		super(properties);
@@ -50,14 +54,14 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 		Direction face = state.getValue(DirectionalBlock.FACING);
 		if (!level.isAreaLoaded(pos.relative(face), 1) && level.getBlockEntity(pos.relative(face)) == null)
 			return null;
-		return FluidHelper.getFluidHandler(level.getBlockEntity(pos.relative(face)), face.getOpposite());
+		return FluidHelper.getFluidHandler(level, pos.relative(face), face.getOpposite());
 	}
 
 	@Override
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof FluidDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
-			NetworkHooks.openScreen((ServerPlayer) player, (FluidDispatcherBE) blockEntity, pos);
+			player.openMenu((FluidDispatcherBE) blockEntity, pos);
 		}
 		return super.use(state, level, pos, player, handIn, hit);
 	}

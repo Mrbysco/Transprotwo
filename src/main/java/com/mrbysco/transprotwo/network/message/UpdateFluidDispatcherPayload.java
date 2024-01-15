@@ -7,11 +7,11 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
-public record UpdatePowerDispatcherMessage(CompoundTag compound,
+public record UpdateFluidDispatcherPayload(CompoundTag compound,
 										   BlockPos blockEntityPos) implements CustomPacketPayload {
-	public static final ResourceLocation ID = new ResourceLocation(Transprotwo.MOD_ID, "update_power_dispatcher");
+	public static final ResourceLocation ID = new ResourceLocation(Transprotwo.MOD_ID, "update_fluid_dispatcher");
 
-	public UpdatePowerDispatcherMessage(final FriendlyByteBuf packetBuffer) {
+	public UpdateFluidDispatcherPayload(final FriendlyByteBuf packetBuffer) {
 		this(packetBuffer.readNbt(), packetBuffer.readBlockPos());
 	}
 
