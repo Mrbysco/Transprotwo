@@ -2,6 +2,7 @@ package com.mrbysco.transprotwo.blockentity.transfer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
@@ -17,22 +18,19 @@ public class ItemTransfer extends AbstractTransfer {
 		this.stack = stack;
 	}
 
-	public void readFromNBT(CompoundTag compound) {
-		CompoundTag tag = compound.getCompound("stack");
-		stack = ItemStack.of(tag);
-		super.readFromNBT(compound);
+	public void readFromNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		stack = ItemStack.parseOptional(lookupProvider, compound.getCompound("stack"));
+		super.readFromNBT(compound, lookupProvider);
 	}
 
-	public CompoundTag writeToNBT(CompoundTag compound) {
-		CompoundTag tag = new CompoundTag();
-		stack.save(tag);
-		compound.put("stack", tag);
-		return super.writeToNBT(compound);
+	public CompoundTag writeToNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		compound.put("stack", stack.save(lookupProvider));
+		return super.writeToNBT(compound, lookupProvider);
 	}
 
-	public static ItemTransfer loadFromNBT(CompoundTag nbt) {
+	public static ItemTransfer loadFromNBT(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 		ItemTransfer transfer = new ItemTransfer();
-		transfer.readFromNBT(nbt);
+		transfer.readFromNBT(nbt, lookupProvider);
 		return transfer;
 	}
 }

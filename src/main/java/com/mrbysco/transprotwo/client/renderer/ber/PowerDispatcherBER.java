@@ -62,8 +62,7 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 
 		poseStack.pushPose();
 		poseStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
-		float width = 4.0f;
-		RenderType lineType = TransprotwoRenderTypes.getType(width);
+		RenderType lineType = TransprotwoRenderTypes.POWER;
 		VertexConsumer vertexBuilder = bufferSource.getBuffer(lineType);
 
 		for (Pair<BlockPos, Direction> pa : dispatcher.getTargets()) {

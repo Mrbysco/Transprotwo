@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.Objects;
 
 public class FluidDispatcherContainer extends AbstractContainerMenu {
-	private FluidDispatcherBE blockEntity;
-	private Player player;
+	private final FluidDispatcherBE blockEntity;
+	private final Player player;
 
 	public final int[] mode = new int[1];
 	public final int[] buttonValues = new int[2];

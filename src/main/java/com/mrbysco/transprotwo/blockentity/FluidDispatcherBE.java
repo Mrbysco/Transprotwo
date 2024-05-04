@@ -13,6 +13,7 @@ import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.FluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -86,7 +87,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 					return false;
 				if (mod && BuiltInRegistries.FLUID.getKey(checkStack.getFluid()).getNamespace().equals(BuiltInRegistries.FLUID.getKey(fluid.getFluid()).getNamespace()))
 					return true;
-				if (checkStack.isFluidEqual(fluid)) {
+				if (FluidStack.isSameFluidSameComponents(checkStack, fluid)) {
 					return true;
 				}
 			}
@@ -95,23 +96,23 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	@Override
-	public void load(CompoundTag compound) {
+	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.loadAdditional(compound, lookupProvider);
 		ListTag transferList = compound.getList("transfers", 10);
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(FluidTransfer.loadFromNBT(transferList.getCompound(i)));
+			this.transfers.add(FluidTransfer.loadFromNBT(transferList.getCompound(i), lookupProvider));
 
-		this.filterHandler.deserializeNBT(compound.getCompound("filter"));
+		this.filterHandler.deserializeNBT(lookupProvider, compound.getCompound("filter"));
 
 		white = compound.getBoolean("white");
 		mod = compound.getBoolean("mod");
-		super.load(compound);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound) {
-		super.saveAdditional(compound);
-		compound.put("filter", filterHandler.serializeNBT());
+	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.saveAdditional(compound, lookupProvider);
+		compound.put("filter", filterHandler.serializeNBT(lookupProvider));
 
 		compound.putBoolean("white", white);
 		compound.putBoolean("mod", mod);
@@ -212,7 +213,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 
 	@Override
 	public void summonParticles(CompoundTag nbt) {
-		PacketHandler.sendToNearbyPlayers(new TransferParticlePayload(nbt), getBlockPos(), 32, this.getLevel().dimension());
+		PacketHandler.sendToNearbyPlayers(new TransferParticlePayload(nbt), getBlockPos(), 32, this.getLevel());
 	}
 
 	public static void clientTick(Level level, BlockPos pos, BlockState state, FluidDispatcherBE fluidDispatcher) {

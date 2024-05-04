@@ -7,6 +7,8 @@ import com.mrbysco.transprotwo.util.Boost;
 import com.mrbysco.transprotwo.util.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Connection;
@@ -75,8 +77,9 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 		}
 	}
 
-	@Override
-	public void load(CompoundTag compound) {
+	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.loadAdditional(compound, lookupProvider);
+
 		ListTag targetList = compound.getList("targets", 10);
 		this.targets = Sets.newHashSet();
 		for (int i = 0; i < targetList.size(); i++) {
@@ -89,18 +92,17 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 		else
 			this.mode = Mode.NF;
 
-		this.upgradeHandler.deserializeNBT(compound.getCompound("upgrade"));
+		this.upgradeHandler.deserializeNBT(lookupProvider, compound.getCompound("upgrade"));
 		this.lastInsertIndex = compound.getInt("index");
-
-		super.load(compound);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound) {
+	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.saveAdditional(compound, lookupProvider);
 		ListTag transferList = new ListTag();
 		for (AbstractTransfer transfer : transfers) {
 			CompoundTag n = new CompoundTag();
-			transfer.writeToNBT(n);
+			transfer.writeToNBT(n, lookupProvider);
 			transferList.add(n);
 		}
 		compound.put("transfers", transferList);
@@ -113,7 +115,7 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 			targetList.add(tag);
 		}
 
-		compound.put("upgrade", upgradeHandler.serializeNBT());
+		compound.put("upgrade", upgradeHandler.serializeNBT(lookupProvider));
 
 		compound.put("targets", targetList);
 		compound.putString("mode", this.mode.toString());
@@ -204,26 +206,26 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
-		this.load(packet.getTag());
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider lookupProvider) {
+		this.loadAdditional(packet.getTag(), lookupProvider);
 	}
 
 	@Override
-	public CompoundTag getUpdateTag() {
+	public CompoundTag getUpdateTag(HolderLookup.Provider lookupProvider) {
 		CompoundTag nbt = new CompoundTag();
-		this.saveAdditional(nbt);
+		this.saveAdditional(nbt, lookupProvider);
 		return nbt;
 	}
 
 	@Override
-	public void handleUpdateTag(CompoundTag tag) {
-		this.load(tag);
+	public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+		this.loadAdditional(tag, lookupProvider);
 	}
 
 	@Override
 	public CompoundTag getPersistentData() {
 		CompoundTag nbt = new CompoundTag();
-		this.saveAdditional(nbt);
+		this.saveAdditional(nbt, level != null ? level.registryAccess() : VanillaRegistries.createLookup());
 		return nbt;
 	}
 

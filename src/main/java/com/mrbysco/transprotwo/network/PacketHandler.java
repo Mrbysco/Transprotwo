@@ -10,29 +10,27 @@ import com.mrbysco.transprotwo.network.message.UpdateFluidDispatcherPayload;
 import com.mrbysco.transprotwo.network.message.UpdatePowerDispatcherMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class PacketHandler {
 
-	public static void setupPackets(final RegisterPayloadHandlerEvent event) {
-		final IPayloadRegistrar registrar = event.registrar(Transprotwo.MOD_ID);
-		registrar.play(ChangeColorPayload.ID, ChangeColorPayload::new, handler -> handler
-				.client(ClientPayloadHandler.getInstance()::handleColorPayload));
-		registrar.play(TransferParticlePayload.ID, TransferParticlePayload::new, handler -> handler
-				.client(ClientPayloadHandler.getInstance()::handleParticlePayload));
-		registrar.play(UpdateDispatcherPayload.ID, UpdateDispatcherPayload::new, handler -> handler
-				.server(ServerPayloadHandler.getInstance()::handleDispatcherPayload));
-		registrar.play(UpdateFluidDispatcherPayload.ID, UpdateFluidDispatcherPayload::new, handler -> handler
-				.server(ServerPayloadHandler.getInstance()::handleFluidDispatcherPayload));
-		registrar.play(UpdatePowerDispatcherMessage.ID, UpdatePowerDispatcherMessage::new, handler -> handler
-				.server(ServerPayloadHandler.getInstance()::handlePowerDispatcherPayload));
+	public static void setupPackets(final RegisterPayloadHandlersEvent event) {
+		final PayloadRegistrar registrar = event.registrar(Transprotwo.MOD_ID);
+		registrar.playToClient(ChangeColorPayload.ID, ChangeColorPayload.CODEC, ClientPayloadHandler.getInstance()::handleColorPayload);
+		registrar.playToClient(TransferParticlePayload.ID, TransferParticlePayload.CODEC, ClientPayloadHandler.getInstance()::handleParticlePayload);
+		registrar.playToServer(UpdateDispatcherPayload.ID, UpdateDispatcherPayload.CODEC, ServerPayloadHandler.getInstance()::handleDispatcherPayload);
+		registrar.playToServer(UpdateFluidDispatcherPayload.ID, UpdateFluidDispatcherPayload.CODEC, ServerPayloadHandler.getInstance()::handleFluidDispatcherPayload);
+		registrar.playToServer(UpdatePowerDispatcherMessage.ID, UpdatePowerDispatcherMessage.CODEC, ServerPayloadHandler.getInstance()::handlePowerDispatcherPayload);
 	}
 
-	public static void sendToNearbyPlayers(CustomPacketPayload payload, BlockPos pos, double radius, ResourceKey<Level> dim) {
-		PacketDistributor.NEAR.with(new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), radius, dim)).send(payload);
+	public static void sendToNearbyPlayers(CustomPacketPayload payload, BlockPos pos, double radius, Level level) {
+		if (level instanceof ServerLevel serverLevel)
+			PacketDistributor.sendToPlayersNear(serverLevel, null, pos.getX(), pos.getY(), pos.getZ(), radius, payload);
+		else
+			throw new IllegalStateException("Cannot send packets to nearby players using a client world.");
 	}
 }

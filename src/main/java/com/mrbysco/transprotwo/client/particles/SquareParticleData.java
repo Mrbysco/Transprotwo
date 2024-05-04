@@ -1,7 +1,7 @@
 package com.mrbysco.transprotwo.client.particles;
 
-import com.mrbysco.transprotwo.util.Color;
 import com.mrbysco.transprotwo.client.particles.factory.SquareParticleTypeData;
+import com.mrbysco.transprotwo.util.Color;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -24,7 +24,7 @@ public class SquareParticleData implements ParticleProvider<SquareParticleTypeDa
 		return new SquareParticleTypeData(TransprotwoParticles.SQUARE_TYPE.get(), color);
 	}
 
-	public static ParticleOptions createData(double r, double g, double b) {
-		return new SquareParticleTypeData(TransprotwoParticles.SQUARE_TYPE.get(), new Color(r, g, b));
+	public static ParticleOptions createData(float r, float g, float b, float a) {
+		return new SquareParticleTypeData(TransprotwoParticles.SQUARE_TYPE.get(), new Color(r, g, b, a));
 	}
 }

@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:gems/emerald"
+            "items": "#c:gems/emerald"
           }
         ]
       },
@@ -21,9 +21,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "transprotwo:upgrade_mk_iii"
-            ]
+            "items": "transprotwo:upgrade_mk_iii"
           }
         ]
       },

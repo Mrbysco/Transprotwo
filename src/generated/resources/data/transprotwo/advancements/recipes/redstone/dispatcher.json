@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:ender_pearls"
+            "items": "#c:ender_pearls"
           }
         ]
       },
@@ -15,7 +15,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:ingots/iron"
+            "items": "#c:ingots/iron"
           }
         ]
       },
@@ -31,7 +31,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:chests/wooden"
+            "items": "#c:chests/wooden"
           }
         ]
       },

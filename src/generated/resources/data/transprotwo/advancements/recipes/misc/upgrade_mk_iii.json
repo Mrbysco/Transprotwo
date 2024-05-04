@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:gems/diamond"
+            "items": "#c:gems/diamond"
           }
         ]
       },
@@ -21,9 +21,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "transprotwo:upgrade_mk_ii"
-            ]
+            "items": "transprotwo:upgrade_mk_ii"
           }
         ]
       },

@@ -187,6 +187,6 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 
 	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketDistributor.SERVER.noArg().send(new UpdateDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
+		PacketDistributor.sendToServer(new UpdateDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

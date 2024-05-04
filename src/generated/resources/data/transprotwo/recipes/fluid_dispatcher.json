@@ -3,13 +3,13 @@
   "category": "redstone",
   "key": {
     "B": {
-      "item": "minecraft:bucket"
+      "tag": "c:buckets/empty"
     },
     "E": {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 2,
-    "item": "transprotwo:fluid_dispatcher"
+    "id": "transprotwo:fluid_dispatcher"
   }
 }

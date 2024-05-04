@@ -6,13 +6,13 @@ import com.mrbysco.transprotwo.client.particles.factory.SquareParticleTypeData;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber(modid = Transprotwo.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Transprotwo.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class TransprotwoParticles {
 	public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, Transprotwo.MOD_ID);
 

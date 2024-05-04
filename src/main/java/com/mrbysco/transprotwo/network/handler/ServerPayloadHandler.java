@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class ServerPayloadHandler {
 	private static final ServerPayloadHandler INSTANCE = new ServerPayloadHandler();
@@ -23,11 +23,11 @@ public class ServerPayloadHandler {
 		return INSTANCE;
 	}
 
-	public void handleDispatcherPayload(final UpdateDispatcherPayload updateDispatcherPayload, final PlayPayloadContext context) {
+	public void handleDispatcherPayload(final UpdateDispatcherPayload updateDispatcherPayload, final IPayloadContext context) {
 		// Do something with the data, on the main thread
-		context.workHandler().submitAsync(() -> {
-					if (context.player().isPresent()) {
-						Player player = context.player().get();
+		context.enqueueWork(() -> {
+					if (context.player() != null) {
+						Player player = context.player();
 						Level level = player.level();
 						BlockEntity blockEntity = level.getBlockEntity(updateDispatcherPayload.blockEntityPos());
 						if (blockEntity instanceof ItemDispatcherBE itemDispatcher) {
@@ -59,16 +59,16 @@ public class ServerPayloadHandler {
 				})
 				.exceptionally(e -> {
 					// Handle exception
-					context.packetHandler().disconnect(Component.translatable("captcha.networking.failed", e.getMessage()));
+					context.disconnect(Component.translatable("captcha.networking.failed", e.getMessage()));
 					return null;
 				});
 	}
 
-	public void handleFluidDispatcherPayload(final UpdateFluidDispatcherPayload updateDispatcherPayload, final PlayPayloadContext context) {
+	public void handleFluidDispatcherPayload(final UpdateFluidDispatcherPayload updateDispatcherPayload, final IPayloadContext context) {
 		// Do something with the data, on the main thread
-		context.workHandler().submitAsync(() -> {
-					if (context.player().isPresent()) {
-						Player player = context.player().get();
+		context.enqueueWork(() -> {
+					if (context.player() != null) {
+						Player player = context.player();
 						Level level = player.level();
 						BlockEntity blockEntity = level.getBlockEntity(updateDispatcherPayload.blockEntityPos());
 						if (blockEntity instanceof FluidDispatcherBE fluidDispatcher) {
@@ -90,17 +90,17 @@ public class ServerPayloadHandler {
 				})
 				.exceptionally(e -> {
 					// Handle exception
-					context.packetHandler().disconnect(Component.translatable("captcha.networking.failed", e.getMessage()));
+					context.disconnect(Component.translatable("captcha.networking.failed", e.getMessage()));
 					return null;
 				});
 	}
 
-	public void handlePowerDispatcherPayload(final UpdatePowerDispatcherMessage updateDispatcherPayload, final PlayPayloadContext context) {
+	public void handlePowerDispatcherPayload(final UpdatePowerDispatcherMessage updateDispatcherPayload, final IPayloadContext context) {
 		// Do something with the data, on the main thread
-		context.workHandler().submitAsync(() -> {
+		context.enqueueWork(() -> {
 					//Complete Captcha
-					if (context.player().isPresent()) {
-						Player player = context.player().get();
+					if (context.player() != null) {
+						Player player = context.player();
 						Level level = player.level();
 						BlockPos blockEntityPos = updateDispatcherPayload.blockEntityPos();
 						BlockEntity blockEntity = level.getBlockEntity(blockEntityPos);
@@ -121,7 +121,7 @@ public class ServerPayloadHandler {
 							if (compound.contains("color5"))
 								powerDispatcher.setLine5(compound.getInt("color5"));
 							powerDispatcher.refreshClient();
-							PacketHandler.sendToNearbyPlayers(new ChangeColorPayload(blockEntityPos), blockEntityPos, 32, level.dimension());
+							PacketHandler.sendToNearbyPlayers(new ChangeColorPayload(blockEntityPos), blockEntityPos, 32, level);
 						}
 
 						player.containerMenu.slotsChanged(null);
@@ -129,7 +129,7 @@ public class ServerPayloadHandler {
 				})
 				.exceptionally(e -> {
 					// Handle exception
-					context.packetHandler().disconnect(Component.translatable("captcha.networking.failed", e.getMessage()));
+					context.disconnect(Component.translatable("captcha.networking.failed", e.getMessage()));
 					return null;
 				});
 	}

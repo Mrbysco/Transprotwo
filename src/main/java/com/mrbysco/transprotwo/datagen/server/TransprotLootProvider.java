@@ -1,10 +1,12 @@
 package com.mrbysco.transprotwo.datagen.server;
 
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -12,23 +14,23 @@ import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static com.mrbysco.transprotwo.registry.TransprotwoRegistry.DISPATCHER;
 import static com.mrbysco.transprotwo.registry.TransprotwoRegistry.FLUID_DISPATCHER;
 import static com.mrbysco.transprotwo.registry.TransprotwoRegistry.POWER_DISPATCHER;
 
 public class TransprotLootProvider extends LootTableProvider {
-	public TransprotLootProvider(PackOutput packOutput) {
+	public TransprotLootProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 		super(packOutput, Set.of(), List.of(
 				new SubProviderEntry(TransprotBlockProvider::new, LootContextParamSets.BLOCK)
-		));
+		), lookupProvider);
 	}
 
 	@Override
-	protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
-		map.forEach((name, table) -> table.validate(validationtracker));
+	protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector) {
+		super.validate(writableregistry, validationcontext, problemreporter$collector);
 	}
 
 	private static class TransprotBlockProvider extends BlockLootSubProvider {

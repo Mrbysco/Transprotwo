@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "D": {
-      "tag": "forge:gems/diamond"
+      "tag": "c:gems/diamond"
     },
     "U": {
       "item": "transprotwo:upgrade_mk_ii"
@@ -13,6 +13,7 @@
     "UDU"
   ],
   "result": {
-    "item": "transprotwo:upgrade_mk_iii"
+    "count": 1,
+    "id": "transprotwo:upgrade_mk_iii"
   }
 }

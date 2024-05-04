@@ -10,7 +10,6 @@ import com.mrbysco.transprotwo.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
@@ -35,9 +34,7 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 
 		BlockPos pos = dispatcher.getBlockPos();
 		poseStack.pushPose();
-		float width = 6.0f;
-		RenderType lineType = TransprotwoRenderTypes.getType(width);
-		VertexConsumer vertexConsumer = bufferSource.getBuffer(lineType);
+		VertexConsumer vertexConsumer = bufferSource.getBuffer(TransprotwoRenderTypes.LINE);
 
 		final Color color = dispatcher.getColor();
 		for (Pair<BlockPos, Direction> pa : dispatcher.getTargets()) {
@@ -55,8 +52,8 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 				RenderSystem.enableDepthTest();
 			}
 			Matrix4f matrix = poseStack.last().pose();
-			vertexConsumer.vertex(matrix, x, y, z).color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f).endVertex();
-			vertexConsumer.vertex(matrix, x2, y2, z2).color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1f).endVertex();
+			vertexConsumer.vertex(matrix, x, y, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+			vertexConsumer.vertex(matrix, x2, y2, z2).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
 		}
 
 		if (vertexConsumer instanceof MultiBufferSource.BufferSource bufferSource1) {

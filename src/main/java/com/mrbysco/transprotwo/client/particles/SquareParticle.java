@@ -15,6 +15,8 @@ public class SquareParticle extends TextureSheetParticle {
 		float colorR = r;
 		float colorG = g;
 		float colorB = b;
+
+		//Should never be needed, but just in case the color is not in the correct range
 		if (colorR > 1.0) {
 			colorR = (float) (colorR / 255.0);
 		}

@@ -15,6 +15,7 @@ import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.PowerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -58,24 +59,23 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	@Override
-	public void load(CompoundTag compound) {
+	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.loadAdditional(compound, lookupProvider);
 		ListTag transferList = compound.getList("transfers", 10);
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(PowerTransfer.loadFromNBT(transferList.getCompound(i)));
+			this.transfers.add(PowerTransfer.loadFromNBT(transferList.getCompound(i), lookupProvider));
 
 		this.line1 = compound.getInt("line1");
 		this.line2 = compound.getInt("line2");
 		this.line3 = compound.getInt("line3");
 		this.line4 = compound.getInt("line4");
 		this.line5 = compound.getInt("line5");
-
-		super.load(compound);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound) {
-		super.saveAdditional(compound);
+	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.saveAdditional(compound, lookupProvider);
 		compound.putInt("line1", this.line1);
 		compound.putInt("line2", this.line2);
 		compound.putInt("line3", this.line3);
@@ -177,7 +177,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 
 	@Override
 	public void summonParticles(CompoundTag nbt) {
-		PacketHandler.sendToNearbyPlayers(new TransferParticlePayload(nbt), getBlockPos(), 32, this.getLevel().dimension());
+		PacketHandler.sendToNearbyPlayers(new TransferParticlePayload(nbt), getBlockPos(), 32, this.getLevel());
 	}
 
 	public static void clientTick(Level level, BlockPos pos, BlockState state, PowerDispatcherBE powerDispatcher) {
@@ -301,20 +301,20 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 	@Override
 	public void resetOptions() {
 		super.resetOptions();
-		this.line1 = 0x6b0e0e;
-		this.line2 = 0x870707;
-		this.line3 = 0xa10d0d;
-		this.line4 = 0x870707;
-		this.line5 = 0x640707;
+		this.line1 = 0x6b0e0eFF;
+		this.line2 = 0x870707FF;
+		this.line3 = 0xa10d0dFF;
+		this.line4 = 0x870707FF;
+		this.line5 = 0x640707FF;
 	}
 
 	public void initializeColors() {
 		this.colors = new Color[5];
-		this.colors[0] = new Color((this.line1 >> 16) & 0xFF, (this.line1 >> 8) & 0xFF, this.line1 & 0xFF);
-		this.colors[1] = new Color((this.line2 >> 16) & 0xFF, (this.line2 >> 8) & 0xFF, this.line2 & 0xFF);
-		this.colors[2] = new Color((this.line3 >> 16) & 0xFF, (this.line3 >> 8) & 0xFF, this.line3 & 0xFF);
-		this.colors[3] = new Color((this.line4 >> 16) & 0xFF, (this.line4 >> 8) & 0xFF, this.line4 & 0xFF);
-		this.colors[4] = new Color((this.line5 >> 16) & 0xFF, (this.line5 >> 8) & 0xFF, this.line5 & 0xFF);
+		this.colors[0] = new Color(this.line1);
+		this.colors[1] = new Color(this.line2);
+		this.colors[2] = new Color(this.line3);
+		this.colors[3] = new Color(this.line4);
+		this.colors[4] = new Color(this.line5);
 	}
 
 	@Override

@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractDispatcherBlock extends DirectionalBlock implements EntityBlock {

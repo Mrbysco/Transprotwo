@@ -1,11 +1,11 @@
 package com.mrbysco.transprotwo.config;
 
 import com.mrbysco.transprotwo.Transprotwo;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class TransprotConfig {

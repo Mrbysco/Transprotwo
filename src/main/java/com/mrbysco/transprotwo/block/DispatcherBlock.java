@@ -8,7 +8,6 @@ import com.mrbysco.transprotwo.blockentity.transfer.ItemTransfer;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -48,12 +47,12 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+	public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof AbstractDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
 			player.openMenu((AbstractDispatcherBE) blockEntity, pos);
 		}
-		return super.use(state, level, pos, player, handIn, hit);
+		return super.useWithoutItem(state, level, pos, player, hit);
 	}
 
 	@Nullable

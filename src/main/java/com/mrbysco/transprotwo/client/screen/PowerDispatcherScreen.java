@@ -167,6 +167,6 @@ public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatch
 
 	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketDistributor.SERVER.noArg().send(new UpdatePowerDispatcherMessage(compound, this.getMenu().getBlockEntity().getBlockPos()));
+		PacketDistributor.sendToServer(new UpdatePowerDispatcherMessage(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

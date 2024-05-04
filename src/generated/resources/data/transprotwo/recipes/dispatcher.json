@@ -3,13 +3,13 @@
   "category": "redstone",
   "key": {
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     "E": {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -19,6 +19,6 @@
   ],
   "result": {
     "count": 2,
-    "item": "transprotwo:dispatcher"
+    "id": "transprotwo:dispatcher"
   }
 }

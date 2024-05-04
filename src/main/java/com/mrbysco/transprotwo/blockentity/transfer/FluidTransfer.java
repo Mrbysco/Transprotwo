@@ -2,6 +2,7 @@ package com.mrbysco.transprotwo.blockentity.transfer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -17,22 +18,19 @@ public class FluidTransfer extends AbstractTransfer {
 		this.fluidStack = stack;
 	}
 
-	public void readFromNBT(CompoundTag compound) {
-		CompoundTag tag = compound.getCompound("fluidstack");
-		fluidStack = FluidStack.loadFluidStackFromNBT(tag);
-		super.readFromNBT(compound);
+	public void readFromNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		fluidStack = FluidStack.parseOptional(lookupProvider, compound.getCompound("fluidstack"));
+		super.readFromNBT(compound, lookupProvider);
 	}
 
-	public CompoundTag writeToNBT(CompoundTag compound) {
-		CompoundTag tag = new CompoundTag();
-		fluidStack.writeToNBT(tag);
-		compound.put("fluidstack", tag);
-		return super.writeToNBT(compound);
+	public CompoundTag writeToNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		compound.put("fluidstack", fluidStack.saveOptional(lookupProvider));
+		return super.writeToNBT(compound, lookupProvider);
 	}
 
-	public static FluidTransfer loadFromNBT(CompoundTag nbt) {
+	public static FluidTransfer loadFromNBT(CompoundTag nbt, HolderLookup.Provider lookupProvider) {
 		FluidTransfer transfer = new FluidTransfer();
-		transfer.readFromNBT(nbt);
+		transfer.readFromNBT(nbt, lookupProvider);
 		return transfer;
 	}
 }

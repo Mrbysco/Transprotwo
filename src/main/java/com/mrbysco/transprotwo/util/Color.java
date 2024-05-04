@@ -1,6 +1,10 @@
 package com.mrbysco.transprotwo.util;
 
-import org.jetbrains.annotations.NotNull;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.FastColor;
 
 import java.util.Random;
 
@@ -8,24 +12,56 @@ import java.util.Random;
  * Modified version of ParticleColor: <a href="https://github.com/baileyholl/Ars-Nouveau/blob/1.16.2/src/main/java/com/hollingsworth/arsnouveau/client/particle/ParticleColor.java">...</a>
  */
 public class Color {
+	public static final Codec<Color> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+					Codec.INT.fieldOf("color").forGetter(Color::getColor))
+			.apply(inst, Color::new));
+	public static final StreamCodec<ByteBuf, Color> STREAM_CODEC = new StreamCodec<ByteBuf, Color>() {
+		public Color decode(ByteBuf byteBuf) {
+			return new Color(byteBuf.readInt());
+		}
+
+		public void encode(ByteBuf byteBuf, Color color) {
+			byteBuf.writeInt(color.getColor());
+		}
+	};
+
 	private final float r;
 	private final float g;
 	private final float b;
+	private final float a;
 	private final int color;
 
-	public Color(int r, int g, int b) {
-		this.r = r / 255F;
-		this.g = g / 255F;
-		this.b = b / 255F;
-		this.color = (r << 16) | (g << 8) | b;
+	public Color(float r, float g, float b, float a) {
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
+		this.color = FastColor.ARGB32.color((int) (r * 255), (int) (g * 255), (int) (b * 255), (int) (a * 255));
+	}
+
+	public Color(int color) {
+		this(
+				FastColor.ARGB32.red(color) / 255F,
+				FastColor.ARGB32.green(color) / 255F,
+				FastColor.ARGB32.blue(color) / 255F,
+				FastColor.ARGB32.alpha(color) / 255F
+		);
+	}
+
+	public Color(int r, int g, int b, int a) {
+		this(a << 24 | r << 16 | g << 8 | b);
+	}
+
+	public int getColor() {
+		return color;
 	}
 
 	public static Color makeRandomColor(int r, int g, int b, Random random) {
-		return new Color(random.nextInt(r), random.nextInt(g), random.nextInt(b));
+		return new Color(random.nextInt(r), random.nextInt(g), random.nextInt(b), 255);
 	}
 
 	public static Color getHSBColor(float h, float s, float b) {
-		return fromInt(HSBtoRGB(h, s, b));
+		return new Color(HSBtoRGB(h, s, b));
 	}
 
 	public static int HSBtoRGB(float hue, float saturation, float brightness) {
@@ -74,21 +110,6 @@ public class Color {
 		return 0xff000000 | (r << 16) | (g << 8) | (b);
 	}
 
-	public Color(float r, float g, float b) {
-		this((int) r, (int) g, (int) b);
-	}
-
-	public Color(double r, double g, double b) {
-		this((int) r, (int) g, (int) b);
-	}
-
-	public static Color fromInt(int color) {
-		int r = (color >> 16) & 0xFF;
-		int g = (color >> 8) & 0xFF;
-		int b = (color) & 0xFF;
-		return new Color(r, g, b);
-	}
-
 	public float getRed() {
 		return r;
 	}
@@ -101,72 +122,7 @@ public class Color {
 		return b;
 	}
 
-	public int getAlpha() {
-		return (getColor() >> 24) & 0xff;
-	}
-
-	public int getColor() {
-		return color;
-	}
-
-	public String serialize() {
-		return "" + this.r + "," + this.g + "," + this.b;
-	}
-
-	public IntWrapper toWrapper() {
-		return new IntWrapper(this);
-	}
-
-	public static Color deserialize(String string) {
-		String[] arr = string.split(",");
-		return new Color(Integer.parseInt(arr[0].trim()), Integer.parseInt(arr[1].trim()), Integer.parseInt(arr[2].trim()));
-	}
-
-	public static class IntWrapper {
-
-		public int r;
-		public int g;
-		public int b;
-
-		public IntWrapper(int r, int g, int b) {
-			this.r = r;
-			this.g = g;
-			this.b = b;
-		}
-
-		public IntWrapper(Color color) {
-			this.r = (int) (color.getRed() * 255.0);
-			this.g = (int) (color.getGreen() * 255.0);
-			this.b = (int) (color.getBlue() * 255.0);
-		}
-
-		public Color toParticleColor() {
-			return new Color(r, g, b);
-		}
-
-		public String serialize() {
-			return "" + this.r + "," + this.g + "," + this.b;
-		}
-
-		public void makeVisible() {
-			if (r + g + b < 20) {
-				b += 10;
-				g += 10;
-				r += 10;
-			}
-		}
-
-		public static @NotNull
-		Color.IntWrapper deserialize(String string) {
-			Color.IntWrapper color = new Color.IntWrapper(255, 25, 180);
-			try {
-				String[] arr = string.split(",");
-				color = new Color.IntWrapper(Integer.parseInt(arr[0].trim()), Integer.parseInt(arr[1].trim()), Integer.parseInt(arr[2].trim()));
-				return color;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return color;
-		}
+	public float getAlpha() {
+		return a;
 	}
 }

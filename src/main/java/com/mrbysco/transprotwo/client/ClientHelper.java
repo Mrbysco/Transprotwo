@@ -38,7 +38,7 @@ public class ClientHelper {
 			double xx = (new Random().nextDouble() - .5) / 2.3;
 			double yy = (new Random().nextDouble() - .5) / 2.3;
 			double zz = (new Random().nextDouble() - .5) / 2.3;
-			level.addParticle(SquareParticleData.createData(255, 136, 255),
+			level.addParticle(SquareParticleData.createData(255, 136, 255, 255),
 					pos.getX() + .5 + xx, pos.getY() + .5 + yy, pos.getZ() + .5 + zz, dx, dy, dz);
 		}
 	}

@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "G": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "U": {
       "item": "transprotwo:upgrade_mk_i"
@@ -13,6 +13,7 @@
     "UGU"
   ],
   "result": {
-    "item": "transprotwo:upgrade_mk_ii"
+    "count": 1,
+    "id": "transprotwo:upgrade_mk_ii"
   }
 }

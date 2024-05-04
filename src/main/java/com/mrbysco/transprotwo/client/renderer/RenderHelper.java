@@ -23,11 +23,11 @@ public class RenderHelper {
 			poseStack.mulPose(Axis.YP.rotationDegrees(90F));
 			poseStack.mulPose(Axis.ZP.rotationDegrees(270F));
 
-			RenderType type = TransprotwoRenderTypes.getLiquid();
+			RenderType type = TransprotwoRenderTypes.LIQUID;
 			VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
 			Matrix4f pose = poseStack.last().pose();
 
-			Color color = Color.fromInt(IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor(fluid));
+			Color color = new Color(IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor(fluid));
 
 			drawQuad(pose, vertexConsumer, color);
 
@@ -48,7 +48,7 @@ public class RenderHelper {
 		poseStack.mulPose(Axis.YP.rotationDegrees(90F));
 		poseStack.mulPose(Axis.ZP.rotationDegrees(270F));
 
-		RenderType type = TransprotwoRenderTypes.getPower();
+		RenderType type = TransprotwoRenderTypes.POWER;
 		VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
 		Matrix4f pose = poseStack.last().pose();
 

@@ -3,19 +3,20 @@
   "category": "misc",
   "ingredients": [
     {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     },
     {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     {
       "item": "minecraft:paper"
     },
     {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   ],
   "result": {
-    "item": "transprotwo:upgrade_mk_i"
+    "count": 1,
+    "id": "transprotwo:upgrade_mk_i"
   }
 }

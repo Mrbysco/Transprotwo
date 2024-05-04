@@ -3,11 +3,15 @@ package com.mrbysco.transprotwo.network.message;
 import com.mrbysco.transprotwo.Transprotwo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 public record ChangeColorPayload(BlockPos blockEntityPos) implements CustomPacketPayload {
-	public static final ResourceLocation ID = new ResourceLocation(Transprotwo.MOD_ID, "change_color");
+	public static final StreamCodec<FriendlyByteBuf, ChangeColorPayload> CODEC = CustomPacketPayload.codec(
+			ChangeColorPayload::write,
+			ChangeColorPayload::new);
+	public static final Type<ChangeColorPayload> ID = CustomPacketPayload.createType(new ResourceLocation(Transprotwo.MOD_ID, "change_color").toString());
 
 	public ChangeColorPayload(final FriendlyByteBuf packetBuffer) {
 		this(packetBuffer.readBlockPos());
@@ -18,7 +22,7 @@ public record ChangeColorPayload(BlockPos blockEntityPos) implements CustomPacke
 	}
 
 	@Override
-	public ResourceLocation id() {
+	public Type<? extends CustomPacketPayload> type() {
 		return ID;
 	}
 }

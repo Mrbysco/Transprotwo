@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.Objects;
 
 public class DispatcherContainer extends AbstractContainerMenu {
-	private ItemDispatcherBE blockEntity;
-	private Player player;
+	private final ItemDispatcherBE blockEntity;
+	private final Player player;
 
 	public final int[] mode = new int[1];
 	public final int[] stockNum = new int[1];

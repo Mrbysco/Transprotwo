@@ -5,11 +5,12 @@ import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import com.mrbysco.transprotwo.config.TransprotConfig;
+import com.mrbysco.transprotwo.registry.TransprotwoComponents;
 import com.mrbysco.transprotwo.util.DistanceHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
@@ -39,16 +40,14 @@ public class LinkerItem extends Item {
 		ItemStack stack = context.getItemInHand();
 		if (player.isShiftKeyDown()) {
 			if (level.getBlockEntity(pos) instanceof AbstractDispatcherBE) {
-				CompoundTag stackTag = stack.hasTag() ? stack.getTag() : new CompoundTag();
-				stackTag.putLong("pos", pos.asLong());
-				stackTag.putString("dimension", level.dimension().location().toString());
-				stack.setTag(stackTag);
+				GlobalPos globalPos = GlobalPos.of(level.dimension(), pos);
+				stack.set(TransprotwoComponents.LINKED, globalPos);
 				player.displayClientMessage(Component.literal("Bound to Dispatcher."), true);
 				return InteractionResult.SUCCESS;
-			} else if (stack.hasTag() && stack.getTag().contains("pos")) {
-				CompoundTag stackTag = stack.getTag();
-				BlockPos tPos = BlockPos.of(stackTag.getLong("pos"));
-				ResourceLocation location = ResourceLocation.tryParse(stackTag.getString("dimension"));
+			} else if (stack.has(TransprotwoComponents.LINKED)) {
+				GlobalPos globalPos = stack.get(TransprotwoComponents.LINKED);
+				BlockPos tPos = globalPos.pos();
+				ResourceLocation location = globalPos.dimension().location();
 				BlockEntity blockEntity = level.getBlockEntity(pos);
 				if (blockEntity != null) {
 					if (level.getCapability(Capabilities.ItemHandler.BLOCK, pos, context.getClickedFace()) != null) {

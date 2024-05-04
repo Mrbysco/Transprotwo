@@ -16,8 +16,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.Objects;
 
 public class PowerDispatcherContainer extends AbstractContainerMenu {
-	private PowerDispatcherBE blockEntity;
-	private Player player;
+	private final PowerDispatcherBE blockEntity;
+	private final Player player;
 
 	public final int[] mode = new int[1];
 	public final int[] lines = new int[5];

@@ -8,7 +8,6 @@ import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import com.mrbysco.transprotwo.util.FluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -58,12 +57,12 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+	public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof FluidDispatcherBE && !level.isClientSide && !player.isShiftKeyDown()) {
 			player.openMenu((FluidDispatcherBE) blockEntity, pos);
 		}
-		return super.use(state, level, pos, player, handIn, hit);
+		return super.useWithoutItem(state, level, pos, player, hit);
 	}
 
 	@Nullable

@@ -2,6 +2,7 @@ package com.mrbysco.transprotwo.blockentity.transfer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -19,7 +20,7 @@ public abstract class AbstractTransfer {
 	private AbstractTransfer() {
 	}
 
-	public void readFromNBT(CompoundTag compound) {
+	public void readFromNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
 		dis = BlockPos.of(compound.getLong("dis"));
 		rec = new ImmutablePair<>(BlockPos.of(compound.getLong("rec")), Direction.values()[compound.getInt("face")]);
 		current = new Vec3(compound.getDouble("xx"), compound.getDouble("yy"), compound.getDouble("zz"));
@@ -27,7 +28,7 @@ public abstract class AbstractTransfer {
 		turn = compound.getInt("turn");
 	}
 
-	public CompoundTag writeToNBT(CompoundTag compound) {
+	public CompoundTag writeToNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
 		compound.putLong("dis", dis.asLong());
 		compound.putLong("rec", rec.getLeft().asLong());
 		compound.putInt("face", rec.getRight().ordinal());

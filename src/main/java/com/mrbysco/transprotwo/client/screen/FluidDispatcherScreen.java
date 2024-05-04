@@ -131,6 +131,6 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 
 	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketDistributor.SERVER.noArg().send(new UpdateFluidDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
+		PacketDistributor.sendToServer(new UpdateFluidDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

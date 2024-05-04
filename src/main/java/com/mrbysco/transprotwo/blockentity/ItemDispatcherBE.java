@@ -14,6 +14,7 @@ import com.mrbysco.transprotwo.util.InventoryUtil;
 import com.mrbysco.transprotwo.util.StackHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -81,7 +82,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 			return true;
 		if (mod && BuiltInRegistries.ITEM.getKey(stack1.getItem()).getNamespace().equals(BuiltInRegistries.ITEM.getKey(stack2.getItem()).getNamespace()))
 			return true;
-		if (nbt && !ItemStack.isSameItemSameTags(stack1, stack2))
+		if (nbt && !ItemStack.isSameItemSameComponents(stack1, stack2))
 			return false;
 		if (durability && stack1.getDamageValue() == stack2.getDamageValue())
 			return true;
@@ -89,13 +90,14 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	@Override
-	public void load(CompoundTag compound) {
+	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.loadAdditional(compound, lookupProvider);
 		ListTag transferList = compound.getList("transfers", 10);
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(ItemTransfer.loadFromNBT(transferList.getCompound(i)));
+			this.transfers.add(ItemTransfer.loadFromNBT(transferList.getCompound(i), lookupProvider));
 
-		this.filterHandler.deserializeNBT(compound.getCompound("filter"));
+		this.filterHandler.deserializeNBT(lookupProvider, compound.getCompound("filter"));
 
 		tag = compound.getBoolean("tag");
 		durability = compound.getBoolean("durability");
@@ -103,13 +105,12 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 		white = compound.getBoolean("white");
 		mod = compound.getBoolean("mod");
 		stockNum = compound.getInt("stock");
-		super.load(compound);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound) {
-		super.saveAdditional(compound);
-		compound.put("filter", filterHandler.serializeNBT());
+	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.saveAdditional(compound, lookupProvider);
+		compound.put("filter", filterHandler.serializeNBT(lookupProvider));
 
 		compound.putBoolean("tag", tag);
 		compound.putBoolean("durability", durability);
@@ -234,7 +235,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 
 	@Override
 	public void summonParticles(CompoundTag nbt) {
-		PacketHandler.sendToNearbyPlayers(new TransferParticlePayload(nbt), getBlockPos(), 32, this.getLevel().dimension());
+		PacketHandler.sendToNearbyPlayers(new TransferParticlePayload(nbt), getBlockPos(), 32, this.getLevel());
 	}
 
 	public static void clientTick(Level level, BlockPos pos, BlockState state, ItemDispatcherBE itemDispatcher) {
