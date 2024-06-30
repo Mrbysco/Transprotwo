@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.mrbysco.transprotwo.Transprotwo;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.OptionalDouble;
 
@@ -43,10 +42,10 @@ public class TransprotwoRenderTypes extends RenderType {
 					.createCompositeState(false));
 
 	public static final RenderType POWER = create("transprotwo:power",
-			DefaultVertexFormat.POSITION_COLOR_TEX, Mode.QUADS, 262144, false, true,
+			DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, Mode.QUADS, 262144, false, true,
 			RenderType.CompositeState.builder()
-					.setShaderState(RenderStateShard.POSITION_COLOR_TEX_SHADER)
-					.setTextureState(new RenderStateShard.TextureStateShard(new ResourceLocation(Transprotwo.MOD_ID, "textures/particle/power.png"), false, false))
+					.setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
+					.setTextureState(new RenderStateShard.TextureStateShard(Transprotwo.modLoc("textures/particle/power.png"), false, false))
 					.setTransparencyState(new RenderStateShard.TransparencyStateShard("translucent_transparency", () -> {
 						RenderSystem.depthMask(false);
 						RenderSystem.enableBlend();
@@ -60,10 +59,12 @@ public class TransprotwoRenderTypes extends RenderType {
 					.createCompositeState(true));
 
 	public static final RenderType LIQUID = create("transprotwo:liquid",
-			DefaultVertexFormat.POSITION_COLOR_TEX, Mode.QUADS, 262144, false, true,
+			DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, Mode.QUADS, 262144, false, true,
 			RenderType.CompositeState.builder()
-					.setShaderState(RenderStateShard.POSITION_COLOR_TEX_SHADER)
-					.setTextureState(new RenderStateShard.TextureStateShard(new ResourceLocation(Transprotwo.MOD_ID, "textures/particle/fluid.png"), false, false))
+					.setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
+					.setTextureState(new RenderStateShard.TextureStateShard(
+							Transprotwo.modLoc("textures/particle/fluid.png"), false, false))
+					.setLightmapState(RenderStateShard.LIGHTMAP)
 					.setTransparencyState(new RenderStateShard.TransparencyStateShard("translucent_transparency", () -> {
 						RenderSystem.depthMask(true);
 						RenderSystem.enableBlend();

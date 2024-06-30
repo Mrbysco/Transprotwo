@@ -82,11 +82,11 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 
 			for (int i = 0; i < 5; i++) {
 				if (flag) {
-					vertexBuilder.vertex(pose, x - initialOffset + (i * offset), y, z).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
-					vertexBuilder.vertex(pose, x2 - initialOffset + (i * offset), y2, z2).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
+					vertexBuilder.addVertex(pose, x - initialOffset + (i * offset), y, z).setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
+					vertexBuilder.addVertex(pose, x2 - initialOffset + (i * offset), y2, z2).setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
 				} else {
-					vertexBuilder.vertex(pose, x, y - initialOffset + (i * offset), z).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
-					vertexBuilder.vertex(pose, x2, y2 - initialOffset + (i * offset), z2).color(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f).endVertex();
+					vertexBuilder.addVertex(pose, x, y - initialOffset + (i * offset), z).setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
+					vertexBuilder.addVertex(pose, x2, y2 - initialOffset + (i * offset), z2).setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
 				}
 			}
 		}

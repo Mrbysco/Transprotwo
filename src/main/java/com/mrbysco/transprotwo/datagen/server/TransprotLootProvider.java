@@ -35,8 +35,8 @@ public class TransprotLootProvider extends LootTableProvider {
 
 	private static class TransprotBlockProvider extends BlockLootSubProvider {
 
-		protected TransprotBlockProvider() {
-			super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+		protected TransprotBlockProvider(HolderLookup.Provider provider) {
+			super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
 		}
 
 		@Override

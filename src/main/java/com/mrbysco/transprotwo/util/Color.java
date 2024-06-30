@@ -15,7 +15,7 @@ public class Color {
 	public static final Codec<Color> CODEC = RecordCodecBuilder.create(inst -> inst.group(
 					Codec.INT.fieldOf("color").forGetter(Color::getColor))
 			.apply(inst, Color::new));
-	public static final StreamCodec<ByteBuf, Color> STREAM_CODEC = new StreamCodec<ByteBuf, Color>() {
+	public static final StreamCodec<ByteBuf, Color> STREAM_CODEC = new StreamCodec<>() {
 		public Color decode(ByteBuf byteBuf) {
 			return new Color(byteBuf.readInt());
 		}

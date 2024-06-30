@@ -66,7 +66,8 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if (level.getCapability(Capabilities.FluidHandler.BLOCK, pos, context.getClickedFace()) != null) {
+					}
+					if (level.getCapability(Capabilities.FluidHandler.BLOCK, pos, context.getClickedFace()) != null) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof FluidDispatcherBE fluidDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
@@ -82,7 +83,8 @@ public class LinkerItem extends Item {
 								player.displayClientMessage(Component.literal("Too far away."), true);
 							return InteractionResult.SUCCESS;
 						}
-					} else if (level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, context.getClickedFace()) != null) {
+					}
+					if (level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, context.getClickedFace()) != null) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof PowerDispatcherBE powerDispatcher) {
 							Direction facing = context.getClickedFace();
 							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);

@@ -10,5 +10,10 @@
   "itemGroup.transprotwo": "Transprotwo",
   "transprotwo.container.dispatcher": "Dispatcher",
   "transprotwo.container.fluid_dispatcher": "Fluid Dispatcher",
-  "transprotwo.container.power_dispatcher": "Power Dispatcher"
+  "transprotwo.container.power_dispatcher": "Power Dispatcher",
+  "transprotwo.networking.change_color.failed": "Failed to change color: %s",
+  "transprotwo.networking.transfer_particle.failed": "Failed to summon transfer particle: %s",
+  "transprotwo.networking.update_dispatcher.failed": "Failed to update dispatcher: %s",
+  "transprotwo.networking.update_fluid_dispatcher.failed": "Failed to update fluid dispatcher: %s",
+  "transprotwo.networking.update_power_dispatcher.failed": "Failed to update power dispatcher: %s"
 }

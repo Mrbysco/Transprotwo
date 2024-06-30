@@ -52,8 +52,8 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 				RenderSystem.enableDepthTest();
 			}
 			Matrix4f matrix = poseStack.last().pose();
-			vertexConsumer.vertex(matrix, x, y, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
-			vertexConsumer.vertex(matrix, x2, y2, z2).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+			vertexConsumer.addVertex(matrix, x, y, z).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+			vertexConsumer.addVertex(matrix, x2, y2, z2).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 		}
 
 		if (vertexConsumer instanceof MultiBufferSource.BufferSource bufferSource1) {

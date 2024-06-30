@@ -25,12 +25,10 @@ public class FluidDispatcherBER extends AbstractDispatcherBER<FluidDispatcherBE>
 			return;
 
 		final Minecraft mc = Minecraft.getInstance();
-		final Vec3 projectedView = mc.gameRenderer.getMainCamera().getPosition();
 		for (AbstractTransfer abstractTransfer : dispatcher.getTransfers()) {
 			if (abstractTransfer instanceof FluidTransfer transfer) {
 
 				poseStack.pushPose();
-				poseStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 				Vec3 cur = transfer.prev == null ? transfer.current : new Vec3(
 						transfer.prev.x + (transfer.current.x - transfer.prev.x) * partialTicks,
 						transfer.prev.y + (transfer.current.y - transfer.prev.y) * partialTicks,
@@ -38,14 +36,14 @@ public class FluidDispatcherBER extends AbstractDispatcherBER<FluidDispatcherBE>
 				poseStack.translate(cur.x, cur.y, cur.z);
 
 				RenderSystem.disableDepthTest();
-				RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack);
+				RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack, combinedLightIn);
 				int stackAmount = transfer.fluidStack.getAmount() / 1000;
 				if (stackAmount > 1) {
 					poseStack.translate(.08, .08, .08);
-					RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack);
+					RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack, combinedLightIn);
 					if (stackAmount >= 16) {
 						poseStack.translate(.08, .08, .08);
-						RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack);
+						RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack, combinedLightIn);
 					}
 				}
 				RenderSystem.enableDepthTest();

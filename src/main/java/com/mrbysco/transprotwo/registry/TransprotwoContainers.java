@@ -15,11 +15,11 @@ public class TransprotwoContainers {
 	public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, Transprotwo.MOD_ID);
 
 	public static final Supplier<MenuType<DispatcherContainer>> DISPATCHER = MENU_TYPES.register("dispatcher", () ->
-			IMenuTypeExtension.create((windowId, inv, data) -> new DispatcherContainer(windowId, inv, data)));
+			IMenuTypeExtension.create(DispatcherContainer::new));
 
 	public static final Supplier<MenuType<FluidDispatcherContainer>> FLUID_DISPATCHER = MENU_TYPES.register("fluid_dispatcher", () ->
-			IMenuTypeExtension.create((windowId, inv, data) -> new FluidDispatcherContainer(windowId, inv, data)));
+			IMenuTypeExtension.create(FluidDispatcherContainer::new));
 
 	public static final Supplier<MenuType<PowerDispatcherContainer>> POWER_DISPATCHER = MENU_TYPES.register("power_dispatcher", () ->
-			IMenuTypeExtension.create((windowId, inv, data) -> new PowerDispatcherContainer(windowId, inv, data)));
+			IMenuTypeExtension.create(PowerDispatcherContainer::new));
 }

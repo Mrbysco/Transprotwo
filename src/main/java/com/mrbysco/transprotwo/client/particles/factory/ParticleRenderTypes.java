@@ -10,27 +10,19 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
+import org.jetbrains.annotations.Nullable;
 
 public class ParticleRenderTypes {
 	public static final ParticleRenderType SQUARE_RENDER = new ParticleRenderType() {
-
+		@Nullable
 		@Override
-		public void begin(BufferBuilder buffer, TextureManager textureManager) {
+		public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
 			RenderSystem.enableBlend();
 			RenderSystem.enableCull();
 			RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
 			RenderSystem.depthMask(false);
 			RenderSystem.blendFunc(SourceFactor.SRC_ALPHA.value, DestFactor.ONE_MINUS_SRC_ALPHA.value);
-			buffer.begin(Mode.QUADS, DefaultVertexFormat.PARTICLE);
-		}
-
-		@Override
-		public void end(Tesselator tesselator) {
-			tesselator.end();
-			RenderSystem.enableDepthTest();
-			RenderSystem.depthMask(true);
-			RenderSystem.blendFunc(SourceFactor.SRC_ALPHA.value, DestFactor.ONE_MINUS_SRC_ALPHA.value);
-			RenderSystem.disableCull();
+			return tesselator.begin(Mode.QUADS, DefaultVertexFormat.PARTICLE);
 		}
 
 		@Override

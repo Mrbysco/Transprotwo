@@ -8,6 +8,7 @@ import com.mrbysco.transprotwo.network.PacketHandler;
 import com.mrbysco.transprotwo.registry.TransprotwoComponents;
 import com.mrbysco.transprotwo.registry.TransprotwoContainers;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -43,4 +44,7 @@ public class Transprotwo {
 		}
 	}
 
+	public static ResourceLocation modLoc(String path) {
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+	}
 }

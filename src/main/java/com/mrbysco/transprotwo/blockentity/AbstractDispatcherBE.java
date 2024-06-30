@@ -84,7 +84,7 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 		this.targets = Sets.newHashSet();
 		for (int i = 0; i < targetList.size(); i++) {
 			CompoundTag nbt = targetList.getCompound(i);
-			this.targets.add(new ImmutablePair<BlockPos, Direction>(BlockPos.of(nbt.getLong("pos")), Direction.values()[nbt.getInt("face")]));
+			this.targets.add(new ImmutablePair<>(BlockPos.of(nbt.getLong("pos")), Direction.values()[nbt.getInt("face")]));
 		}
 
 		if (compound.contains("mode"))

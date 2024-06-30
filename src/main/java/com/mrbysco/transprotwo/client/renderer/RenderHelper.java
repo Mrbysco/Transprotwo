@@ -13,7 +13,7 @@ import org.joml.Matrix4f;
 
 public class RenderHelper {
 
-	public static void renderFluid(PoseStack poseStack, MultiBufferSource bufferSource, FluidStack fluid) {
+	public static void renderFluid(PoseStack poseStack, MultiBufferSource bufferSource, FluidStack fluid, int combinedLight) {
 		if (fluid != null && !fluid.isEmpty()) {
 			poseStack.pushPose();
 			float scale = 0.25f;
@@ -29,11 +29,7 @@ public class RenderHelper {
 
 			Color color = new Color(IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor(fluid));
 
-			drawQuad(pose, vertexConsumer, color);
-
-			if (bufferSource instanceof MultiBufferSource.BufferSource bufferSource1) {
-				bufferSource1.endBatch(type);
-			}
+			drawQuad(pose, vertexConsumer, color, combinedLight);
 
 			poseStack.popPose();
 		}
@@ -52,23 +48,31 @@ public class RenderHelper {
 		VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
 		Matrix4f pose = poseStack.last().pose();
 
-		drawQuad(pose, vertexConsumer, color);
-
-		if (bufferSource instanceof MultiBufferSource.BufferSource bufferSource1) {
-			bufferSource1.endBatch(type);
-		}
+		drawQuad(pose, vertexConsumer, color, -1);
 
 		poseStack.popPose();
 	}
 
-	private static void drawQuad(Matrix4f pose, VertexConsumer vertexConsumer, Color color) {
+	private static void drawQuad(Matrix4f pose, VertexConsumer vertexConsumer, Color color, int packedLight) {
 		float xOffset = -0.75f;
 		float yOffset = -0f;
 		float zOffset = -0.75f;
 
-		vertexConsumer.vertex(pose, 0 + xOffset, yOffset, 1.5f + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(0, 1).endVertex();
-		vertexConsumer.vertex(pose, 1 + xOffset + 0.5f, yOffset, 1.5f + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(1, 1).endVertex();
-		vertexConsumer.vertex(pose, 1 + xOffset + 0.5f, yOffset, 0 + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(1, 0).endVertex();
-		vertexConsumer.vertex(pose, 0 + xOffset, yOffset, 0 + zOffset).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).uv(0, 0).endVertex();
+		vertexConsumer.addVertex(pose, 0 + xOffset, yOffset, 1.5f + zOffset)
+				.setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha())
+				.setUv(0, 1)
+				.setLight(packedLight);
+		vertexConsumer.addVertex(pose, 1 + xOffset + 0.5f, yOffset, 1.5f + zOffset)
+				.setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha())
+				.setUv(1, 1)
+				.setLight(packedLight);
+		vertexConsumer.addVertex(pose, 1 + xOffset + 0.5f, yOffset, 0 + zOffset)
+				.setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha())
+				.setUv(1, 0)
+				.setLight(packedLight);
+		vertexConsumer.addVertex(pose, 0 + xOffset, yOffset, 0 + zOffset)
+				.setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha())
+				.setUv(0, 0)
+				.setLight(packedLight);
 	}
 }

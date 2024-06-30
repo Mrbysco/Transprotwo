@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class PowerDispatcherScreen extends AbstractContainerScreen<PowerDispatcherContainer> {
-	private final ResourceLocation TEXTURE = new ResourceLocation(Transprotwo.MOD_ID, "textures/gui/container/power_dispatcher.png");
+	private final ResourceLocation TEXTURE = Transprotwo.modLoc("textures/gui/container/power_dispatcher.png");
 
 	private final static Tooltip nearestFirstTooltip = Tooltip.create(Component.literal("Nearest First"));
 	private final static Tooltip roundRobinTooltip = Tooltip.create(Component.literal("Round Robin"));

@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatcherContainer> {
-	private final ResourceLocation TEXTURE = new ResourceLocation(Transprotwo.MOD_ID, "textures/gui/container/dispatcher.png");
+	private final ResourceLocation TEXTURE = Transprotwo.modLoc("textures/gui/container/dispatcher.png");
 
 	private final static Tooltip nearestFirstTooltip = Tooltip.create(Component.literal("Nearest First"));
 	private final static Tooltip roundRobinTooltip = Tooltip.create(Component.literal("Round Robin"));
