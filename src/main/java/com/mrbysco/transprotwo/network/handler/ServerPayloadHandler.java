@@ -59,7 +59,7 @@ public class ServerPayloadHandler {
 				})
 				.exceptionally(e -> {
 					// Handle exception
-					context.disconnect(Component.translatable("captcha.networking.failed", e.getMessage()));
+					context.disconnect(Component.translatable("transprotwo.networking.update_dispatcher.failed", e.getMessage()));
 					return null;
 				});
 	}
@@ -90,7 +90,7 @@ public class ServerPayloadHandler {
 				})
 				.exceptionally(e -> {
 					// Handle exception
-					context.disconnect(Component.translatable("captcha.networking.failed", e.getMessage()));
+					context.disconnect(Component.translatable("transprotwo.networking.update_fluid_dispatcher.failed", e.getMessage()));
 					return null;
 				});
 	}
@@ -98,7 +98,6 @@ public class ServerPayloadHandler {
 	public void handlePowerDispatcherPayload(final UpdatePowerDispatcherMessage updateDispatcherPayload, final IPayloadContext context) {
 		// Do something with the data, on the main thread
 		context.enqueueWork(() -> {
-					//Complete Captcha
 					if (context.player() != null) {
 						Player player = context.player();
 						Level level = player.level();
@@ -129,7 +128,7 @@ public class ServerPayloadHandler {
 				})
 				.exceptionally(e -> {
 					// Handle exception
-					context.disconnect(Component.translatable("captcha.networking.failed", e.getMessage()));
+					context.disconnect(Component.translatable("transprotwo.networking.update_power_dispatcher.failed", e.getMessage()));
 					return null;
 				});
 	}
