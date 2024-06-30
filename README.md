@@ -1,3 +1,5 @@
+[![build](https://github.com/Mrbysco/Transprotwo/actions/workflows/build.yml/badge.svg)](https://github.com/Mrbysco/Transprotwo/actions/workflows/build.yml)
+[![](http://cf.way2muchnoise.eu/versions/527201.svg)](https://www.curseforge.com/minecraft/mc-mods/transprotwo)
 # Transprotwo #
 
 ## About ##
@@ -6,7 +8,7 @@ Based on [Transprot](https://web.archive.org/web/20210914020840/https://github.c
 
 ## License ##
 * Transprotwo is licensed under GNU GPL v3
-  - (c) 2021 Mrbysco
+  - (c) 2024 Mrbysco
   - [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ## Downloads ##
