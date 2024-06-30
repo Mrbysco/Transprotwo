@@ -28,5 +28,11 @@ public class TransprotLanguageProvider extends LanguageProvider {
 		add("transprotwo.container.dispatcher", "Dispatcher");
 		add("transprotwo.container.fluid_dispatcher", "Fluid Dispatcher");
 		add("transprotwo.container.power_dispatcher", "Power Dispatcher");
+
+		add("transprotwo.networking.change_color.failed", "Failed to change color: %s");
+		add("transprotwo.networking.transfer_particle.failed", "Failed to summon transfer particle: %s");
+		add("transprotwo.networking.update_dispatcher.failed", "Failed to update dispatcher: %s");
+		add("transprotwo.networking.update_fluid_dispatcher.failed", "Failed to update fluid dispatcher: %s");
+		add("transprotwo.networking.update_power_dispatcher.failed", "Failed to update power dispatcher: %s");
 	}
 }
