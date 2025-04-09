@@ -44,7 +44,7 @@ public class TransprotConfig {
 
 		Common(ModConfigSpec.Builder builder) {
 			builder.comment("General settings")
-					.push("General");
+					.push("general");
 
 			range = builder
 					.comment("Max distance between dispatcher and inventory [Default: 24]")

@@ -14,6 +14,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.slf4j.Logger;
 
 @Mod(Transprotwo.MOD_ID)
@@ -38,6 +40,7 @@ public class Transprotwo {
 
 		if (dist.isClient()) {
 			container.registerConfig(ModConfig.Type.CLIENT, TransprotConfig.clientSpec);
+			container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 			eventBus.addListener(ClientHandler::registerMenus);
 			eventBus.addListener(ClientHandler::registerEntityRenders);
 			eventBus.addListener(ClientHandler::registerRenderTypes);
