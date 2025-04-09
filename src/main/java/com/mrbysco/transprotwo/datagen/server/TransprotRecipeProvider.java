@@ -2,12 +2,11 @@ package com.mrbysco.transprotwo.datagen.server;
 
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.Tags;
 
@@ -15,13 +14,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class TransprotRecipeProvider extends RecipeProvider {
 
-	public TransprotRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-		super(packOutput, lookupProvider);
+	public TransprotRecipeProvider(HolderLookup.Provider provider, RecipeOutput recipeOutput) {
+		super(provider, recipeOutput);
 	}
 
 	@Override
-	protected void buildRecipes(RecipeOutput output) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, TransprotwoRegistry.DISPATCHER.get(), 2)
+	protected void buildRecipes() {
+		shaped(RecipeCategory.REDSTONE, TransprotwoRegistry.DISPATCHER.get(), 2)
 				.pattern("EIE")
 				.pattern("ICI")
 				.pattern("I I")
@@ -33,7 +32,7 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.unlockedBy("has_wooden_chest", has(Tags.Items.CHESTS_WOODEN))
 				.save(output);
 
-		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, TransprotwoRegistry.FLUID_DISPATCHER.get(), 2)
+		shaped(RecipeCategory.REDSTONE, TransprotwoRegistry.FLUID_DISPATCHER.get(), 2)
 				.pattern("EIE")
 				.pattern("IBI")
 				.pattern("I I")
@@ -45,7 +44,7 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.unlockedBy("has_bucket", has(Tags.Items.BUCKETS_EMPTY))
 				.save(output);
 
-		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, TransprotwoRegistry.POWER_DISPATCHER.get(), 2)
+		shaped(RecipeCategory.REDSTONE, TransprotwoRegistry.POWER_DISPATCHER.get(), 2)
 				.pattern("EIE")
 				.pattern("IRI")
 				.pattern("I I")
@@ -57,7 +56,7 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.unlockedBy("has_redstone_dust", has(Tags.Items.DUSTS_REDSTONE))
 				.save(output);
 
-		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TransprotwoRegistry.LINKER.get())
+		shaped(RecipeCategory.TOOLS, TransprotwoRegistry.LINKER.get())
 				.pattern("I  ")
 				.pattern(" P ")
 				.pattern("  I")
@@ -67,7 +66,7 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.unlockedBy("has_paper", has(Items.PAPER))
 				.save(output);
 
-		ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_I.get())
+		shapeless(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_I.get())
 				.requires(Tags.Items.DUSTS_REDSTONE)
 				.requires(Tags.Items.INGOTS_GOLD)
 				.requires(Items.PAPER)
@@ -78,26 +77,42 @@ public class TransprotRecipeProvider extends RecipeProvider {
 				.unlockedBy("has_paper", has(Items.PAPER))
 				.save(output);
 
-		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_II.get())
+		shaped(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_II.get())
 				.pattern("UGU")
 				.define('U', TransprotwoRegistry.UPGRADE_MK_I.get())
 				.define('G', Tags.Items.INGOTS_GOLD)
 				.unlockedBy("has_upgrade", has(TransprotwoRegistry.UPGRADE_MK_I.get()))
 				.unlockedBy("has_gold_ingot", has(Tags.Items.INGOTS_GOLD))
 				.save(output);
-		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_III.get())
+		shaped(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_III.get())
 				.pattern("UDU")
 				.define('U', TransprotwoRegistry.UPGRADE_MK_II.get())
 				.define('D', Tags.Items.GEMS_DIAMOND)
 				.unlockedBy("has_upgrade", has(TransprotwoRegistry.UPGRADE_MK_II.get()))
 				.unlockedBy("has_diamond", has(Tags.Items.GEMS_DIAMOND))
 				.save(output);
-		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_IV.get())
+		shaped(RecipeCategory.MISC, TransprotwoRegistry.UPGRADE_MK_IV.get())
 				.pattern("UEU")
 				.define('U', TransprotwoRegistry.UPGRADE_MK_III.get())
 				.define('E', Tags.Items.GEMS_EMERALD)
 				.unlockedBy("has_upgrade", has(TransprotwoRegistry.UPGRADE_MK_III.get()))
 				.unlockedBy("has_emerald", has(Tags.Items.GEMS_EMERALD))
 				.save(output);
+	}
+
+	public static class Runner extends RecipeProvider.Runner {
+		public Runner(PackOutput output, CompletableFuture<Provider> completableFuture) {
+			super(output, completableFuture);
+		}
+
+		@Override
+		protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, RecipeOutput recipeOutput) {
+			return new TransprotRecipeProvider(provider, recipeOutput);
+		}
+
+		@Override
+		public String getName() {
+			return "Transprotwo Recipes";
+		}
 	}
 }

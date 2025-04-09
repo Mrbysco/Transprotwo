@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 
 import java.util.Random;
 
@@ -36,15 +36,15 @@ public class Color {
 		this.g = g;
 		this.b = b;
 		this.a = a;
-		this.color = FastColor.ARGB32.color((int) (r * 255), (int) (g * 255), (int) (b * 255), (int) (a * 255));
+		this.color = ARGB.color((int) (r * 255), (int) (g * 255), (int) (b * 255), (int) (a * 255));
 	}
 
 	public Color(int color) {
 		this(
-				FastColor.ARGB32.red(color) / 255F,
-				FastColor.ARGB32.green(color) / 255F,
-				FastColor.ARGB32.blue(color) / 255F,
-				FastColor.ARGB32.alpha(color) / 255F
+				ARGB.red(color) / 255F,
+				ARGB.green(color) / 255F,
+				ARGB.blue(color) / 255F,
+				ARGB.alpha(color) / 255F
 		);
 	}
 

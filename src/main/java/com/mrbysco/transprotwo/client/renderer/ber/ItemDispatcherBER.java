@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 	public ItemDispatcherBER(Context context) {
@@ -23,7 +24,7 @@ public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 	}
 
 	@Override
-	public void render(ItemDispatcherBE dispatcher, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
+	public void render(@NotNull ItemDispatcherBE dispatcher, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
 		super.render(dispatcher, partialTicks, poseStack, bufferSource, combinedLightIn, combinedOverlayIn);
 
 		if (!TransprotConfig.CLIENT.showItems.get())

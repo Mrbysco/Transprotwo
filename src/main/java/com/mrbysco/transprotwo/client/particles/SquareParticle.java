@@ -1,6 +1,5 @@
 package com.mrbysco.transprotwo.client.particles;
 
-import com.mrbysco.transprotwo.client.particles.factory.ParticleRenderTypes;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
@@ -56,6 +55,6 @@ public class SquareParticle extends TextureSheetParticle {
 
 	@Override
 	public ParticleRenderType getRenderType() {
-		return ParticleRenderTypes.SQUARE_RENDER;
+		return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
 	}
 }

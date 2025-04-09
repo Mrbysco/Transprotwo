@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "B": {
-      "tag": "c:buckets/empty"
-    },
-    "E": {
-      "tag": "c:ender_pearls"
-    },
-    "I": {
-      "tag": "c:ingots/iron"
-    }
+    "B": "#c:buckets/empty",
+    "E": "#c:ender_pearls",
+    "I": "#c:ingots/iron"
   },
   "pattern": [
     "EIE",

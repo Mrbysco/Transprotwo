@@ -18,6 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
 public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE> {
@@ -26,7 +27,7 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 	}
 
 	@Override
-	public void render(PowerDispatcherBE dispatcher, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
+	public void render(@NotNull PowerDispatcherBE dispatcher, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
 		super.render(dispatcher, partialTicks, poseStack, bufferSource, combinedLightIn, combinedOverlayIn);
 
 		if (!TransprotConfig.CLIENT.showPower.get())
@@ -77,7 +78,7 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 
 			float offset = 0.015F;
 			float initialOffset = offset * 2;
-			Direction dir = Direction.getNearest(x - x2, y - y2, z - z2);
+			Direction dir = Direction.getNearest((int) (x - x2), (int) (y - y2), (int) (z - z2), null); //TODO: Double check! as it was using float before
 			boolean flag = y != y2 && (dir == Direction.UP || dir == Direction.DOWN);
 
 			for (int i = 0; i < 5; i++) {

@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 public class FluidDispatcherBER extends AbstractDispatcherBER<FluidDispatcherBE> {
 	public FluidDispatcherBER(Context context) {
@@ -18,7 +19,7 @@ public class FluidDispatcherBER extends AbstractDispatcherBER<FluidDispatcherBE>
 	}
 
 	@Override
-	public void render(FluidDispatcherBE dispatcher, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
+	public void render(@NotNull FluidDispatcherBE dispatcher, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
 		super.render(dispatcher, partialTicks, poseStack, bufferSource, combinedLightIn, combinedOverlayIn);
 
 		if (!TransprotConfig.CLIENT.showFluids.get())

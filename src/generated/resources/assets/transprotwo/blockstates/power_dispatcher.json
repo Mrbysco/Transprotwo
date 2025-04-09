@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "transprotwo:block/dispatcher"
+    },
+    "facing=east": {
+      "model": "transprotwo:block/dispatcher",
+      "x": 270,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "transprotwo:block/dispatcher",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south": {
+      "model": "transprotwo:block/dispatcher",
+      "x": 270,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "transprotwo:block/dispatcher",
+      "x": 180
+    },
+    "facing=west": {
+      "model": "transprotwo:block/dispatcher",
+      "x": 270,
+      "y": 270
+    }
+  }
+}

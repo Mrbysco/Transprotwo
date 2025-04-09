@@ -17,6 +17,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
 public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements BlockEntityRenderer<T> {
@@ -25,10 +26,11 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 	}
 
 	@Override
-	public void render(T dispatcher, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
+	public void render(@NotNull T dispatcher, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
 		final Minecraft mc = Minecraft.getInstance();
 		final LocalPlayer player = mc.player;
-
+		if (player == null)
+			return;
 		if (player.getInventory().getSelected().isEmpty() || player.getInventory().getSelected().getItem() != TransprotwoRegistry.LINKER.get())
 			return;
 
@@ -39,11 +41,11 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 		final Color color = dispatcher.getColor();
 		for (Pair<BlockPos, Direction> pa : dispatcher.getTargets()) {
 			BlockPos p = pa.getLeft();
-			BlockPos pSubt = pa.getLeft().subtract(pos);
-			float x = pSubt.getX() + .5f, y = pSubt.getY() + .5f, z = pSubt.getZ() + .5f;
+			BlockPos subtracted = pa.getLeft().subtract(pos);
+			float x = subtracted.getX() + .5f, y = subtracted.getY() + .5f, z = subtracted.getZ() + .5f;
 			float x2 = 0 + .5f, y2 = 0 + .5f, z2 = 0 + .5f;
 			boolean free = dispatcher.wayFree(pos, p);
-			if (!free && dispatcher.getLevel().getGameTime() / 10 % 2 != 0)
+			if (!free && dispatcher.getLevel() != null && dispatcher.getLevel().getGameTime() / 10 % 2 != 0)
 				continue;
 
 			if (player.isShiftKeyDown()) {
@@ -64,11 +66,11 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 
 	@Override
 	public boolean shouldRender(T dispatcher, Vec3 pos) {
-		return Vec3.atCenterOf(dispatcher.getBlockPos()).multiply(1.0D, 0.0D, 1.0D).closerThan(pos.multiply(1.0D, 0.0D, 1.0D), (double) this.getViewDistance());
+		return Vec3.atCenterOf(dispatcher.getBlockPos()).multiply(1.0D, 0.0D, 1.0D).closerThan(pos.multiply(1.0D, 0.0D, 1.0D), this.getViewDistance());
 	}
 
 	@Override
-	public boolean shouldRenderOffScreen(T dispatcher) {
+	public boolean shouldRenderOffScreen(@NotNull T dispatcher) {
 		return true;
 	}
 
@@ -78,6 +80,7 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 	}
 
 	@Override
+	@NotNull
 	public AABB getRenderBoundingBox(T blockEntity) {
 		return new AABB(blockEntity.getBlockPos()).inflate(16.0D);
 	}

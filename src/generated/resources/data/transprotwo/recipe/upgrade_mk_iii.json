@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": {
-      "tag": "c:gems/diamond"
-    },
-    "U": {
-      "item": "transprotwo:upgrade_mk_ii"
-    }
+    "D": "#c:gems/diamond",
+    "U": "transprotwo:upgrade_mk_ii"
   },
   "pattern": [
     "UDU"

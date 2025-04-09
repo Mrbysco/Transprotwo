@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "transprotwo:item/upgrade_mk_i"
+  }
+}

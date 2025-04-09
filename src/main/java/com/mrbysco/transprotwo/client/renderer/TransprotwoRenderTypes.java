@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.mrbysco.transprotwo.Transprotwo;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.TriState;
 
 import java.util.OptionalDouble;
 
@@ -45,7 +46,7 @@ public class TransprotwoRenderTypes extends RenderType {
 			DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, Mode.QUADS, 262144, false, true,
 			RenderType.CompositeState.builder()
 					.setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-					.setTextureState(new RenderStateShard.TextureStateShard(Transprotwo.modLoc("textures/particle/power.png"), false, false))
+					.setTextureState(new RenderStateShard.TextureStateShard(Transprotwo.modLoc("textures/particle/power.png"), TriState.FALSE, false))
 					.setTransparencyState(new RenderStateShard.TransparencyStateShard("translucent_transparency", () -> {
 						RenderSystem.depthMask(false);
 						RenderSystem.enableBlend();
@@ -63,7 +64,7 @@ public class TransprotwoRenderTypes extends RenderType {
 			RenderType.CompositeState.builder()
 					.setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
 					.setTextureState(new RenderStateShard.TextureStateShard(
-							Transprotwo.modLoc("textures/particle/fluid.png"), false, false))
+							Transprotwo.modLoc("textures/particle/fluid.png"), TriState.FALSE, false))
 					.setLightmapState(RenderStateShard.LIGHTMAP)
 					.setTransparencyState(new RenderStateShard.TransparencyStateShard("translucent_transparency", () -> {
 						RenderSystem.depthMask(true);
