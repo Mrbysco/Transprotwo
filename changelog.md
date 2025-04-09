@@ -1,1 +1,1 @@
-* Enable in-game config screen
+* Initial update to 1.21.4
