@@ -1,6 +1,5 @@
 package com.mrbysco.transprotwo.client.renderer.ber;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
@@ -18,7 +17,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
 public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE> {
@@ -27,8 +25,8 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 	}
 
 	@Override
-	public void render(@NotNull PowerDispatcherBE dispatcher, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
-		super.render(dispatcher, partialTicks, poseStack, bufferSource, combinedLightIn, combinedOverlayIn);
+	public void render(PowerDispatcherBE dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 p_401186_) {
+		super.render(dispatcher, partialTick, poseStack, bufferSource, packedLight, packedOverlay, p_401186_);
 
 		if (!TransprotConfig.CLIENT.showPower.get())
 			return;
@@ -47,14 +45,12 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 				poseStack.pushPose();
 				poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
 				Vec3 cur = transfer.prev == null ? transfer.current : new Vec3(
-						transfer.prev.x + (transfer.current.x - transfer.prev.x) * partialTicks,
-						transfer.prev.y + (transfer.current.y - transfer.prev.y) * partialTicks,
-						transfer.prev.z + (transfer.current.z - transfer.prev.z) * partialTicks);
+						transfer.prev.x + (transfer.current.x - transfer.prev.x) * partialTick,
+						transfer.prev.y + (transfer.current.y - transfer.prev.y) * partialTick,
+						transfer.prev.z + (transfer.current.z - transfer.prev.z) * partialTick);
 				poseStack.translate(cur.x, cur.y, cur.z);
 
-				RenderSystem.disableDepthTest();
 				RenderHelper.renderPower(poseStack, bufferSource, colors[2]);
-				RenderSystem.enableDepthTest();
 
 				poseStack.popPose();
 			}
@@ -81,13 +77,29 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 			Direction dir = Direction.getNearest((int) (x - x2), (int) (y - y2), (int) (z - z2), null); //TODO: Double check! as it was using float before
 			boolean flag = y != y2 && (dir == Direction.UP || dir == Direction.DOWN);
 
+			float dx = x2 - x;
+			float dy = y2 - y;
+			float dz = z2 - z;
+			float length = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+			float nx = dx / length;
+			float ny = dy / length;
+			float nz = dz / length;
+
 			for (int i = 0; i < 5; i++) {
 				if (flag) {
-					vertexBuilder.addVertex(pose, x - initialOffset + (i * offset), y, z).setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
-					vertexBuilder.addVertex(pose, x2 - initialOffset + (i * offset), y2, z2).setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
+					vertexBuilder.addVertex(pose, x - initialOffset + (i * offset), y, z)
+							.setNormal(nx, ny, nz)
+							.setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
+					vertexBuilder.addVertex(pose, x2 - initialOffset + (i * offset), y2, z2)
+							.setNormal(nx, ny, nz)
+							.setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
 				} else {
-					vertexBuilder.addVertex(pose, x, y - initialOffset + (i * offset), z).setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
-					vertexBuilder.addVertex(pose, x2, y2 - initialOffset + (i * offset), z2).setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
+					vertexBuilder.addVertex(pose, x, y - initialOffset + (i * offset), z)
+							.setNormal(nx, ny, nz)
+							.setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
+					vertexBuilder.addVertex(pose, x2, y2 - initialOffset + (i * offset), z2)
+							.setNormal(nx, ny, nz)
+							.setColor(colors[i].getRed() / 255f, colors[i].getGreen() / 255f, colors[i].getBlue() / 255f, 1f);
 				}
 			}
 		}

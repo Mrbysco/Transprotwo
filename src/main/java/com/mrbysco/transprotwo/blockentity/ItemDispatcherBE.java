@@ -92,19 +92,19 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 	@Override
 	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
 		super.loadAdditional(compound, lookupProvider);
-		ListTag transferList = compound.getList("transfers", 10);
+		ListTag transferList = compound.getListOrEmpty("transfers");
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(ItemTransfer.loadFromNBT(transferList.getCompound(i), lookupProvider));
+			this.transfers.add(ItemTransfer.loadFromNBT(transferList.getCompoundOrEmpty(i), lookupProvider));
 
-		this.filterHandler.deserializeNBT(lookupProvider, compound.getCompound("filter"));
+		this.filterHandler.deserializeNBT(lookupProvider, compound.getCompoundOrEmpty("filter"));
 
-		tag = compound.getBoolean("tag");
-		durability = compound.getBoolean("durability");
-		nbt = compound.getBoolean("nbt");
-		white = compound.getBoolean("white");
-		mod = compound.getBoolean("mod");
-		stockNum = compound.getInt("stock");
+		tag = compound.getBooleanOr("tag", false);
+		durability = compound.getBooleanOr("durability", false);
+		nbt = compound.getBooleanOr("nbt", false);
+		white = compound.getBooleanOr("white", false);
+		mod = compound.getBooleanOr("mod", false);
+		stockNum = compound.getIntOr("stock", 0);
 	}
 
 	@Override

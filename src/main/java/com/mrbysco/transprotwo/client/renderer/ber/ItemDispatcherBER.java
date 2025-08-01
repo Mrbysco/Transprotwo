@@ -1,6 +1,5 @@
 package com.mrbysco.transprotwo.client.renderer.ber;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
@@ -16,7 +15,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 
 public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 	public ItemDispatcherBER(Context context) {
@@ -24,8 +22,8 @@ public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 	}
 
 	@Override
-	public void render(@NotNull ItemDispatcherBE dispatcher, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
-		super.render(dispatcher, partialTicks, poseStack, bufferSource, combinedLightIn, combinedOverlayIn);
+	public void render(ItemDispatcherBE dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 p_401186_) {
+		super.render(dispatcher, partialTick, poseStack, bufferSource, packedLight, packedOverlay, p_401186_);
 
 		if (!TransprotConfig.CLIENT.showItems.get())
 			return;
@@ -36,9 +34,9 @@ public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 			if (abstractTransfer instanceof ItemTransfer transfer) {
 				poseStack.pushPose();
 				Vec3 cur = transfer.prev == null ? transfer.current : new Vec3(
-						transfer.prev.x + (transfer.current.x - transfer.prev.x) * partialTicks,
-						transfer.prev.y + (transfer.current.y - transfer.prev.y) * partialTicks,
-						transfer.prev.z + (transfer.current.z - transfer.prev.z) * partialTicks);
+						transfer.prev.x + (transfer.current.x - transfer.prev.x) * partialTick,
+						transfer.prev.y + (transfer.current.y - transfer.prev.y) * partialTick,
+						transfer.prev.z + (transfer.current.z - transfer.prev.z) * partialTick);
 				poseStack.translate(cur.x, cur.y, cur.z);
 
 				int newCombinedIn = LevelRenderer.getLightColor(mc.level, BlockPos.containing(cur.add(pos.getX(), pos.getY(), pos.getZ())));
@@ -47,7 +45,6 @@ public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 					poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
 				}
 				poseStack.scale(0.5F, 0.5F, 0.5F);
-				RenderSystem.disableDepthTest();
 				ItemRenderer itemRenderer = mc.getItemRenderer();
 				itemRenderer.renderStatic(transfer.stack, ItemDisplayContext.FIXED, newCombinedIn, OverlayTexture.NO_OVERLAY, poseStack, bufferSource, mc.level, 0);
 				if (transfer.stack.getCount() > 1) {
@@ -58,7 +55,6 @@ public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 						itemRenderer.renderStatic(transfer.stack, ItemDisplayContext.FIXED, newCombinedIn, OverlayTexture.NO_OVERLAY, poseStack, bufferSource, mc.level, 0);
 					}
 				}
-				RenderSystem.enableDepthTest();
 
 				if (bufferSource instanceof MultiBufferSource.BufferSource bufferSource1) {
 					bufferSource1.endBatch();

@@ -1,6 +1,5 @@
 package com.mrbysco.transprotwo.client.renderer.ber;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
@@ -11,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 
 public class FluidDispatcherBER extends AbstractDispatcherBER<FluidDispatcherBE> {
 	public FluidDispatcherBER(Context context) {
@@ -19,8 +17,8 @@ public class FluidDispatcherBER extends AbstractDispatcherBER<FluidDispatcherBE>
 	}
 
 	@Override
-	public void render(@NotNull FluidDispatcherBE dispatcher, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
-		super.render(dispatcher, partialTicks, poseStack, bufferSource, combinedLightIn, combinedOverlayIn);
+	public void render(FluidDispatcherBE dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 p_401186_) {
+		super.render(dispatcher, partialTick, poseStack, bufferSource, packedLight, packedOverlay, p_401186_);
 
 		if (!TransprotConfig.CLIENT.showFluids.get())
 			return;
@@ -31,23 +29,23 @@ public class FluidDispatcherBER extends AbstractDispatcherBER<FluidDispatcherBE>
 
 				poseStack.pushPose();
 				Vec3 cur = transfer.prev == null ? transfer.current : new Vec3(
-						transfer.prev.x + (transfer.current.x - transfer.prev.x) * partialTicks,
-						transfer.prev.y + (transfer.current.y - transfer.prev.y) * partialTicks,
-						transfer.prev.z + (transfer.current.z - transfer.prev.z) * partialTicks);
+						transfer.prev.x + (transfer.current.x - transfer.prev.x) * partialTick,
+						transfer.prev.y + (transfer.current.y - transfer.prev.y) * partialTick,
+						transfer.prev.z + (transfer.current.z - transfer.prev.z) * partialTick);
 				poseStack.translate(cur.x, cur.y, cur.z);
 
-				RenderSystem.disableDepthTest();
-				RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack, combinedLightIn);
+//				RenderSystem.disableDepthTest();
+				RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack, packedLight);
 				int stackAmount = transfer.fluidStack.getAmount() / 1000;
 				if (stackAmount > 1) {
 					poseStack.translate(.08, .08, .08);
-					RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack, combinedLightIn);
+					RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack, packedLight);
 					if (stackAmount >= 16) {
 						poseStack.translate(.08, .08, .08);
-						RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack, combinedLightIn);
+						RenderHelper.renderFluid(poseStack, bufferSource, transfer.fluidStack, packedLight);
 					}
 				}
-				RenderSystem.enableDepthTest();
+//				RenderSystem.enableDepthTest();
 
 				poseStack.popPose();
 			}

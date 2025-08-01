@@ -1,6 +1,5 @@
 package com.mrbysco.transprotwo.client.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE.Mode;
 import com.mrbysco.transprotwo.network.message.UpdateDispatcherPayload;
@@ -8,7 +7,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -143,8 +141,7 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 
 	@Override
 	protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int x, int y) {
-		RenderSystem.setShaderTexture(0, TEXTURE);
-		guiGraphics.blit(RenderType::guiTextured, TEXTURE, this.leftPos, this.topPos, 0, 0, 0, 0, this.imageWidth, this.imageHeight);
+		guiGraphics.blit(RenderType::guiTextured, TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
 
 		guiGraphics.drawString(font, String.valueOf(this.getMenu().stockNum[0]), leftPos + (95 - font.width("" + this.getMenu().stockNum[0]) / 2), topPos + 68, 14737632, false);
 	}

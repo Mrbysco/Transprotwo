@@ -19,7 +19,7 @@ public class PowerTransfer extends AbstractTransfer {
 	}
 
 	public void readFromNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		CompoundTag tag = compound.getCompound("power");
+		CompoundTag tag = compound.getCompoundOrEmpty("power");
 		powerStack = PowerStack.read(tag);
 		super.readFromNBT(compound, lookupProvider);
 	}

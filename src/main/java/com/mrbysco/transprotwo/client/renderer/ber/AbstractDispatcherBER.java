@@ -1,6 +1,5 @@
 package com.mrbysco.transprotwo.client.renderer.ber;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
@@ -26,12 +25,12 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 	}
 
 	@Override
-	public void render(@NotNull T dispatcher, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
+	public void render(T dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 p_401186_) {
 		final Minecraft mc = Minecraft.getInstance();
 		final LocalPlayer player = mc.player;
 		if (player == null)
 			return;
-		if (player.getInventory().getSelected().isEmpty() || player.getInventory().getSelected().getItem() != TransprotwoRegistry.LINKER.get())
+		if (player.getInventory().getSelectedItem().isEmpty() || player.getInventory().getSelectedItem().getItem() != TransprotwoRegistry.LINKER.get())
 			return;
 
 		BlockPos pos = dispatcher.getBlockPos();
@@ -48,14 +47,17 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 			if (!free && dispatcher.getLevel() != null && dispatcher.getLevel().getGameTime() / 10 % 2 != 0)
 				continue;
 
-			if (player.isShiftKeyDown()) {
-				RenderSystem.disableDepthTest();
-			} else {
-				RenderSystem.enableDepthTest();
-			}
+			float dx = x2 - x;
+			float dy = y2 - y;
+			float dz = z2 - z;
+			float length = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+			float nx = dx / length;
+			float ny = dy / length;
+			float nz = dz / length;
+
 			Matrix4f matrix = poseStack.last().pose();
-			vertexConsumer.addVertex(matrix, x, y, z).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-			vertexConsumer.addVertex(matrix, x2, y2, z2).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+			vertexConsumer.addVertex(matrix, x, y, z).setNormal(nx, ny, nz).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+			vertexConsumer.addVertex(matrix, x2, y2, z2).setNormal(nx, ny, nz).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 		}
 
 		if (vertexConsumer instanceof MultiBufferSource.BufferSource bufferSource1) {

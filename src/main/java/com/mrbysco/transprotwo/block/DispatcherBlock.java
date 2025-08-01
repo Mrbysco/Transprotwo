@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -32,8 +33,9 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		BlockEntity blockEntity = level.getBlockEntity(pos);
+	public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+		super.playerDestroy(level, player, pos, state, blockEntity, tool);
+
 		if (!level.isClientSide && blockEntity instanceof ItemDispatcherBE itemDispatcher) {
 			if (!itemDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
 				popResource(level, pos, itemDispatcher.getUpgrade().getStackInSlot(0));
@@ -43,7 +45,6 @@ public class DispatcherBlock extends AbstractDispatcherBlock {
 				}
 			}
 		}
-		super.onRemove(state, level, pos, newState, isMoving);
 	}
 
 	@Override

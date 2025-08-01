@@ -37,8 +37,9 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		BlockEntity blockEntity = level.getBlockEntity(pos);
+	public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+		super.playerDestroy(level, player, pos, state, blockEntity, tool);
+
 		if (!level.isClientSide && blockEntity instanceof PowerDispatcherBE powerDispatcher) {
 			IEnergyStorage originHandler = getOriginHandler(state, level, pos);
 			if (!powerDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
@@ -49,7 +50,6 @@ public class PowerDispatcherBlock extends AbstractDispatcherBlock {
 				}
 			}
 		}
-		super.onRemove(state, level, pos, newState, isMoving);
 	}
 
 	public IEnergyStorage getOriginHandler(BlockState state, Level level, BlockPos pos) {

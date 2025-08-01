@@ -19,7 +19,7 @@ public class ItemTransfer extends AbstractTransfer {
 	}
 
 	public void readFromNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		stack = ItemStack.parseOptional(lookupProvider, compound.getCompound("stack"));
+		stack = ItemStack.parse(lookupProvider, compound.getCompoundOrEmpty("stack")).orElse(ItemStack.EMPTY);
 		super.readFromNBT(compound, lookupProvider);
 	}
 

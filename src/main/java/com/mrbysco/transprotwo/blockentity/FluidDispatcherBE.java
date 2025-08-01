@@ -98,15 +98,15 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	@Override
 	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
 		super.loadAdditional(compound, lookupProvider);
-		ListTag transferList = compound.getList("transfers", 10);
+		ListTag transferList = compound.getListOrEmpty("transfers");
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(FluidTransfer.loadFromNBT(transferList.getCompound(i), lookupProvider));
+			this.transfers.add(FluidTransfer.loadFromNBT(transferList.getCompoundOrEmpty(i), lookupProvider));
 
-		this.filterHandler.deserializeNBT(lookupProvider, compound.getCompound("filter"));
+		this.filterHandler.deserializeNBT(lookupProvider, compound.getCompoundOrEmpty("filter"));
 
-		white = compound.getBoolean("white");
-		mod = compound.getBoolean("mod");
+		white = compound.getBooleanOr("white", false);
+		mod = compound.getBooleanOr("mod", false);
 	}
 
 	@Override

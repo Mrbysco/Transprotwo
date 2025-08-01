@@ -31,8 +31,8 @@ public class ClientHelper {
 	public static void summonParticles(Level level, CompoundTag nbt) {
 		if (!TransprotConfig.CLIENT.showParticles.get())
 			return;
-		BlockPos pos = BlockPos.of(nbt.getLong("pos"));
-		Vec3 vec = new Vec3(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
+		BlockPos pos = BlockPos.of(nbt.getLongOr("pos", 0l));
+		Vec3 vec = new Vec3(nbt.getDoubleOr("x", 0), nbt.getDoubleOr("y", 0), nbt.getDoubleOr("z", 0));
 		double dx = vec.x, dy = vec.y, dz = vec.z;
 		for (int i = 0; i < 7; i++) {
 			double xx = (new Random().nextDouble() - .5) / 2.3;

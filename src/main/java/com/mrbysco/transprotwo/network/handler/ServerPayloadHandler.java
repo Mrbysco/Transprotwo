@@ -110,15 +110,15 @@ public class ServerPayloadHandler {
 							if (compound.contains("reset"))
 								powerDispatcher.resetOptions();
 							if (compound.contains("color1"))
-								powerDispatcher.setLine1(compound.getInt("color1"));
+								powerDispatcher.setLine1(compound.getIntOr("color1", 0));
 							if (compound.contains("color2"))
-								powerDispatcher.setLine2(compound.getInt("color2"));
+								powerDispatcher.setLine2(compound.getIntOr("color2", 0));
 							if (compound.contains("color3"))
-								powerDispatcher.setLine3(compound.getInt("color3"));
+								powerDispatcher.setLine3(compound.getIntOr("color3", 0));
 							if (compound.contains("color4"))
-								powerDispatcher.setLine4(compound.getInt("color4"));
+								powerDispatcher.setLine4(compound.getIntOr("color4", 0));
 							if (compound.contains("color5"))
-								powerDispatcher.setLine5(compound.getInt("color5"));
+								powerDispatcher.setLine5(compound.getIntOr("color5", 0));
 							powerDispatcher.refreshClient();
 							PacketHandler.sendToNearbyPlayers(new ChangeColorPayload(blockEntityPos), blockEntityPos, 32, level);
 						}

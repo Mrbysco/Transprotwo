@@ -19,7 +19,7 @@ public class PowerStack {
 			return EMPTY;
 		}
 
-		PowerStack stack = new PowerStack(nbt.getInt("Amount"));
+		PowerStack stack = new PowerStack(nbt.getIntOr("Amount", 0));
 
 		return stack;
 	}

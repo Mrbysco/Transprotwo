@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -34,8 +35,9 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 	}
 
 	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		BlockEntity blockEntity = level.getBlockEntity(pos);
+	public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+		super.playerDestroy(level, player, pos, state, blockEntity, tool);
+
 		if (!level.isClientSide && blockEntity instanceof FluidDispatcherBE fluidDispatcher) {
 			IFluidHandler originHandler = getOriginHandler(state, level, pos);
 			if (!fluidDispatcher.getUpgrade().getStackInSlot(0).isEmpty())
@@ -46,7 +48,6 @@ public class FluidDispatcherBlock extends AbstractDispatcherBlock {
 				}
 			}
 		}
-		super.onRemove(state, level, pos, newState, isMoving);
 	}
 
 	public IFluidHandler getOriginHandler(BlockState state, Level level, BlockPos pos) {

@@ -21,11 +21,11 @@ public abstract class AbstractTransfer {
 	}
 
 	public void readFromNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		dis = BlockPos.of(compound.getLong("dis"));
-		rec = new ImmutablePair<>(BlockPos.of(compound.getLong("rec")), Direction.values()[compound.getInt("face")]);
-		current = new Vec3(compound.getDouble("xx"), compound.getDouble("yy"), compound.getDouble("zz"));
-		blocked = compound.getBoolean("blocked");
-		turn = compound.getInt("turn");
+		dis = BlockPos.of(compound.getLongOr("dis", 0L));
+		rec = new ImmutablePair<>(BlockPos.of(compound.getLongOr("rec", 0L)), Direction.values()[compound.getIntOr("face", 0)]);
+		current = new Vec3(compound.getDoubleOr("xx", 0), compound.getDoubleOr("yy", 0), compound.getDoubleOr("zz", 0));
+		blocked = compound.getBooleanOr("blocked", false);
+		turn = compound.getIntOr("turn", 0);
 	}
 
 	public CompoundTag writeToNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {

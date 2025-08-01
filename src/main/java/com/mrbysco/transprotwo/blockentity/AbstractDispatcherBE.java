@@ -80,20 +80,20 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
 		super.loadAdditional(compound, lookupProvider);
 
-		ListTag targetList = compound.getList("targets", 10);
+		ListTag targetList = compound.getListOrEmpty("targets");
 		this.targets = Sets.newHashSet();
 		for (int i = 0; i < targetList.size(); i++) {
-			CompoundTag nbt = targetList.getCompound(i);
-			this.targets.add(new ImmutablePair<>(BlockPos.of(nbt.getLong("pos")), Direction.values()[nbt.getInt("face")]));
+			CompoundTag nbt = targetList.getCompoundOrEmpty(i);
+			this.targets.add(new ImmutablePair<>(BlockPos.of(nbt.getLongOr("pos", 0l)), Direction.values()[nbt.getIntOr("face", 0)]));
 		}
 
 		if (compound.contains("mode"))
-			this.mode = Mode.valueOf(compound.getString("mode"));
+			this.mode = Mode.valueOf(compound.getStringOr("mode", ""));
 		else
 			this.mode = Mode.NF;
 
-		this.upgradeHandler.deserializeNBT(lookupProvider, compound.getCompound("upgrade"));
-		this.lastInsertIndex = compound.getInt("index");
+		this.upgradeHandler.deserializeNBT(lookupProvider, compound.getCompoundOrEmpty("upgrade"));
+		this.lastInsertIndex = compound.getIntOr("index", 0);
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public class FluidTransfer extends AbstractTransfer {
 	}
 
 	public void readFromNBT(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		fluidStack = FluidStack.parseOptional(lookupProvider, compound.getCompound("fluidstack"));
+		fluidStack = FluidStack.parseOptional(lookupProvider, compound.getCompoundOrEmpty("fluidstack"));
 		super.readFromNBT(compound, lookupProvider);
 	}
 

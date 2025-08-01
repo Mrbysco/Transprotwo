@@ -13,7 +13,7 @@ public class GhostSlot extends SlotItemHandler {
 
 	@Override
 	public boolean mayPickup(Player playerIn) {
-		ItemStack holding = playerIn.getInventory().getSelected();
+		ItemStack holding = playerIn.getInventory().getSelectedItem();
 
 		if (!holding.isEmpty()) {
 			holding = holding.copy();

@@ -61,16 +61,16 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 	@Override
 	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
 		super.loadAdditional(compound, lookupProvider);
-		ListTag transferList = compound.getList("transfers", 10);
+		ListTag transferList = compound.getListOrEmpty("transfers");
 		this.transfers = Sets.newHashSet();
 		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(PowerTransfer.loadFromNBT(transferList.getCompound(i), lookupProvider));
+			this.transfers.add(PowerTransfer.loadFromNBT(transferList.getCompoundOrEmpty(i), lookupProvider));
 
-		this.line1 = compound.getInt("line1");
-		this.line2 = compound.getInt("line2");
-		this.line3 = compound.getInt("line3");
-		this.line4 = compound.getInt("line4");
-		this.line5 = compound.getInt("line5");
+		this.line1 = compound.getIntOr("line1", 0);
+		this.line2 = compound.getIntOr("line2", 0);
+		this.line3 = compound.getIntOr("line3", 0);
+		this.line4 = compound.getIntOr("line4", 0);
+		this.line5 = compound.getIntOr("line5", 0);
 	}
 
 	@Override
