@@ -2,6 +2,7 @@ package com.mrbysco.transprotwo.blockentity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.FluidTransfer;
@@ -13,10 +14,8 @@ import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.FluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -26,19 +25,22 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueInput.TypedInputList;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class FluidDispatcherBE extends AbstractDispatcherBE {
 	private boolean white = false;
@@ -96,31 +98,37 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.loadAdditional(compound, lookupProvider);
-		ListTag transferList = compound.getListOrEmpty("transfers");
+	protected void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+
+		TypedInputList<FluidTransfer> transferList = input.listOrEmpty("fluidTransfers", FluidTransfer.CODEC);
 		this.transfers = Sets.newHashSet();
-		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(FluidTransfer.loadFromNBT(transferList.getCompoundOrEmpty(i), lookupProvider));
+		if (!transferList.isEmpty()) {
+			transferList.forEach(this.transfers::add);
+		}
 
-		this.filterHandler.deserializeNBT(lookupProvider, compound.getCompoundOrEmpty("filter"));
+		Optional<ValueInput> filterInput = input.child("filter");
+		if (filterInput.isPresent())
+			this.filterHandler.deserialize(filterInput.get());
 
-		white = compound.getBooleanOr("white", false);
-		mod = compound.getBooleanOr("mod", false);
+		white = input.getBooleanOr("white", false);
+		mod = input.getBooleanOr("mod", false);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.saveAdditional(compound, lookupProvider);
-		compound.put("filter", filterHandler.serializeNBT(lookupProvider));
+	protected void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
 
-		compound.putBoolean("white", white);
-		compound.putBoolean("mod", mod);
+		ValueOutput childOutput = output.child("filter");
+		filterHandler.serialize(childOutput);
+
+		output.putBoolean("white", white);
+		output.putBoolean("mod", mod);
 	}
 
 	void moveItems() {
 		for (AbstractTransfer tr : getTransfers()) {
-			if (!tr.blocked && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
+			if (!tr.blocked && level.isAreaLoaded(tr.rec.getFirst(), 1)) {
 				tr.prev = new Vec3(tr.current.x, tr.current.y, tr.current.z);
 				tr.current = tr.current.add(tr.getVec().scale(getSpeed() / tr.getVec().length()));
 			}
@@ -135,19 +143,19 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 				return false;
 			List<Pair<BlockPos, Direction>> lis = Lists.newArrayList();
 			for (Pair<BlockPos, Direction> pp : targets)
-				if (wayFree(worldPosition, pp.getLeft()))
+				if (wayFree(worldPosition, pp.getFirst()))
 					lis.add(pp);
 			if (lis.isEmpty())
 				return false;
 			switch (mode) {
 				case FF -> lis.sort((o1, o2) -> {
-					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
-					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
+					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getFirst());
+					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getFirst());
 					return Double.compare(dis1, dis2);
 				});
 				case NF -> lis.sort((o1, o2) -> {
-					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
-					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
+					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getFirst());
+					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getFirst());
 					return Double.compare(dis2, dis1);
 				});
 				case RA -> Collections.shuffle(lis);
@@ -181,15 +189,15 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 					if (blocked)
 						continue;
 
-					IFluidHandler dest = FluidHelper.getFluidHandler(level, pair.getLeft(), pair.getRight());
+					IFluidHandler dest = FluidHelper.getFluidHandler(level, pair.getFirst(), pair.getSecond());
 					int canInsert = FluidHelper.canInsert(dest, send);
 					if (canInsert <= 0)
 						continue;
 
 					FluidStack x = originHandler.drain(send, IFluidHandler.FluidAction.SIMULATE);
 					if (!x.isEmpty()) {
-						FluidTransfer tr = new FluidTransfer(worldPosition, pair.getLeft(), pair.getRight(), x);
-						if (!wayFree(tr.dis, tr.rec.getLeft()))
+						FluidTransfer tr = new FluidTransfer(worldPosition, pair.getFirst(), pair.getSecond(), x);
+						if (!wayFree(tr.dis, tr.rec.getFirst()))
 							continue;
 						if (true) {
 							Vec3 vec = tr.getVec().normalize().scale(0.015);
@@ -226,7 +234,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 		Iterator<Pair<BlockPos, Direction>> ite = fluidDispatcher.targets.iterator();
 		while (ite.hasNext()) {
 			Pair<BlockPos, Direction> pa = ite.next();
-			if (!FluidHelper.hasFluidHandler(level, pa.getLeft(), pa.getRight())) {
+			if (!FluidHelper.hasFluidHandler(level, pa.getFirst(), pa.getSecond())) {
 				ite.remove();
 				needSync = true;
 			}
@@ -241,15 +249,15 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 			AbstractTransfer t = it.next();
 			if (t instanceof FluidTransfer tr) {
 				BlockPos currentPos = BlockPos.containing(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
-				if (tr.rec == null || !FluidHelper.hasFluidHandler(level, tr.rec.getLeft(), tr.rec.getRight()) ||
-						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !fluidDispatcher.throughBlocks())) {
+				if (tr.rec == null || !FluidHelper.hasFluidHandler(level, tr.rec.getFirst(), tr.rec.getSecond()) ||
+						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getFirst()) && !level.isEmptyBlock(currentPos) && !fluidDispatcher.throughBlocks())) {
 					it.remove();
 					needSync = true;
 					continue;
 				}
-				boolean received = tr.rec.getLeft().equals(currentPos);
-				if (received && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
-					FluidStack rest = FluidHelper.insert(level, tr.rec.getLeft(), tr.fluidStack, tr.rec.getRight());
+				boolean received = tr.rec.getFirst().equals(currentPos);
+				if (received && level.isAreaLoaded(tr.rec.getFirst(), 1)) {
+					FluidStack rest = FluidHelper.insert(level, tr.rec.getFirst(), tr.fluidStack, tr.rec.getSecond());
 					if (!rest.isEmpty()) {
 						tr.fluidStack = rest;
 						for (AbstractTransfer at : fluidDispatcher.transfers) {
@@ -267,7 +275,7 @@ public class FluidDispatcherBE extends AbstractDispatcherBE {
 						it.remove();
 						needSync = true;
 					}
-					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getLeft());
+					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getFirst());
 					if (blockEntity != null) {
 						blockEntity.setChanged();
 					}

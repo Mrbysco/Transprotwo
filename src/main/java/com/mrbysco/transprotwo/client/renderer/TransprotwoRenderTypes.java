@@ -3,15 +3,12 @@ package com.mrbysco.transprotwo.client.renderer;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DepthTestFunction;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.mrbysco.transprotwo.Transprotwo;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.TriState;
 
 import java.util.OptionalDouble;
 
@@ -29,7 +26,7 @@ public abstract class TransprotwoRenderTypes extends RenderType {
 			.withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
 			.build();
 
-	public static final RenderPipeline.Snippet POWER_SNIPPET = RenderPipeline.builder(RenderPipelines.MATRICES_COLOR_SNIPPET)
+	public static final RenderPipeline.Snippet POWER_SNIPPET = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
 			.withVertexShader("core/position_tex_color")
 			.withFragmentShader("core/position_tex_color")
 			.withSampler("Sampler0")
@@ -59,7 +56,7 @@ public abstract class TransprotwoRenderTypes extends RenderType {
 
 	public static final RenderType POWER = RenderType.create("transprotwo:power", 262144, POWER_PIPELINE,
 			RenderType.CompositeState.builder()
-					.setTextureState(new RenderStateShard.TextureStateShard(Transprotwo.modLoc("textures/particle/power.png"), TriState.FALSE, false))
+					.setTextureState(new RenderStateShard.TextureStateShard(Transprotwo.modLoc("textures/particle/power.png"), false))
 //					.setTransparencyState(new RenderStateShard.TransparencyStateShard("translucent_transparency", () -> {
 //						RenderSystem.depthMask(false);
 //						RenderSystem.enableBlend();
@@ -73,7 +70,7 @@ public abstract class TransprotwoRenderTypes extends RenderType {
 	public static final RenderType LIQUID = RenderType.create("transprotwo:liquid", 262144, POWER_PIPELINE,
 			RenderType.CompositeState.builder()
 					.setTextureState(new RenderStateShard.TextureStateShard(
-							Transprotwo.modLoc("textures/particle/fluid.png"), TriState.FALSE, false))
+							Transprotwo.modLoc("textures/particle/fluid.png"), false))
 					.setLightmapState(RenderStateShard.LIGHTMAP)
 //					.setTransparencyState(new RenderStateShard.TransparencyStateShard("translucent_transparency", () -> {
 //						RenderSystem.depthMask(true);

@@ -1,5 +1,6 @@
 package com.mrbysco.transprotwo.item;
 
+import com.mojang.datafixers.util.Pair;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.FluidDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.ItemDispatcherBE;
@@ -21,8 +22,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class LinkerItem extends Item {
 	public LinkerItem(Properties properties) {
@@ -53,7 +52,7 @@ public class LinkerItem extends Item {
 					if (level.getCapability(Capabilities.ItemHandler.BLOCK, pos, context.getClickedFace()) != null) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof ItemDispatcherBE itemDispatcher) {
 							Direction facing = context.getClickedFace();
-							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
+							Pair<BlockPos, Direction> pair = new Pair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = itemDispatcher.getTargets().add(pair);
 								if (done) {
@@ -70,7 +69,7 @@ public class LinkerItem extends Item {
 					if (level.getCapability(Capabilities.FluidHandler.BLOCK, pos, context.getClickedFace()) != null) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof FluidDispatcherBE fluidDispatcher) {
 							Direction facing = context.getClickedFace();
-							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
+							Pair<BlockPos, Direction> pair = new Pair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = fluidDispatcher.getTargets().add(pair);
 								if (done) {
@@ -87,7 +86,7 @@ public class LinkerItem extends Item {
 					if (level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, context.getClickedFace()) != null) {
 						if (level.dimension().location().equals(location) && level.getBlockEntity(tPos) instanceof PowerDispatcherBE powerDispatcher) {
 							Direction facing = context.getClickedFace();
-							Pair<BlockPos, Direction> pair = new ImmutablePair<>(pos, facing);
+							Pair<BlockPos, Direction> pair = new Pair<>(pos, facing);
 							if (DistanceHelper.getDistance(pos, tPos) < TransprotConfig.COMMON.range.get()) {
 								boolean done = powerDispatcher.getTargets().add(pair);
 								if (done) {

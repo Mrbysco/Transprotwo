@@ -1,7 +1,13 @@
 package com.mrbysco.transprotwo.blockentity;
 
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.FluidTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.ItemTransfer;
+import com.mrbysco.transprotwo.blockentity.transfer.power.PowerTransfer;
 import com.mrbysco.transprotwo.item.UpgradeItem;
 import com.mrbysco.transprotwo.util.Boost;
 import com.mrbysco.transprotwo.util.Color;
@@ -10,21 +16,25 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueInput.TypedInputList;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueOutput.TypedOutputList;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class AbstractDispatcherBE extends BlockEntity implements MenuProvider {
@@ -77,49 +87,53 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 		}
 	}
 
-	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.loadAdditional(compound, lookupProvider);
+	@Override
+	protected void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
 
-		ListTag targetList = compound.getListOrEmpty("targets");
+		TypedInputList<Pair<Long, Direction>> targetList = input.listOrEmpty("targets",
+				Codec.mapPair(Codec.LONG.fieldOf("pos"), Direction.CODEC.fieldOf("face")).codec());
 		this.targets = Sets.newHashSet();
-		for (int i = 0; i < targetList.size(); i++) {
-			CompoundTag nbt = targetList.getCompoundOrEmpty(i);
-			this.targets.add(new ImmutablePair<>(BlockPos.of(nbt.getLongOr("pos", 0l)), Direction.values()[nbt.getIntOr("face", 0)]));
+		for (Pair<Long, Direction> target : targetList) {
+			BlockPos pos = BlockPos.of(target.getFirst());
+			this.targets.add(Pair.of(pos, target.getSecond()));
 		}
 
-		if (compound.contains("mode"))
-			this.mode = Mode.valueOf(compound.getStringOr("mode", ""));
-		else
-			this.mode = Mode.NF;
+		Optional<String> modeOpt = input.getString("mode");
+		this.mode = modeOpt.map(Mode::valueOf).orElse(Mode.NF);
 
-		this.upgradeHandler.deserializeNBT(lookupProvider, compound.getCompoundOrEmpty("upgrade"));
-		this.lastInsertIndex = compound.getIntOr("index", 0);
+		Optional<ValueInput> upgradeInput = input.child("upgrade");
+		upgradeInput.ifPresent(this.upgradeHandler::deserialize);
+
+		this.lastInsertIndex = input.getIntOr("index", 0);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.saveAdditional(compound, lookupProvider);
-		ListTag transferList = new ListTag();
-		for (AbstractTransfer transfer : transfers) {
-			CompoundTag n = new CompoundTag();
-			transfer.writeToNBT(n, lookupProvider);
-			transferList.add(n);
+	protected void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		TypedOutputList<ItemTransfer> itemTransfers = output.list("itemTransfers", ItemTransfer.CODEC);
+		TypedOutputList<FluidTransfer> fluidTransfers = output.list("fluidTransfers", FluidTransfer.CODEC);
+		TypedOutputList<PowerTransfer> powerTransfers = output.list("powerTransfers", PowerTransfer.CODEC);
+		for (AbstractTransfer transfer : this.transfers) {
+			if (transfer instanceof ItemTransfer itemTransfer) {
+				itemTransfers.add(itemTransfer);
+			} else if (transfer instanceof FluidTransfer fluidTransfer) {
+				fluidTransfers.add(fluidTransfer);
+			} else if (transfer instanceof PowerTransfer powerTransfer) {
+				powerTransfers.add(powerTransfer);
+			}
 		}
-		compound.put("transfers", transferList);
 
-		ListTag targetList = new ListTag();
+		TypedOutputList<Pair<Long, Direction>> targetsList = output.list("targets", Codec.mapPair(Codec.LONG.fieldOf("pos"), Direction.CODEC.fieldOf("face")).codec());
 		for (Pair<BlockPos, Direction> target : this.targets) {
-			CompoundTag tag = new CompoundTag();
-			tag.putLong("pos", target.getLeft().asLong());
-			tag.putLong("face", target.getRight().ordinal());
-			targetList.add(tag);
+			targetsList.add(Pair.of(target.getFirst().asLong(), target.getSecond()));
 		}
 
-		compound.put("upgrade", upgradeHandler.serializeNBT(lookupProvider));
+		ValueOutput upgradeOutput = output.child("upgrade");
+		upgradeHandler.serialize(upgradeOutput);
 
-		compound.put("targets", targetList);
-		compound.putString("mode", this.mode.toString());
-		compound.putInt("index", this.lastInsertIndex);
+		output.putString("mode", this.mode.toString());
+		output.putInt("index", this.lastInsertIndex);
 	}
 
 	public boolean wayFree(BlockPos start, BlockPos end) {
@@ -206,27 +220,31 @@ public abstract class AbstractDispatcherBE extends BlockEntity implements MenuPr
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider lookupProvider) {
-		this.loadAdditional(packet.getTag(), lookupProvider);
+	public void onDataPacket(Connection net, ValueInput valueInput) {
+		super.onDataPacket(net, valueInput);
 	}
 
 	@Override
 	public CompoundTag getUpdateTag(HolderLookup.Provider lookupProvider) {
-		CompoundTag nbt = new CompoundTag();
-		this.saveAdditional(nbt, lookupProvider);
-		return nbt;
-	}
-
-	@Override
-	public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-		this.loadAdditional(tag, lookupProvider);
+		CompoundTag tag = new CompoundTag();
+		try (ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(Transprotwo.LOGGER)) {
+			TagValueOutput output = TagValueOutput.createWithContext(problemreporter$scopedcollector, lookupProvider);
+			this.saveAdditional(output);
+			tag.merge(output.buildResult());
+		}
+		return tag;
 	}
 
 	@Override
 	public CompoundTag getPersistentData() {
-		CompoundTag nbt = new CompoundTag();
-		this.saveAdditional(nbt, level != null ? level.registryAccess() : VanillaRegistries.createLookup());
-		return nbt;
+		CompoundTag tag = new CompoundTag();
+		try (ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(Transprotwo.LOGGER)) {
+			HolderLookup.Provider lookupProvider = this.level != null ? this.level.registryAccess() : VanillaRegistries.createLookup();
+			TagValueOutput output = TagValueOutput.createWithContext(problemreporter$scopedcollector, lookupProvider);
+			this.saveAdditional(output);
+			tag.merge(output.buildResult());
+		}
+		return tag;
 	}
 
 	public boolean isUsableByPlayer(Player player) {

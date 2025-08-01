@@ -2,6 +2,7 @@ package com.mrbysco.transprotwo.client.renderer.ber;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.datafixers.util.Pair;
 import com.mrbysco.transprotwo.blockentity.PowerDispatcherBE;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.power.PowerTransfer;
@@ -16,7 +17,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Con
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
-import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix4f;
 
 public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE> {
@@ -25,8 +25,8 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 	}
 
 	@Override
-	public void render(PowerDispatcherBE dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 p_401186_) {
-		super.render(dispatcher, partialTick, poseStack, bufferSource, packedLight, packedOverlay, p_401186_);
+	public void render(PowerDispatcherBE dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 cameraPos) {
+		super.render(dispatcher, partialTick, poseStack, bufferSource, packedLight, packedOverlay, cameraPos);
 
 		if (!TransprotConfig.CLIENT.showPower.get())
 			return;
@@ -63,7 +63,7 @@ public class PowerDispatcherBER extends AbstractDispatcherBER<PowerDispatcherBE>
 		VertexConsumer vertexBuilder = bufferSource.getBuffer(lineType);
 
 		for (Pair<BlockPos, Direction> pa : dispatcher.getTargets()) {
-			BlockPos p = pa.getLeft();
+			BlockPos p = pa.getFirst();
 			float x = p.getX() + .5f, y = p.getY() + .5f, z = p.getZ() + .5f;
 			float x2 = pos.getX() + .5f, y2 = pos.getY() + .5f, z2 = pos.getZ() + .5f;
 			boolean free = dispatcher.wayFree(pos, p);

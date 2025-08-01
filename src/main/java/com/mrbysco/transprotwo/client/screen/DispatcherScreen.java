@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public class DispatcherScreen extends AbstractContainerScreen<DispatcherContainer> {
 	private final ResourceLocation TEXTURE = Transprotwo.modLoc("textures/gui/container/dispatcher.png");
@@ -141,7 +141,7 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 
 	@Override
 	protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int x, int y) {
-		guiGraphics.blit(RenderType::guiTextured, TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
+		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
 
 		guiGraphics.drawString(font, String.valueOf(this.getMenu().stockNum[0]), leftPos + (95 - font.width("" + this.getMenu().stockNum[0]) / 2), topPos + 68, 14737632, false);
 	}
@@ -159,10 +159,10 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 		DispatcherContainer container = this.getMenu();
 		guiGraphics.renderItem(new ItemStack(Blocks.GOLD_ORE), 2 + tag.getX() - leftPos, 2 + tag.getY() - topPos);
 		if (!(container.buttonValues[0] == 1)) {
-			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(0.0F, 0.0F, 100.0F);
+//			guiGraphics.pose().pushPose();
+//			guiGraphics.pose().translate(0.0F, 0.0F, 100.0F);
 			guiGraphics.renderItem(new ItemStack(Blocks.BARRIER), 2 + tag.getX() - leftPos, 2 + tag.getY() - topPos);
-			guiGraphics.pose().popPose();
+//			guiGraphics.pose().popPose();
 		}
 		if (!(container.buttonValues[1] == 1)) //Durability
 			guiGraphics.renderItem(new ItemStack(Blocks.BARRIER), 2 + durability.getX() - leftPos, 2 + durability.getY() - topPos);
@@ -178,12 +178,12 @@ public class DispatcherScreen extends AbstractContainerScreen<DispatcherContaine
 			guiGraphics.renderItem(new ItemStack(Blocks.BARRIER), 2 + mod.getX() - leftPos, 2 + mod.getY() - topPos);
 
 		if (isHovering(86, 65, 13, 13, mouseX, mouseY))
-			guiGraphics.renderTooltip(this.font, Component.literal("If greater than 0 destination inventory\n will keep that amount of items."), mouseX - leftPos, mouseY - topPos);
+			guiGraphics.setTooltipForNextFrame(this.font, Component.literal("If greater than 0 destination inventory\n will keep that amount of items."), mouseX - leftPos, mouseY - topPos);
 	}
 
 
 	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketDistributor.sendToServer(new UpdateDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
+		ClientPacketDistributor.sendToServer(new UpdateDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

@@ -2,6 +2,7 @@ package com.mrbysco.transprotwo.client.renderer.ber;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.datafixers.util.Pair;
 import com.mrbysco.transprotwo.blockentity.AbstractDispatcherBE;
 import com.mrbysco.transprotwo.client.renderer.TransprotwoRenderTypes;
 import com.mrbysco.transprotwo.registry.TransprotwoRegistry;
@@ -15,7 +16,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
@@ -25,7 +25,7 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 	}
 
 	@Override
-	public void render(T dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 p_401186_) {
+	public void render(T dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 cameraPos) {
 		final Minecraft mc = Minecraft.getInstance();
 		final LocalPlayer player = mc.player;
 		if (player == null)
@@ -39,8 +39,8 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 
 		final Color color = dispatcher.getColor();
 		for (Pair<BlockPos, Direction> pa : dispatcher.getTargets()) {
-			BlockPos p = pa.getLeft();
-			BlockPos subtracted = pa.getLeft().subtract(pos);
+			BlockPos p = pa.getFirst();
+			BlockPos subtracted = pa.getFirst().subtract(pos);
 			float x = subtracted.getX() + .5f, y = subtracted.getY() + .5f, z = subtracted.getZ() + .5f;
 			float x2 = 0 + .5f, y2 = 0 + .5f, z2 = 0 + .5f;
 			boolean free = dispatcher.wayFree(pos, p);
@@ -72,7 +72,7 @@ public class AbstractDispatcherBER<T extends AbstractDispatcherBE> implements Bl
 	}
 
 	@Override
-	public boolean shouldRenderOffScreen(@NotNull T dispatcher) {
+	public boolean shouldRenderOffScreen() {
 		return true;
 	}
 

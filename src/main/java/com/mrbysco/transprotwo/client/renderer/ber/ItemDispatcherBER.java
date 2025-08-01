@@ -22,8 +22,8 @@ public class ItemDispatcherBER extends AbstractDispatcherBER<ItemDispatcherBE> {
 	}
 
 	@Override
-	public void render(ItemDispatcherBE dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 p_401186_) {
-		super.render(dispatcher, partialTick, poseStack, bufferSource, packedLight, packedOverlay, p_401186_);
+	public void render(ItemDispatcherBE dispatcher, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, Vec3 cameraPos) {
+		super.render(dispatcher, partialTick, poseStack, bufferSource, packedLight, packedOverlay, cameraPos);
 
 		if (!TransprotConfig.CLIENT.showItems.get())
 			return;

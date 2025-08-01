@@ -2,6 +2,7 @@ package com.mrbysco.transprotwo.blockentity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.power.PowerStack;
@@ -15,9 +16,7 @@ import com.mrbysco.transprotwo.util.DistanceHelper;
 import com.mrbysco.transprotwo.util.PowerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -26,9 +25,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueInput.TypedInputList;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -59,33 +60,35 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.loadAdditional(compound, lookupProvider);
-		ListTag transferList = compound.getListOrEmpty("transfers");
-		this.transfers = Sets.newHashSet();
-		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(PowerTransfer.loadFromNBT(transferList.getCompoundOrEmpty(i), lookupProvider));
+	protected void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
 
-		this.line1 = compound.getIntOr("line1", 0);
-		this.line2 = compound.getIntOr("line2", 0);
-		this.line3 = compound.getIntOr("line3", 0);
-		this.line4 = compound.getIntOr("line4", 0);
-		this.line5 = compound.getIntOr("line5", 0);
+		TypedInputList<PowerTransfer> transferList = input.listOrEmpty("transfers", PowerTransfer.CODEC);
+		this.transfers = Sets.newHashSet();
+		if (!transferList.isEmpty()) {
+			transferList.forEach(this.transfers::add);
+		}
+
+		this.line1 = input.getIntOr("line1", 0);
+		this.line2 = input.getIntOr("line2", 0);
+		this.line3 = input.getIntOr("line3", 0);
+		this.line4 = input.getIntOr("line4", 0);
+		this.line5 = input.getIntOr("line5", 0);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.saveAdditional(compound, lookupProvider);
-		compound.putInt("line1", this.line1);
-		compound.putInt("line2", this.line2);
-		compound.putInt("line3", this.line3);
-		compound.putInt("line4", this.line4);
-		compound.putInt("line5", this.line5);
+	protected void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		output.putInt("line1", this.line1);
+		output.putInt("line2", this.line2);
+		output.putInt("line3", this.line3);
+		output.putInt("line4", this.line4);
+		output.putInt("line5", this.line5);
 	}
 
 	void moveItems() {
 		for (AbstractTransfer tr : getTransfers()) {
-			if (!tr.blocked && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
+			if (!tr.blocked && level.isAreaLoaded(tr.rec.getFirst(), 1)) {
 				tr.prev = new Vec3(tr.current.x, tr.current.y, tr.current.z);
 				tr.current = tr.current.add(tr.getVec().scale(getSpeed() / tr.getVec().length()));
 			}
@@ -100,19 +103,19 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 				return false;
 			List<Pair<BlockPos, Direction>> lis = Lists.newArrayList();
 			for (Pair<BlockPos, Direction> pp : targets)
-				if (wayFree(worldPosition, pp.getLeft()))
+				if (wayFree(worldPosition, pp.getFirst()))
 					lis.add(pp);
 			if (lis.isEmpty())
 				return false;
 			switch (mode) {
 				case FF -> lis.sort((o1, o2) -> {
-					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
-					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
+					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getFirst());
+					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getFirst());
 					return Double.compare(dis1, dis2);
 				});
 				case NF -> lis.sort((o1, o2) -> {
-					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
-					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
+					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getFirst());
+					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getFirst());
 					return Double.compare(dis2, dis1);
 				});
 				case RA -> Collections.shuffle(lis);
@@ -145,15 +148,15 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 				if (blocked)
 					continue;
 
-				IEnergyStorage dest = PowerUtil.getEnergyStorage(level, pair.getLeft(), pair.getRight());
+				IEnergyStorage dest = PowerUtil.getEnergyStorage(level, pair.getFirst(), pair.getSecond());
 				int canInsert = !dest.canReceive() ? 0 : PowerUtil.canInsert(dest, send);
 				if (canInsert <= 0)
 					continue;
 
 				PowerStack x = new PowerStack(originHandler.extractEnergy(send.getAmount(), true));
 				if (!x.isEmpty()) {
-					PowerTransfer tr = new PowerTransfer(worldPosition, pair.getLeft(), pair.getRight(), x);
-					if (!wayFree(tr.dis, tr.rec.getLeft()))
+					PowerTransfer tr = new PowerTransfer(worldPosition, pair.getFirst(), pair.getSecond(), x);
+					if (!wayFree(tr.dis, tr.rec.getFirst()))
 						continue;
 					if (true) {
 						Vec3 vec = tr.getVec().normalize().scale(0.015);
@@ -190,7 +193,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 		Iterator<Pair<BlockPos, Direction>> ite = powerDispatcher.targets.iterator();
 		while (ite.hasNext()) {
 			Pair<BlockPos, Direction> pa = ite.next();
-			if (!PowerUtil.hasEnergyStorage(level, pa.getLeft(), pa.getRight())) {
+			if (!PowerUtil.hasEnergyStorage(level, pa.getFirst(), pa.getSecond())) {
 				ite.remove();
 				needSync = true;
 			}
@@ -205,15 +208,15 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 			AbstractTransfer t = it.next();
 			if (t instanceof PowerTransfer tr) {
 				BlockPos currentPos = BlockPos.containing(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
-				if (tr.rec == null || !PowerUtil.hasEnergyStorage(level, tr.rec.getLeft(), tr.rec.getRight()) ||
-						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !powerDispatcher.throughBlocks())) {
+				if (tr.rec == null || !PowerUtil.hasEnergyStorage(level, tr.rec.getFirst(), tr.rec.getSecond()) ||
+						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getFirst()) && !level.isEmptyBlock(currentPos) && !powerDispatcher.throughBlocks())) {
 					it.remove();
 					needSync = true;
 					continue;
 				}
-				boolean received = tr.rec.getLeft().equals(currentPos);
-				if (received && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
-					PowerStack rest = PowerUtil.insert(level, tr.rec.getLeft(), tr.powerStack, tr.rec.getRight());
+				boolean received = tr.rec.getFirst().equals(currentPos);
+				if (received && level.isAreaLoaded(tr.rec.getFirst(), 1)) {
+					PowerStack rest = PowerUtil.insert(level, tr.rec.getFirst(), tr.powerStack, tr.rec.getSecond());
 					if (!rest.isEmpty()) {
 						tr.powerStack = rest;
 						for (AbstractTransfer at : powerDispatcher.transfers) {
@@ -231,7 +234,7 @@ public class PowerDispatcherBE extends AbstractDispatcherBE {
 						it.remove();
 						needSync = true;
 					}
-					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getLeft());
+					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getFirst());
 					if (blockEntity != null) {
 						blockEntity.setChanged();
 					}

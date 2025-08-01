@@ -40,12 +40,12 @@ public abstract class AbstractDispatcherBlock extends DirectionalBlock implement
 	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
 		return switch (state.getValue(FACING)) {
-			default -> NORTH_SHAPE;
 			case SOUTH -> SOUTH_SHAPE;
 			case DOWN -> DOWN_SHAPE;
 			case EAST -> EAST_SHAPE;
 			case UP -> TOP_SHAPE;
 			case WEST -> WEST_SHAPE;
+			default -> NORTH_SHAPE;
 		};
 	}
 
@@ -54,6 +54,7 @@ public abstract class AbstractDispatcherBlock extends DirectionalBlock implement
 		builder.add(FACING);
 	}
 
+	@Override
 	public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int p_49229_, int p_49230_) {
 		super.triggerEvent(state, level, pos, p_49229_, p_49230_);
 		BlockEntity blockentity = level.getBlockEntity(pos);
@@ -67,7 +68,7 @@ public abstract class AbstractDispatcherBlock extends DirectionalBlock implement
 	}
 
 	@Nullable
-	protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> p_152133_, BlockEntityType<E> p_152134_, BlockEntityTicker<? super E> p_152135_) {
-		return p_152134_ == p_152133_ ? (BlockEntityTicker<A>) p_152135_ : null;
+	protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> type, BlockEntityType<E> entityType, BlockEntityTicker<? super E> ticker) {
+		return entityType == type ? (BlockEntityTicker<A>) ticker : null;
 	}
 }

@@ -37,7 +37,7 @@ public class TransprotModelProvider extends ModelProvider {
 	}
 
 	private void dispatcher(BlockModelGenerators blockModels, Block block) {
-		ResourceLocation dispatcher = ResourceLocation.fromNamespaceAndPath(Transprotwo.MOD_ID, "block/dispatcher");
+		ResourceLocation dispatcher = Transprotwo.modLoc("block/dispatcher");
 		MultiVariant variant = BlockModelGenerators.plainVariant(dispatcher);
 		blockModels.blockStateOutput
 				.accept(

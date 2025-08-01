@@ -1,8 +1,20 @@
 package com.mrbysco.transprotwo.blockentity.transfer.power;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.Random;
+
 public class PowerStack {
+
+	public static final Codec<PowerStack> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+							Codec.INT.optionalFieldOf("amount", new Random().nextInt()).forGetter(transfer -> transfer.amount)
+					)
+					.apply(instance, PowerStack::new)
+	);
+
 	public static final PowerStack EMPTY = new PowerStack(0);
 
 	private boolean isEmpty;

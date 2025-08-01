@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatcherContainer> {
 	private final ResourceLocation TEXTURE = Transprotwo.modLoc("textures/gui/container/dispatcher.png");
@@ -104,7 +104,7 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 
 	@Override
 	protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int x, int y) {
-		guiGraphics.blit(RenderType::guiTextured, TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
+		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
 	}
 
 	@Override
@@ -128,6 +128,6 @@ public class FluidDispatcherScreen extends AbstractContainerScreen<FluidDispatch
 
 	private void updateBlockEntity(CompoundTag compound) {
 		this.dirty = true;
-		PacketDistributor.sendToServer(new UpdateFluidDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
+		ClientPacketDistributor.sendToServer(new UpdateFluidDispatcherPayload(compound, this.getMenu().getBlockEntity().getBlockPos()));
 	}
 }

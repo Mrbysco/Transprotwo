@@ -12,7 +12,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-@EventBusSubscriber(modid = Transprotwo.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 public class TransprotwoParticles {
 	public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, Transprotwo.MOD_ID);
 

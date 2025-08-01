@@ -2,6 +2,7 @@ package com.mrbysco.transprotwo.blockentity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mrbysco.transprotwo.Transprotwo;
 import com.mrbysco.transprotwo.blockentity.transfer.AbstractTransfer;
 import com.mrbysco.transprotwo.blockentity.transfer.ItemTransfer;
@@ -14,10 +15,8 @@ import com.mrbysco.transprotwo.util.InventoryUtil;
 import com.mrbysco.transprotwo.util.StackHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -28,15 +27,18 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueInput.TypedInputList;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class ItemDispatcherBE extends AbstractDispatcherBE {
 	private boolean tag = false;
@@ -90,39 +92,44 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.loadAdditional(compound, lookupProvider);
-		ListTag transferList = compound.getListOrEmpty("transfers");
+	protected void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+
+		TypedInputList<ItemTransfer> transferList = input.listOrEmpty("itemTransfers", ItemTransfer.CODEC);
 		this.transfers = Sets.newHashSet();
-		for (int i = 0; i < transferList.size(); i++)
-			this.transfers.add(ItemTransfer.loadFromNBT(transferList.getCompoundOrEmpty(i), lookupProvider));
+		if (!transferList.isEmpty()) {
+			transferList.forEach(this.transfers::add);
+		}
+		Optional<ValueInput> filterInput = input.child("filter");
+		if (filterInput.isPresent())
+			this.filterHandler.deserialize(filterInput.get());
 
-		this.filterHandler.deserializeNBT(lookupProvider, compound.getCompoundOrEmpty("filter"));
-
-		tag = compound.getBooleanOr("tag", false);
-		durability = compound.getBooleanOr("durability", false);
-		nbt = compound.getBooleanOr("nbt", false);
-		white = compound.getBooleanOr("white", false);
-		mod = compound.getBooleanOr("mod", false);
-		stockNum = compound.getIntOr("stock", 0);
+		tag = input.getBooleanOr("tag", false);
+		durability = input.getBooleanOr("durability", false);
+		nbt = input.getBooleanOr("nbt", false);
+		white = input.getBooleanOr("white", false);
+		mod = input.getBooleanOr("mod", false);
+		stockNum = input.getIntOr("stock", 0);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.saveAdditional(compound, lookupProvider);
-		compound.put("filter", filterHandler.serializeNBT(lookupProvider));
+	protected void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
 
-		compound.putBoolean("tag", tag);
-		compound.putBoolean("durability", durability);
-		compound.putBoolean("nbt", nbt);
-		compound.putBoolean("white", white);
-		compound.putBoolean("mod", mod);
-		compound.putInt("stock", stockNum);
+		ValueOutput childOutput = output.child("filter");
+		filterHandler.serialize(childOutput);
+
+		output.putBoolean("tag", tag);
+		output.putBoolean("durability", durability);
+		output.putBoolean("nbt", nbt);
+		output.putBoolean("white", white);
+		output.putBoolean("mod", mod);
+		output.putInt("stock", stockNum);
 	}
 
 	void moveItems() {
 		for (AbstractTransfer tr : getTransfers()) {
-			if (!tr.blocked && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
+			if (!tr.blocked && level.isAreaLoaded(tr.rec.getFirst(), 1)) {
 				tr.prev = new Vec3(tr.current.x, tr.current.y, tr.current.z);
 				tr.current = tr.current.add(tr.getVec().scale(getSpeed() / tr.getVec().length()));
 			}
@@ -140,19 +147,19 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 				return false;
 			List<Pair<BlockPos, Direction>> lis = Lists.newArrayList();
 			for (Pair<BlockPos, Direction> pp : targets)
-				if (wayFree(worldPosition, pp.getLeft()))
+				if (wayFree(worldPosition, pp.getFirst()))
 					lis.add(pp);
 			if (lis.isEmpty())
 				return false;
 			switch (mode) {
 				case FF -> lis.sort((o1, o2) -> {
-					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
-					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
+					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getFirst());
+					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getFirst());
 					return Double.compare(dis1, dis2);
 				});
 				case NF -> lis.sort((o1, o2) -> {
-					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getLeft());
-					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getLeft());
+					double dis1 = DistanceHelper.getDistance(worldPosition, o2.getFirst());
+					double dis2 = DistanceHelper.getDistance(worldPosition, o1.getFirst());
 					return Double.compare(dis2, dis1);
 				});
 				case RA -> Collections.shuffle(lis);
@@ -185,7 +192,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 					}
 					if (blocked)
 						continue;
-					IItemHandler dest = InventoryUtil.getItemHandler(level, pair.getLeft(), pair.getRight());
+					IItemHandler dest = InventoryUtil.getItemHandler(level, pair.getFirst(), pair.getSecond());
 					int canInsert = InventoryUtil.canInsert(dest, send);
 					int missing = Integer.MAX_VALUE;
 					if (stockNum > 0) {
@@ -210,8 +217,8 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 					canInsert = Math.min(canInsert, missing);
 					ItemStack x = inv.extractItem(i, canInsert, true);
 					if (!x.isEmpty()) {
-						ItemTransfer tr = new ItemTransfer(worldPosition, pair.getLeft(), pair.getRight(), x);
-						if (!wayFree(tr.dis, tr.rec.getLeft()))
+						ItemTransfer tr = new ItemTransfer(worldPosition, pair.getFirst(), pair.getSecond(), x);
+						if (!wayFree(tr.dis, tr.rec.getFirst()))
 							continue;
 						if (true) {
 							Vec3 vec = tr.getVec().normalize().scale(0.015);
@@ -248,7 +255,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 		Iterator<Pair<BlockPos, Direction>> ite = itemDispatcher.targets.iterator();
 		while (ite.hasNext()) {
 			Pair<BlockPos, Direction> pa = ite.next();
-			if (!InventoryUtil.hasItemHandler(level, pa.getLeft(), pa.getRight())) {
+			if (!InventoryUtil.hasItemHandler(level, pa.getFirst(), pa.getSecond())) {
 				ite.remove();
 				needSync = true;
 			}
@@ -258,16 +265,16 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 			AbstractTransfer t = it.next();
 			if (t instanceof ItemTransfer tr) {
 				BlockPos currentPos = BlockPos.containing(pos.getX() + tr.current.x, pos.getY() + tr.current.y, pos.getZ() + tr.current.z);
-				if (tr.rec == null || !InventoryUtil.hasItemHandler(level, tr.rec.getLeft(), tr.rec.getRight()) ||
-						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getLeft()) && !level.isEmptyBlock(currentPos) && !itemDispatcher.throughBlocks())) {
+				if (tr.rec == null || !InventoryUtil.hasItemHandler(level, tr.rec.getFirst(), tr.rec.getSecond()) ||
+						(!currentPos.equals(pos) && !currentPos.equals(tr.rec.getFirst()) && !level.isEmptyBlock(currentPos) && !itemDispatcher.throughBlocks())) {
 					Block.popResource(level, currentPos, tr.stack);
 					it.remove();
 					needSync = true;
 					continue;
 				}
-				boolean received = tr.rec.getLeft().equals(currentPos);
-				if (received && level.isAreaLoaded(tr.rec.getLeft(), 1)) {
-					ItemStack rest = InventoryUtil.insert(level, tr.rec.getLeft(), tr.stack, tr.rec.getRight());
+				boolean received = tr.rec.getFirst().equals(currentPos);
+				if (received && level.isAreaLoaded(tr.rec.getFirst(), 1)) {
+					ItemStack rest = InventoryUtil.insert(level, tr.rec.getFirst(), tr.stack, tr.rec.getSecond());
 					if (!rest.isEmpty()) {
 						tr.stack = rest;
 						for (AbstractTransfer at : itemDispatcher.transfers) {
@@ -285,7 +292,7 @@ public class ItemDispatcherBE extends AbstractDispatcherBE {
 						it.remove();
 						needSync = true;
 					}
-					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getLeft());
+					BlockEntity blockEntity = level.getBlockEntity(tr.rec.getFirst());
 					if (blockEntity != null) {
 						blockEntity.setChanged();
 					}
